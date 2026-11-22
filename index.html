@@ -1,9 +1,10 @@
 <!doctype html>
-<html lang="uk">
+<html lang="uk" translate="no">
 <head>
 <meta charset="utf-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<title>ZMIST Hookah Toolkit</title>
+<title>404 Not Found</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -354,9 +355,15 @@ pre{max-width:100%;overflow-x:auto;}
 .ui-dlg-btns{display:flex;justify-content:flex-end;gap:8px;}
 .tab-icon{position:relative;}
 .sync-dot{position:absolute;top:6px;right:4px;width:6px;height:6px;border-radius:50%;background:transparent;}
-.sync-dot.ok{background:#16A34A;}.sync-dot.sync,.sync-dot.wait{background:#D4A017;}.sync-dot.err,.sync-dot.key{background:#DC2626;}
+.sync-dot.ok{background:#16A34A;}.sync-dot.sync,.sync-dot.wait{background:#D4A017;}.sync-dot.err,.sync-dot.key,.sync-dot.pass{background:#DC2626;}
 .cloud-line{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);margin:-2px 0 12px;}
 .cloud-empty{font-size:13px;line-height:1.55;background:var(--bg2,#f4f4f2);border-radius:8px;padding:10px 12px;margin-bottom:12px;color:var(--text1);}
+.export-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:12px 24px 0;padding:10px 14px;border-radius:10px;background:#FFF7E6;border:1px solid #F5D9A8;font-size:13px;color:#7A4B00;line-height:1.5;}
+.export-bar-btns{display:flex;gap:6px;flex:0 0 auto;}
+@media (max-width:640px){.export-bar{margin:10px 14px 0;}}
+.bio-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:14px;}
+.bio-title{font-size:13.5px;font-weight:600;color:var(--text1);}
+.bio-state{font-size:12px;color:var(--text2);margin-top:2px;}
 .gas-help{margin-top:14px;font-size:13px;color:var(--text2);}
 .gas-help summary{cursor:pointer;color:var(--text1);font-weight:500;}
 .gas-help ol{margin:10px 0 12px 18px;line-height:1.7;}
@@ -742,15 +749,25 @@ input[type=number]::-webkit-inner-spin-button{opacity:.35;}
 
 /* ── Екран входу ── */
 #lockScreen{display:none;}
-html.locked body>*:not(#lockScreen){display:none!important;}
+html.locked body>*:not(#lockScreen):not(#decoyScreen){display:none!important;}
+#decoyScreen{display:none;}
+html.decoy #lockScreen{display:none!important;}
+html.decoy #decoyScreen{display:flex;position:fixed;inset:0;z-index:5001;flex-direction:column;align-items:center;justify-content:center;background:#fff;color:#24292f;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;text-align:center;padding:24px;-webkit-user-select:none;user-select:none;}
+.dc-code{font-size:96px;font-weight:300;letter-spacing:-2px;line-height:1;color:#d0d7de;}
+.dc-title{font-size:22px;font-weight:600;margin:18px 0 8px;}
+.dc-text{font-size:14px;color:#57606a;max-width:360px;line-height:1.6;}
+.dc-foot{position:absolute;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom));font-size:11px;color:#c4c9cf;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;cursor:default;-webkit-tap-highlight-color:transparent;padding:8px;}
 html.locked #lockScreen{display:flex;position:fixed;inset:0;z-index:5000;align-items:center;justify-content:center;background:var(--bg);padding:20px;}
 .lock-card{width:100%;max-width:320px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px 28px 28px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.06);}
 .lock-icon{width:48px;height:48px;margin:0 auto 14px;border-radius:14px;background:var(--surface2);color:var(--text1);display:flex;align-items:center;justify-content:center;}
 .lock-title{font-size:20px;font-weight:700;letter-spacing:-.02em;}
 .lock-sub{font-size:13px;color:var(--text2);margin:4px 0 20px;}
-.lock-inp{display:block;width:100%;height:48px;border:1px solid var(--border2);border-radius:12px;text-align:center;font-family:inherit;font-size:22px;letter-spacing:.4em;color:var(--text1);outline:none;transition:border-color .15s,box-shadow .15s;}
+.lock-inp{display:block;width:100%;height:48px;border:1px solid var(--border2);border-radius:12px;text-align:center;font-family:inherit;font-size:18px;letter-spacing:.12em;color:var(--text1);outline:none;transition:border-color .15s,box-shadow .15s;}
 .lock-inp:focus{border-color:var(--text3);box-shadow:0 0 0 3px rgba(24,24,27,.07);}
 .lock-inp::placeholder{color:var(--border2);}
+.lock-inp::placeholder{letter-spacing:0;font-size:15px;}
+.lock-bio{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;height:44px;border:1px solid var(--border2);border-radius:12px;background:transparent;color:var(--text1);font:inherit;font-size:14px;font-weight:500;cursor:pointer;}
+.lock-bio:hover{background:var(--surface2);}
 .lock-err{min-height:20px;font-size:12.5px;color:var(--red);margin:8px 0 6px;}
 .lock-card.shake{animation:lockShake .35s;}
 @keyframes lockShake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
@@ -795,7 +812,7 @@ html.locked #lockScreen{display:flex;position:fixed;inset:0;z-index:5000;align-i
 </style>
 <script>
 // ── Вхід за паролем ──
-const PIN_KEY = 'tk_pin_hash', PIN_SESSION = 'tk_unlocked', PIN_DEFAULT = '1501';
+const PIN_KEY = 'tk_pin_hash', PIN_SESSION = 'tk_unlocked', PIN_DEFAULT = 'mn1501';
 function pinHash(p) {
   let h = 0x811c9dc5;
   const s = 'hookah:' + p;
@@ -805,19 +822,26 @@ function pinHash(p) {
 function currentPinHash() { try { return localStorage.getItem(PIN_KEY) || pinHash(PIN_DEFAULT); } catch (e) { return pinHash(PIN_DEFAULT); } }
 // Пароль запитується при кожному відкритті / оновленні сторінки
 try { sessionStorage.removeItem(PIN_SESSION); } catch (e) {}
-document.documentElement.classList.add('locked');
+document.documentElement.classList.add('locked', 'decoy');
 </script>
 </head>
 <body>
+<div id="decoyScreen">
+  <div class="dc-code">404</div>
+  <div class="dc-title">Page not found</div>
+  <div class="dc-text">The requested URL was not found on this server. Check the address for typing errors or try again later.</div>
+  <div class="dc-foot" id="decoyFoot" onclick="decoyTap()">Request ID: 8C1F:15A0:4E2B:7D90</div>
+</div>
 <div id="lockScreen" aria-modal="true" role="dialog">
   <div class="lock-card">
     <div class="lock-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
     <div class="lock-title">Hookah</div>
     <div class="lock-sub">Введіть пароль для входу</div>
-    <input type="password" id="lockPin" class="lock-inp" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="••••"
+    <input type="password" id="lockPin" class="lock-inp" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="64" placeholder="Пароль"
       oninput="lockInput(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();unlockAttempt();}">
     <div class="lock-err" id="lockErr"></div>
     <button type="button" class="full-action-btn" onclick="unlockAttempt()">Увійти</button>
+    <button type="button" class="lock-bio" id="lockBioBtn" style="display:none" onclick="bioUnlock()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3H5a2 2 0 0 0-2 2v2M17 3h2a2 2 0 0 1 2 2v2M7 21H5a2 2 0 0 1-2-2v-2M17 21h2a2 2 0 0 0 2-2v-2"/><path d="M9 9v1M15 9v1M12 9v4h-1M9 16c1.7 1.3 4.3 1.3 6 0"/></svg>Face ID / Touch ID</button>
   </div>
 </div>
 
@@ -844,6 +868,10 @@ document.documentElement.classList.add('locked');
           </div>
         </div>
   </div>
+</div>
+<div id="exportBar" class="export-bar" style="display:none">
+  <span id="exportBarText"></span>
+  <span class="export-bar-btns"><button class="ops-btn primary sm" onclick="exportData()">Експортувати</button><button class="ops-btn outline sm" onclick="exportSnooze()">Нагадати завтра</button></span>
 </div>
 
 
@@ -1681,13 +1709,13 @@ document.documentElement.classList.add('locked');
 <!-- ══════════════ SCRIPTS ══════════════ -->
 <script>
 // ── Діалоги всередині сторінки (замість confirm/prompt, які блокуються на опублікованій сторінці) ──
-function uiDialog({ msg, input = false, def = '', okText = 'OK', cancelText = 'Скасувати', danger = false }) {
+function uiDialog({ msg, input = false, inputType = 'text', def = '', okText = 'OK', cancelText = 'Скасувати', danger = false }) {
   return new Promise(resolve => {
     const wrap = document.createElement('div');
     wrap.className = 'ui-dlg-wrap';
     wrap.innerHTML = `<div class="ui-dlg" role="dialog" aria-modal="true">
       <div class="ui-dlg-msg"></div>
-      ${input ? '<input class="finp ui-dlg-inp" type="text">' : ''}
+      ${input ? `<input class="finp ui-dlg-inp" type="${inputType}" autocomplete="off">` : ''}
       <div class="ui-dlg-btns"><button type="button" class="ops-btn outline" data-r="0">${cancelText}</button><button type="button" class="ops-btn ${danger ? 'danger' : 'primary'}" data-r="1">${okText}</button></div>
     </div>`;
     wrap.querySelector('.ui-dlg-msg').textContent = msg;
@@ -1738,6 +1766,280 @@ async function saveBlobFile(blob, filename) {
 // localStorage лишається локальним кешем, тож сторінка працює й без мережі.
 const CLOUD = { db: null, ready: false, rev: localStorage.getItem('tk_cloud_rev') || '', pushing: false, again: false, timer: null, state: 'off', pending: null, at: null };
 const CLOUD_CHUNK = 180000;
+
+// ══ Безпека: шифрування даних паролем, блокування, Face ID / Touch ID, нагадування про експорт ══
+// Дані на пристрої (localStorage) і в сховищі на Google Диску зберігаються лише зашифрованими (AES-GCM 256,
+// ключ виводиться з пароля через PBKDF2-SHA256). Пароль ніде не зберігається у відкритому вигляді.
+const SEC_ENC_LS = 'tk_db_enc', SEC_FAILS_LS = 'tk_lock_fails', SEC_UNTIL_LS = 'tk_lock_until', SEC_STAGE_LS = 'tk_lock_stage';
+const SEC_DEFAULT_PASS = 'mn1501';
+const SEC_AUTOLOCK_MS = 10 * 60 * 1000;
+const SEC_WAITS = [30, 300, 1800];             // секунди блокування після кожних 5 невдалих спроб
+const SEC = { pass: null, salt: null, keys: new Map(), ready: false, seq: 0, lastAct: Date.now() };
+
+function b64enc(u8) { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
+function b64dec(str) { const s = atob(str); const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
+function secNewSalt() { return b64enc(crypto.getRandomValues(new Uint8Array(16))); }
+async function secKey(pass, salt) {
+  const id = salt + '\u0000' + pass;
+  if (SEC.keys.has(id)) return SEC.keys.get(id);
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  const k = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64dec(salt), iterations: 210000, hash: 'SHA-256' },
+    base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+  SEC.keys.set(id, k);
+  return k;
+}
+async function secEncryptStr(json, pass = SEC.pass, salt = SEC.salt) {
+  const k = await secKey(pass, salt);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, k, new TextEncoder().encode(json));
+  return { v: 1, salt, iv: b64enc(iv), ct: b64enc(new Uint8Array(ct)) };
+}
+async function secDecrypt(blob, pass = SEC.pass) {          // кидає помилку, якщо пароль не той
+  const k = await secKey(pass, blob.salt);
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64dec(blob.iv) }, k, b64dec(blob.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+// Зберегти DB на пристрої (лише зашифровано і лише після входу)
+function secPersist() {
+  if (!SEC.ready) return;
+  const seq = ++SEC.seq, json = JSON.stringify(DB);
+  secEncryptStr(json).then(b => {
+    if (seq === SEC.seq) try { localStorage.setItem(SEC_ENC_LS, JSON.stringify(b)); } catch (e) {}
+  }).catch(() => {});
+}
+function secStoredBlob() { try { return JSON.parse(localStorage.getItem(SEC_ENC_LS) || 'null'); } catch (e) { return null; } }
+function isLocked() { return document.documentElement.classList.contains('locked'); }
+
+// ── Вхід ──
+function lockWaitLeft() { return Math.max(0, (+localStorage.getItem(SEC_UNTIL_LS) || 0) - Date.now()); }
+function lockRegisterFail() {
+  let f = (+localStorage.getItem(SEC_FAILS_LS) || 0) + 1, stage = +localStorage.getItem(SEC_STAGE_LS) || 0;
+  if (f >= 5) {
+    const wait = SEC_WAITS[Math.min(stage, SEC_WAITS.length - 1)];
+    localStorage.setItem(SEC_UNTIL_LS, String(Date.now() + wait * 1000));
+    localStorage.setItem(SEC_STAGE_LS, String(stage + 1));
+    f = 0;
+  }
+  localStorage.setItem(SEC_FAILS_LS, String(f));
+  return 5 - f;
+}
+function lockResetFails() { [SEC_FAILS_LS, SEC_UNTIL_LS, SEC_STAGE_LS].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} }); }
+function fmtWait(ms) { const s = Math.ceil(ms / 1000); return s >= 90 ? Math.ceil(s / 60) + ' хв' : s + ' с'; }
+
+// Перевірка пароля і відкриття даних. Повертає true / false.
+async function secTryPassword(pass) {
+  if (SEC.ready) return pass === SEC.pass;                    // повторний вхід після блокування
+  const blob = secStoredBlob();
+  let data = null, first = false;
+  if (blob) {
+    try { data = await secDecrypt(blob, pass); } catch (e) { return false; }
+    SEC.salt = blob.salt;
+  } else {
+    const legacy = localStorage.getItem(DB_KEY);
+    if (legacy) { if (pass !== SEC_DEFAULT_PASS) return false; SEC.migrated = true; }   // перший вхід після оновлення
+    else if (pass.length < 6) return false;                         // новий пристрій без даних
+    first = true;
+    SEC.salt = secNewSalt();
+  }
+  SEC.pass = pass;
+  SEC.ready = true;
+  if (data) {
+    CLOUD.applying = true;
+    try { applyDB(data); } finally { CLOUD.applying = false; }
+    refreshAllUI();
+  }
+  if (first) {
+    secPersist();                                                   // шифруємо те, що було у відкритому вигляді
+    try { localStorage.removeItem(DB_KEY); localStorage.removeItem(PIN_KEY); } catch (e) {}
+    if (gasConfig()) gasSetDirty(true);                             // і в сховищі на Диску
+  }
+  return true;
+}
+let lockBusy = false;
+async function unlockAttempt(passArg, fromBio) {
+  if (lockBusy) return;
+  const inp = gn('lockPin'), err = gn('lockErr');
+  const left = lockWaitLeft();
+  if (left) { err.textContent = `Забагато спроб. Зачекайте ${fmtWait(left)}`; return; }
+  const pass = passArg != null ? passArg : inp.value;
+  if (!pass) return;
+  lockBusy = true; err.textContent = ''; inp.disabled = true;
+  const wasReady = SEC.ready;
+  let ok = false;
+  try { ok = await secTryPassword(pass); } finally { lockBusy = false; inp.disabled = false; }
+  if (ok) { lockResetFails(); unlockNow(!wasReady); return; }
+  if (fromBio) { err.textContent = 'Пароль змінено – введіть новий пароль'; inp.focus(); return; }
+  const remain = lockRegisterFail();
+  inp.value = '';
+  const card = document.querySelector('.lock-card');
+  card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+  const w = lockWaitLeft();
+  err.textContent = w ? `Забагато спроб. Зачекайте ${fmtWait(w)}` : `Невірний пароль${remain <= 2 ? ` · залишилось спроб: ${remain}` : ''}`;
+  inp.focus();
+}
+function unlockNow(firstTime) {
+  gn('lockPin').value = ''; gn('lockErr').textContent = '';
+  SEC.lastAct = Date.now();
+  document.documentElement.classList.remove('locked', 'decoy');
+  document.title = 'Hookah';
+  if (firstTime) {
+    cloudInit();
+    setTimeout(gasFromHash, 50);
+    if (SEC.migrated) setTimeout(secFirstRunNotice, 400);
+    setTimeout(checkExportReminder, 1500);
+  }
+}
+async function secFirstRunNotice() {
+  const go = await uiConfirm('Дані тепер зашифровані вашим паролем – і на цьому пристрої, і на Google Диску.\n\nЯкщо пароль забути, відновити дані можна буде лише з файлу експорту. Зробити резервну копію зараз?', { okText: 'Експортувати', cancelText: 'Пізніше' });
+  if (go) exportData();
+}
+function lockInput() { gn('lockErr').textContent = ''; }
+// Пасхалка: три швидкі натискання на рядок «Request ID» внизу сторінки-помилки відкривають вхід
+let decoyTaps = [];
+function decoyTap() {
+  const now = Date.now();
+  decoyTaps = decoyTaps.filter(t => now - t < 1500).concat(now);
+  if (decoyTaps.length >= 3) {
+    decoyTaps = [];
+    document.documentElement.classList.remove('decoy');
+    document.title = 'Hookah';
+    renderBioLock();
+    setTimeout(() => gn('lockPin')?.focus(), 50);
+  }
+}
+function lockNow() {
+  closePopovers();
+  document.querySelectorAll('.ui-dlg-wrap').forEach(d => d.remove());
+  document.documentElement.classList.add('locked', 'decoy');
+  document.title = '404 Not Found';
+  renderBioLock();
+}
+// ── Автоблокування після 10 хв без дій ──
+['pointerdown', 'keydown', 'touchstart', 'wheel', 'input'].forEach(ev =>
+  document.addEventListener(ev, () => { SEC.lastAct = Date.now(); }, { passive: true, capture: true }));
+function autoLockCheck() { if (SEC.ready && !isLocked() && Date.now() - SEC.lastAct > SEC_AUTOLOCK_MS) lockNow(); }
+setInterval(autoLockCheck, 15000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') autoLockCheck(); });
+
+// ── Зміна пароля ──
+async function changePin() {
+  const o = gn('pinOld').value, n = gn('pinNew').value, n2 = gn('pinNew2').value;
+  if (o !== SEC.pass) { showToast('Поточний пароль невірний'); return; }
+  if (n.length < 6) { showToast('Новий пароль – щонайменше 6 символів'); return; }
+  if (n !== n2) { showToast('Нові паролі не збігаються'); return; }
+  SEC.pass = n; SEC.salt = secNewSalt();
+  secPersist();
+  if (CLOUD.mode === 'gas') gasMarkDirty();
+  await bioRewrap();
+  ['pinOld', 'pinNew', 'pinNew2'].forEach(id => { gn(id).value = ''; });
+  showToast('Пароль змінено ✓ На інших пристроях введіть новий пароль');
+}
+// Дані зі сховища зашифровані іншим паролем (його змінили на іншому пристрої)
+async function secDecryptRemote(blob) {
+  try { return await secDecrypt(blob); } catch (e) {}
+  for (let i = 0; i < 3; i++) {
+    const p = await uiDialog({ msg: i ? 'Пароль не підходить. Спробуйте ще раз:' : 'Пароль змінили на іншому пристрої.\nВведіть актуальний пароль, щоб отримати свіжі дані:', input: true, inputType: 'password', okText: 'Продовжити' });
+    if (p == null) return null;
+    try {
+      const d = await secDecrypt(blob, p);
+      SEC.pass = p; SEC.salt = secNewSalt();
+      await bioRewrap();
+      return d;
+    } catch (e) {}
+  }
+  return null;
+}
+
+// ── Face ID / Touch ID (WebAuthn): підтвердження власника пристрою, після чого пароль береться з
+//    захищеного сховища браузера (ключ без можливості експорту в IndexedDB) ──
+const BIO_LS = 'tk_bio';
+async function bioAvailable() {
+  try { return !!(window.PublicKeyCredential && window.isSecureContext && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); }
+  catch (e) { return false; }
+}
+function bioInfo() { try { return JSON.parse(localStorage.getItem(BIO_LS) || 'null'); } catch (e) { return null; } }
+async function bioWrapKey(create) {
+  let k = await idbGet('bioKey');
+  if (!k && create) { k = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']); await idbSet('bioKey', k); }
+  return k;
+}
+async function bioStorePass(credId) {
+  const k = await bioWrapKey(true);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, k, new TextEncoder().encode(SEC.pass));
+  localStorage.setItem(BIO_LS, JSON.stringify({ id: credId, iv: b64enc(iv), ct: b64enc(new Uint8Array(ct)) }));
+}
+async function bioRewrap() { const b = bioInfo(); if (b) try { await bioStorePass(b.id); } catch (e) {} }
+async function bioEnable() {
+  if (!SEC.pass) return;
+  try {
+    const cred = await navigator.credentials.create({ publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      rp: { name: 'Hookah' },
+      user: { id: crypto.getRandomValues(new Uint8Array(16)), name: 'hookah', displayName: 'Hookah' },
+      pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+      authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'discouraged' },
+      timeout: 60000, attestation: 'none'
+    } });
+    await bioStorePass(b64enc(new Uint8Array(cred.rawId)));
+    showToast('Вхід за Face ID / Touch ID увімкнено ✓');
+  } catch (e) {
+    showToast(e && e.name === 'NotAllowedError' ? 'Скасовано' : 'Не вдалося увімкнути на цьому пристрої');
+  }
+  renderBioSettings();
+}
+async function bioDisable() {
+  try { localStorage.removeItem(BIO_LS); } catch (e) {}
+  showToast('Вхід за Face ID / Touch ID вимкнено');
+  renderBioSettings();
+}
+async function bioUnlock() {
+  const b = bioInfo(); if (!b) return;
+  const err = gn('lockErr');
+  try {
+    await navigator.credentials.get({ publicKey: {
+      challenge: crypto.getRandomValues(new Uint8Array(32)),
+      allowCredentials: [{ type: 'public-key', id: b64dec(b.id) }],
+      userVerification: 'required', timeout: 60000
+    } });
+    const k = await bioWrapKey(false);
+    const pass = new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64dec(b.iv) }, k, b64dec(b.ct)));
+    await unlockAttempt(pass, true);
+  } catch (e) {
+    if (!(e && e.name === 'NotAllowedError')) err.textContent = 'Не вдалося – увійдіть паролем';
+  }
+}
+function renderBioLock() { const btn = gn('lockBioBtn'); if (btn) btn.style.display = bioInfo() ? '' : 'none'; }
+async function renderBioSettings() {
+  const box = gn('bioRow'); if (!box) return;
+  const avail = await bioAvailable();
+  const on = !!bioInfo();
+  box.style.display = avail || on ? '' : 'none';
+  gn('bioState').textContent = on ? 'Увімкнено на цьому пристрої' : 'Вимкнено';
+  gn('bioBtn').textContent = on ? 'Вимкнути' : 'Увімкнути';
+  gn('bioBtn').onclick = on ? bioDisable : bioEnable;
+}
+
+// ── Нагадування про резервну копію (раз на 7 днів) ──
+const EXPORT_EVERY_DAYS = 7, EXPORT_SNOOZE_LS = 'tk_export_snooze';
+function exportAgeDays() { return DB.lastExport ? (Date.now() - new Date(DB.lastExport)) / 86400000 : Infinity; }
+function exportAgeText() {
+  if (!DB.lastExport) return 'резервної копії ще не було';
+  const d = Math.floor(exportAgeDays());
+  return 'остання копія: ' + (d === 0 ? 'сьогодні' : d === 1 ? 'вчора' : `${d} ${plural(d, 'день', 'дні', 'днів')} тому`);
+}
+function checkExportReminder() {
+  const bar = gn('exportBar'); if (!bar || !SEC.ready) return;
+  const snooze = +localStorage.getItem(EXPORT_SNOOZE_LS) || 0;
+  const due = exportAgeDays() >= EXPORT_EVERY_DAYS && Date.now() > snooze;
+  bar.style.display = due ? '' : 'none';
+  if (due) gn('exportBarText').textContent = `Час зробити резервну копію – ${exportAgeText()}. Без неї дані не відновити, якщо забудете пароль.`;
+  const s = gn('exportAge'); if (s) s.textContent = exportAgeText()[0].toUpperCase() + exportAgeText().slice(1) + '.';
+}
+function exportSnooze() {
+  try { localStorage.setItem(EXPORT_SNOOZE_LS, String(Date.now() + 86400000)); } catch (e) {}
+  checkExportReminder();
+}
 const GAS_SCRIPT_TEMPLATE = "// Hookah – синхронізація між пристроями. Дані лежать у файлі hookah_data.json на вашому Google Диску.\nconst SECRET = '__KEY__';\nconst FILE_NAME = 'hookah_data.json';\n\nfunction file_() {\n  const it = DriveApp.getFilesByName(FILE_NAME);\n  return it.hasNext() ? it.next() : null;\n}\nfunction read_() {\n  const f = file_();\n  return f ? JSON.parse(f.getBlob().getDataAsString()) : null;\n}\nfunction out_(o) {\n  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);\n}\nfunction doGet() {\n  return out_({ ok: true, hookah: true });\n}\nfunction doPost(e) {\n  let b;\n  try { b = JSON.parse(e.postData.contents); } catch (err) { return out_({ ok: false, error: 'bad' }); }\n  if (b.key !== SECRET) return out_({ ok: false, error: 'key' });\n  if (b.action === 'meta' || b.action === 'get') {\n    const st = read_();\n    const r = { ok: true, rev: st ? st.rev : '', updatedAt: st ? st.updatedAt : null };\n    if (b.action === 'get' && st) { r.data = st.data; r.pin = st.pin || ''; }\n    return out_(r);\n  }\n  if (b.action === 'save') {\n    const lock = LockService.getScriptLock();\n    lock.waitLock(20000);\n    try {\n      const st = read_();\n      const cur = st ? st.rev : '';\n      if (!b.force && cur && b.base !== cur) return out_({ ok: false, conflict: true, rev: cur, updatedAt: st.updatedAt });\n      const rec = { rev: b.rev, updatedAt: new Date().toISOString(), pin: b.pin || '', data: b.data };\n      const json = JSON.stringify(rec);\n      const f = file_();\n      if (f) f.setContent(json); else DriveApp.createFile(FILE_NAME, json, 'application/json');\n      return out_({ ok: true, rev: rec.rev, updatedAt: rec.updatedAt });\n    } finally {\n      lock.releaseLock();\n    }\n  }\n  return out_({ ok: false, error: 'action' });\n}\n";
 
 // ── Синхронізація через Google Apps Script (дані у файлі на вашому Google Диску) ──
@@ -1764,7 +2066,9 @@ function gasMarkDirty() {
 }
 async function gasPush(force) {
   const rev = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-  const r = await gasCall({ action: 'save', rev, base: CLOUD.rev, force: !!force, data: DB, pin: localStorage.getItem(PIN_KEY) || '' });
+  if (!SEC.ready) throw { error: 'locked' };
+  const enc = await secEncryptStr(JSON.stringify(DB));
+  const r = await gasCall({ action: 'save', rev, base: CLOUD.rev, force: !!force, data: { enc }, pin: '' });
   if (r.conflict) return r;
   gasSetRev(r.rev);
   gasSetDirty(false);
@@ -1775,13 +2079,17 @@ async function gasPush(force) {
 async function gasPull() {
   const r = await gasCall({ action: 'get' });
   if (!r.rev || !r.data) return;
+  let data = r.data;
+  if (data.enc) {
+    data = await secDecryptRemote(data.enc);
+    if (!data) { GAS.paused = true; throw { error: 'pass' }; }
+  }
   gasSetRev(r.rev);
-  if (r.pin) try { localStorage.setItem(PIN_KEY, r.pin); } catch (e) {}
   CLOUD.at = new Date(r.updatedAt);
-  cloudApply(r.data);
+  cloudApply(data);
 }
 async function gasSync() {
-  if (!gasConfig()) return;
+  if (!gasConfig() || !SEC.ready || GAS.paused) return;
   if (GAS.busy) { GAS.again = true; return; }
   GAS.busy = true;
   cloudSetState('sync');
@@ -1808,7 +2116,7 @@ async function gasSync() {
     }
     cloudSetState('ok');
   } catch (e) {
-    cloudSetState(e && e.error === 'key' ? 'key' : 'err');
+    cloudSetState(e && (e.error === 'key' || e.error === 'pass') ? e.error : 'err');
   } finally {
     GAS.busy = false;
     if (GAS.again) { GAS.again = false; setTimeout(gasSync, 300); }
@@ -1903,7 +2211,7 @@ function cloudSetState(state) {
   const dot = gn('syncDot');
   if (dot) {
     dot.className = 'sync-dot ' + state;
-    dot.title = { off: 'Лише цей пристрій', sync: 'Синхронізація…', ok: 'Синхронізовано', err: 'Немає з’єднання – зміни збережуться пізніше', wait: 'Підключення…', key: 'Невірний ключ синхронізації' }[state] || '';
+    dot.title = { off: 'Лише цей пристрій', sync: 'Синхронізація…', ok: 'Синхронізовано', err: 'Немає з’єднання – зміни збережуться пізніше', wait: 'Підключення…', key: 'Невірний ключ синхронізації', pass: 'Потрібен актуальний пароль' }[state] || '';
   }
   const st = gn('cloudStatus');
   if (st) {
@@ -1914,7 +2222,8 @@ function cloudSetState(state) {
       sync: 'Синхронізація…',
       ok: 'Синхронізовано' + t,
       err: 'Немає з’єднання. Зміни збережено на пристрої і буде надіслано, щойно з’явиться мережа.',
-      key: 'Ключ не підходить: перевірте, що в скрипті й тут однаковий ключ.'
+      key: 'Ключ не підходить: перевірте, що в скрипті й тут однаковий ключ.',
+      pass: 'Синхронізацію призупинено: пароль змінили на іншому пристрої. Оновіть сторінку й увійдіть з новим паролем.'
     }[state] || '';
   }
 }
@@ -1986,7 +2295,8 @@ function cloudApply(data) {
   CLOUD.applying = true;
   try {
     applyDB(data);
-    try { localStorage.setItem(DB_KEY, JSON.stringify(DB)); } catch (e) {}
+    secPersist();
+    setTimeout(checkExportReminder, 0);
     const editing = currentRecipeId && typeof calcEditMode !== 'undefined' && calcEditMode;
     if (!editing) refreshAllUI();
     const active = document.querySelector('.tab-btn.active')?.dataset.tab;
@@ -1997,6 +2307,7 @@ function cloudApply(data) {
 
 async function cloudInit() {
   if (gasConfig()) { gasInit(); return; }
+  cloudSetState('off'); return;
   const cl = window.claude && typeof window.claude.use === 'function' ? window.claude : null;
   if (!cl) { cloudSetState('off'); return; }
   cloudSetState('wait');
@@ -2099,6 +2410,7 @@ function normalizeDB(d) {
   out.srFlavors = d.srFlavors || null;
   out.stockInit = d.stockInit || null;
   out.coolerST = d.coolerST || null;
+  out.lastExport = d.lastExport || null;
   return out;
 }
 
@@ -2141,7 +2453,7 @@ function migrateFlavors() {
   [...DB.recipes, ...(DB.deletedRecipes || [])].forEach(r =>
     (r.data?.flavors || []).forEach(f => { const m = byBase.get(String(f.name || '').toLowerCase()); if (m) f.name = m; }));
   DB.flavorSet = FLAVOR_SET_V;
-  try { localStorage.setItem(DB_KEY, JSON.stringify(DB)); } catch (e) {}
+  secPersist();
   return true;
 }
 // Одноразово очищає асортимент (листопад 2026: старт з нового списку рецептів)
@@ -2153,7 +2465,7 @@ function resetRecipesOnce() {
   DB.finishedGoods = {};
   DB.fgCost = {};
   DB.recipesReset = RECIPES_RESET_V;
-  try { localStorage.setItem(DB_KEY, JSON.stringify(DB)); } catch (e) {}
+  secPersist();
   return true;
 }
 
@@ -2170,7 +2482,7 @@ function resetStockOnce() {
   ['productions','shipments','receipts','writeoffs','auditLog','resorting','semiProductions','opexLog']
     .forEach(k => { DB[k] = []; });
   DB.stockReset = STOCK_RESET_V;
-  try { localStorage.setItem(DB_KEY, JSON.stringify(DB)); } catch (e) {}
+  secPersist();
   return true;
 }
 
@@ -2214,7 +2526,7 @@ function addSrFlavorsOnce() {
     DB.inventory['flav_' + name] = g / 1000;
   });
   DB.srFlavors = SR_FLAVORS_V;
-  try { localStorage.setItem(DB_KEY, JSON.stringify(DB)); } catch (e) {}
+  secPersist();
   return true;
 }
 
@@ -2229,7 +2541,7 @@ function initStockOnce() {
   });
   DB.prices.tobacco = Object.assign({}, DB.prices.tobacco, { virginia: 2700, burley: 3200 });
   DB.stockInit = STOCK_INIT_V;
-  try { localStorage.setItem(DB_KEY, JSON.stringify(DB)); } catch (e) {}
+  secPersist();
   return true;
 }
 
@@ -2251,7 +2563,7 @@ function coolerToFlavorOnce() {
   delete DB.inventory.cooler;
   if (DB.invMin) delete DB.invMin.cooler;
   DB.coolerST = COOLER_ST_V;
-  try { localStorage.setItem(DB_KEY, JSON.stringify(DB)); } catch (e) {}
+  secPersist();
   return true;
 }
 
@@ -2331,7 +2643,7 @@ function sortCollections() {
 function saveDB() {
   sortCollections();
   DB.extraExpenses = extraExpenses;
-  try { localStorage.setItem(DB_KEY, JSON.stringify(DB)); } catch(e) {}
+  secPersist();
   if (!CLOUD.applying) {
     if (CLOUD.mode === 'gas') gasMarkDirty();
     else if (CLOUD.ready) cloudSchedulePush(); else if (CLOUD.db) CLOUD.dirty = true;
@@ -4644,7 +4956,7 @@ function printReportFallback(doc) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 function switchTab(name) {
-  if (name === 'settings') setTimeout(renderSyncSettings, 0);
+  if (name === 'settings') setTimeout(() => { renderSyncSettings(); renderBioSettings(); checkExportReminder(); }, 0);
   // Виробництво та відвантаження тепер – розділи «Складу»
   if (name === 'prod' || name === 'ship') {
     switchTab('sklad');
@@ -4678,55 +4990,19 @@ document.addEventListener('keydown', e => {
 });
 
 // ── Пароль: розблокування, блокування, зміна ──
-let lockFails = 0, lockUntil = 0;
-function unlockNow() {
-  lockFails = 0;
-  gn('lockPin').value = ''; gn('lockErr').textContent = '';
-  document.documentElement.classList.remove('locked');
-  if (typeof gasFromHash === 'function') setTimeout(gasFromHash, 50);
-}
-// Вхід одразу, щойно введено правильний пароль
-function lockInput(inp) {
-  gn('lockErr').textContent = '';
-  if (Date.now() >= lockUntil && pinHash(inp.value) === currentPinHash()) unlockNow();
-}
-function unlockAttempt() {
-  const inp = gn('lockPin'), err = gn('lockErr');
-  if (Date.now() < lockUntil) { err.textContent = `Забагато спроб. Зачекайте ${Math.ceil((lockUntil - Date.now()) / 1000)} с`; return; }
-  if (pinHash(inp.value) === currentPinHash()) { unlockNow(); return; }
-  lockFails++;
-  inp.value = '';
-  const card = document.querySelector('.lock-card');
-  card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
-  if (lockFails >= 5) { lockUntil = Date.now() + 30000; lockFails = 0; err.textContent = 'Забагато спроб. Зачекайте 30 с'; }
-  else err.textContent = 'Невірний пароль';
-  inp.focus();
-}
-function lockNow() {
-  try { sessionStorage.removeItem(PIN_SESSION); } catch (e) {}
-  closePopovers();
-  document.documentElement.classList.add('locked');
-  setTimeout(() => gn('lockPin')?.focus(), 50);
-}
-function changePin() {
-  const o = gn('pinOld').value, n = gn('pinNew').value.trim(), n2 = gn('pinNew2').value.trim();
-  if (pinHash(o) !== currentPinHash()) { showToast('Поточний пароль невірний'); return; }
-  if (n.length < 4) { showToast('Новий пароль – щонайменше 4 символи'); return; }
-  if (n !== n2) { showToast('Нові паролі не збігаються'); return; }
-  try {
-    localStorage.setItem(PIN_KEY, pinHash(n));
-    if (CLOUD.mode === 'gas') gasMarkDirty(); else cloudSchedulePush();
-  } catch (e) { showToast('Не вдалося зберегти пароль'); return; }
-  ['pinOld','pinNew','pinNew2'].forEach(id => { gn(id).value = ''; });
-  showToast('Пароль змінено ✓');
-}
 if (document.documentElement.classList.contains('locked')) setTimeout(() => gn('lockPin')?.focus(), 100);
 
 // ── Export / Import ────────────────────────────────────────
 async function exportData() {
   const date = new Date().toISOString().slice(0,10);
   const blob = new Blob([JSON.stringify(DB, null, 2)], {type:'application/json'});
-  saveBlobFile(blob, 'toolkit_' + date + '.json').then(ok => { if (ok) showToast('Дані збережено у файл ✓'); });
+  saveBlobFile(blob, 'toolkit_' + date + '.json').then(ok => {
+    if (!ok) return;
+    showToast('Резервну копію збережено ✓ Файл не зашифрований – зберігайте його в надійному місці');
+    DB.lastExport = new Date().toISOString();
+    saveDB();
+    checkExportReminder();
+  });
 }
 function importData() {
   const inp = document.createElement('input');
@@ -6217,7 +6493,7 @@ new MutationObserver(muts => muts.forEach(m => m.addedNodes.forEach(n => {
   if (n.tagName === 'SELECT') enhanceSelect(n); else enhanceAllSelects(n);
 }))).observe(document.body, { childList: true, subtree: true });
 document.querySelectorAll('.pf').forEach(pfUpdateLabel);
-cloudInit();
+renderBioLock();
 // Стежимо за висотою етапів рецепта і тримаємо колонки пропорційними
 if (window.ResizeObserver) {
   const ro = new ResizeObserver(scheduleBalanceStages);
@@ -6234,7 +6510,7 @@ scheduleBalanceStages();
   <div class="ops-page">
     <div class="ops-box">
       <div class="ops-title">Дані</div>
-      <p class="set-note">Експорт зберігає всі дані (рецепти, склад, журнали, звіти) у JSON-файл – це ваша резервна копія. Імпорт повністю замінює поточні дані даними з файлу.</p>
+      <p class="set-note">Експорт зберігає всі дані (рецепти, склад, журнали, звіти) у JSON-файл – це ваша резервна копія. Файл не зашифрований, тож тримайте його в надійному місці. Імпорт повністю замінює поточні дані даними з файлу. <b id="exportAge"></b></p>
       <div class="set-actions">
         <button class="ops-btn primary" onclick="exportData()">↓ Експорт у файл</button>
         <button class="ops-btn outline" onclick="importData()">↑ Імпорт з файлу</button>
@@ -6271,13 +6547,18 @@ scheduleBalanceStages();
 
     <div class="ops-box">
       <div class="ops-title">Пароль для входу<button class="ops-btn outline sm" onclick="lockNow()">Заблокувати зараз</button></div>
-      <p class="set-note">Пароль запитується при кожному відкритті або оновленні сторінки.</p>
+      <p class="set-note">Дані на цьому пристрої й на Google Диску зашифровані вашим паролем. Пароль запитується при кожному відкритті сторінки, а після 10 хвилин без дій програма блокується сама. Після 5 невдалих спроб вхід блокується на 30 с, далі – на 5 і 30 хв.</p>
+      <div id="bioRow" class="bio-row" style="display:none">
+        <div><div class="bio-title">Вхід за Face ID / Touch ID</div><div class="bio-state" id="bioState">Вимкнено</div></div>
+        <button class="ops-btn outline" id="bioBtn">Увімкнути</button>
+      </div>
       <div class="g3" style="margin-bottom:12px">
-        <div class="field"><label>Поточний пароль</label><input type="password" id="pinOld" class="finp" inputmode="numeric" autocomplete="off"></div>
-        <div class="field"><label>Новий пароль</label><input type="password" id="pinNew" class="finp" inputmode="numeric" autocomplete="off"></div>
-        <div class="field"><label>Повторіть новий</label><input type="password" id="pinNew2" class="finp" inputmode="numeric" autocomplete="off"></div>
+        <div class="field"><label>Поточний пароль</label><input type="password" id="pinOld" class="finp" autocomplete="off" autocapitalize="off"></div>
+        <div class="field"><label>Новий пароль (від 6 символів)</label><input type="password" id="pinNew" class="finp" autocomplete="off" autocapitalize="off"></div>
+        <div class="field"><label>Повторіть новий</label><input type="password" id="pinNew2" class="finp" autocomplete="off" autocapitalize="off"></div>
       </div>
       <button class="ops-btn primary" onclick="changePin()">Змінити пароль</button>
+      <p class="set-note" style="margin:10px 0 0">Якщо забудете пароль, дані можна відновити лише з файлу експорту.</p>
     </div>
 
     <div class="ops-box">
