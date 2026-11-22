@@ -336,6 +336,9 @@ pre{max-width:100%;overflow-x:auto;}
 @media (hover:none) and (pointer:coarse){
   input,select,textarea,.ss-btn,.ss-search{font-size:16px!important;}
   input::placeholder,textarea::placeholder{font-size:14px!important;}
+  /* коментар: шрифт 16px (щоб iPhone не збільшував сторінку), але візуально зменшений до розміру тексту картки */
+  .rlc-cbox{overflow:visible;}
+  textarea.rlc-comment{font-size:16px!important;width:145.4546%;transform:scale(.6875);transform-origin:0 0;}
   /* однакова висота всіх полів; дата в iOS інакше виходить вищою й ширшою за інші */
   input.finp:not([type=checkbox]):not([type=radio]):not([type=range]),select.finp,.ss-btn.finp,.field .ss-btn{height:44px!important;min-height:44px;box-sizing:border-box;padding-top:0!important;padding-bottom:0!important;line-height:42px;}
   input[type=date].finp{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;max-width:100%;text-align:left;background:var(--inp-bg);}
@@ -370,10 +373,11 @@ pre{max-width:100%;overflow-x:auto;}
 .gas-code-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:12px;}
 .gas-code{background:var(--bg2,#f4f4f2);border-radius:8px;padding:10px 12px;font-size:11px;line-height:1.5;max-height:260px;overflow:auto;white-space:pre;}
 .rlc-comment-row{display:flex;align-items:flex-start;gap:6px;margin-top:6px;font-size:11px;line-height:1.45;}
-.rlc-comment-row .rlc-price-lbl{padding-top:1px;}
-.rlc-comment{flex:1;min-width:0;resize:none;overflow:hidden;border:1px solid transparent;border-radius:4px;padding:1px 4px;margin-left:-4px;font:inherit;font-size:11px;line-height:1.45;color:var(--text1);background:transparent;transition:border-color .15s,background .15s;}
-.rlc-comment:hover{border-color:var(--border);}
-.rlc-comment:focus{outline:none;border-color:var(--border2);background:var(--inp-bg);}
+.rlc-cbox{flex:1;min-width:0;display:block;}
+.rlc-comment-row .rlc-price-lbl{padding-top:0;line-height:1.45;}
+.rlc-comment{display:block;width:100%;min-width:0;resize:none;overflow:hidden;border:0;border-radius:3px;padding:0;margin:0;font:inherit;font-size:11px;line-height:1.45;color:var(--text1);background:transparent;transition:box-shadow .15s,background .15s;}
+.rlc-comment:hover{box-shadow:0 0 0 2px var(--surface2);background:var(--surface2);}
+.rlc-comment:focus{outline:none;background:var(--inp-bg);box-shadow:0 0 0 2px var(--inp-bg),0 0 0 3px var(--border2);}
 .rlc-comment::placeholder{color:var(--text3);}
 .rlc-stock b{font-weight:600;color:var(--text1);}
 .rlc-stock.zero b{color:var(--text3);}
@@ -3847,7 +3851,7 @@ function renderRecipeList() {
       ${missingFl.length ? `<div class="rlc-meta"><div class="flav-missing" title="${escHtml(missingFl.join(', '))}">Є ароматизатори, яких немає у списку</div></div>` : ''}
       ${priceRow}
       <div class="rlc-stock${stockKg === 0 ? ' zero' : ''}">На складі: <b>${kgFmt(stockKg)}</b></div>
-      <div class="rlc-comment-row" onclick="event.stopPropagation()"><span class="rlc-price-lbl">Коментар:</span><textarea class="rlc-comment" rows="1" oninput="autoGrowComment(this)" onchange="setRecipeComment('${r.id}',this.value)">${escHtml(r.comment || '')}</textarea></div>
+      <div class="rlc-comment-row" onclick="event.stopPropagation()"><span class="rlc-price-lbl">Коментар:</span><span class="rlc-cbox"><textarea class="rlc-comment" rows="1" oninput="autoGrowComment(this)" onchange="setRecipeComment('${r.id}',this.value)">${escHtml(r.comment || '')}</textarea></span></div>
     </div>`;
   }).join('');
   grid.querySelectorAll('.rlc-comment').forEach(el => { commentRO?.observe(el); autoGrowComment(el); });
@@ -3856,7 +3860,12 @@ function renderRecipeList() {
 function autoGrowComment(el) {
   if (!el.offsetParent) return;
   el.style.height = 'auto';
-  el.style.height = el.scrollHeight + 2 + 'px';
+  const h = el.scrollHeight;
+  el.style.height = h + 'px';
+  // на сенсорних екранах поле зменшене трансформацією – прибираємо зайве місце під ним
+  const m = getComputedStyle(el).transform.match(/^matrix\(([^,]+)/);
+  const sc = m ? parseFloat(m[1]) : 1;
+  el.style.marginBottom = sc < 1 ? -(h * (1 - sc)) + 'px' : '';
 }
 // Коментар підлаштовує висоту і тоді, коли вкладка стає видимою (після входу або перемикання)
 const commentRO = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(es => es.forEach(e => {
