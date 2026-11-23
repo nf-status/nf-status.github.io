@@ -689,6 +689,37 @@ input[type=number]::-webkit-inner-spin-button{opacity:.35;}
 .chip-cnt{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:999px;background:var(--surface2);color:var(--text2);font-size:11px;font-weight:600;line-height:18px;text-align:center;}
 .filter-chip.active .chip-cnt{background:rgba(255,255,255,.2);color:#fff;}
 .chip-deleted{margin-left:0;}
+.calc-meta-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.calc-meta-row > .ss,.calc-meta-row > select{flex:1 1 220px;width:auto!important;min-width:0;}
+.calc-aging{display:flex;align-items:center;gap:8px;flex:0 0 auto;font-size:12px;font-weight:600;color:var(--text2);}
+.calc-aging i{color:var(--red,#DC2626);font-style:normal;margin-left:2px;}
+.calc-aging input{width:84px;height:36px;text-align:center;}
+.calc-aging em{font-style:normal;font-weight:500;color:var(--text3);}
+.inp-err{border-color:#DC2626!important;box-shadow:0 0 0 3px rgba(220,38,38,.12);}
+.rlc-aging{display:flex;align-items:center;gap:5px;width:100%;margin-top:6px;padding:6px 8px;border:1px solid #F1E3C8;background:#FFF9EE;border-radius:8px;font:inherit;font-size:11px;line-height:1.45;color:#7A4B00;text-align:left;cursor:pointer;}
+.rlc-aging:hover{background:#FFF3DC;}
+.rlc-aging b{font-weight:600;color:#5C3800;}
+.rlc-aging-ico{width:7px;height:7px;border-radius:50%;background:#E0A030;flex:0 0 auto;}
+.rlc-aging-left{color:#9A6A1F;}
+.rlc-aging-more{margin-left:auto;font-size:15px;line-height:1;color:#B98A3E;}
+.log-aging{color:#9A6A1F!important;}
+.aging-dlg{width:min(520px,100%);max-height:86vh;overflow:auto;}
+.aging-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px;}
+.aging-title{font-size:17px;font-weight:600;color:var(--text1);}
+.aging-sub{font-size:12.5px;color:var(--text2);margin-top:3px;}
+.aging-sub b{color:var(--text1);font-weight:600;}
+.aging-x{border:0;background:transparent;font-size:22px;line-height:1;color:var(--text3);cursor:pointer;padding:0 4px;}
+.aging-batch{border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px;}
+.aging-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px;}
+.aging-kg{font-size:16px;font-weight:600;color:var(--text1);}
+.aging-left{font-size:12.5px;color:var(--text2);}
+.aging-left b{color:#9A6A1F;font-weight:600;}
+.aging-bar{height:6px;border-radius:3px;background:var(--surface2,#f1f1ef);overflow:hidden;margin-bottom:10px;}
+.aging-bar i{display:block;height:100%;background:#E0A030;border-radius:3px;}
+.aging-dates{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--text2);}
+.aging-dates b{color:var(--text1);font-weight:500;}
+.aging-note{font-size:12px;color:var(--text3);margin-top:6px;}
+.aging-foot{font-size:11.5px;color:var(--text3);margin-top:4px;}
 .chip-sep{width:1px;height:20px;background:var(--border2);margin:0 4px;flex:0 0 auto;align-self:center;}
 .mini-search{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border:1px solid var(--border2);border-radius:999px;background:var(--surface);color:var(--text3);cursor:text;transition:border-color .15s,box-shadow .15s;text-transform:none;letter-spacing:0;font-weight:400;}
 .filter-chips .mini-search{margin-left:auto;}
@@ -893,12 +924,13 @@ document.documentElement.classList.add('locked', 'decoy');
     <button class="btn-sm btn-delete" id="btnDeleteRecipe" style="display:none" onclick="deleteRecipe()">Видалити</button>
   </div>
   <textarea id="calcDesc" class="finp" rows="1" placeholder="Опис рецепту..." style="display:block;width:100%;margin-bottom:8px;padding:8px 10px;font-size:13px;min-height:36px;" oninput="this.style.height='auto';this.style.height=Math.max(36,this.scrollHeight)+'px'"></textarea>
-  <div style="margin-bottom:12px">
+  <div class="calc-meta-row">
     <select id="calcCategory" class="finp" style="height:36px;padding:0 10px;font-size:12px;font-weight:600">
       <option value="permanent">Постійні смаки</option>
       <option value="elsewhere">Elsewhere</option>
       <option value="tester">Тестер</option>
     </select>
+    <label class="calc-aging"><span>Термін витримки<i>*</i></span><input type="number" id="calcAging" class="finp" min="0" step="1" inputmode="numeric" placeholder="—"><em>днів</em></label>
   </div>
 
   <div class="stages-top">
@@ -1070,7 +1102,7 @@ document.documentElement.classList.add('locked', 'decoy');
       <div class="ops-title"><span>Зафіксувати виробництво</span></div>
       <div class="g2" style="margin-bottom:10px">
         <div class="field"><label>Рецепт</label>
-          <select id="prodRecipe" class="finp" style="height:36px;padding:0 8px" onchange="updateProdPreview()"></select>
+          <select id="prodRecipe" class="finp" style="height:36px;padding:0 8px" onchange="prodAgingFromRecipe();updateProdPreview()"></select>
         </div>
         <div class="field"><label>Кількість готового продукту (кг)</label>
           <input type="number" id="prodBatches" class="finp" value="1" min="0.001" step="0.1" oninput="updateProdPreview()">
@@ -1081,9 +1113,12 @@ document.documentElement.classList.add('locked', 'decoy');
         <div class="field"><label>Дата виробництва</label>
           <input type="date" id="prodDate" class="finp">
         </div>
-        <div class="field"><label>Примітка</label>
-          <input type="text" id="prodNote" class="finp" placeholder="Необов'язково">
+        <div class="field"><label>Термін витримки (днів) <span style="color:var(--red)">*</span></label>
+          <input type="number" id="prodAging" class="finp" min="0" step="1" inputmode="numeric" placeholder="Обов'язково">
         </div>
+      </div>
+      <div class="field" style="margin-bottom:10px"><label>Примітка</label>
+        <input type="text" id="prodNote" class="finp" placeholder="Необов'язково">
       </div>
       <button class="full-action-btn" onclick="confirmProduction()">✓ Підтвердити виробництво</button>
     </div>
@@ -1897,6 +1932,7 @@ function unlockNow(firstTime) {
     setTimeout(gasFromHash, 50);
     if (SEC.migrated) setTimeout(secFirstRunNotice, 400);
     setTimeout(checkExportReminder, 1500);
+    setTimeout(releaseAged, 800);
   }
 }
 async function secFirstRunNotice() {
@@ -2307,6 +2343,7 @@ function cloudApply(data) {
     applyDB(data);
     secPersist();
     setTimeout(checkExportReminder, 0);
+    setTimeout(releaseAged, 0);
     const editing = currentRecipeId && typeof calcEditMode !== 'undefined' && calcEditMode;
     if (!editing) refreshAllUI();
     const active = document.querySelector('.tab-btn.active')?.dataset.tab;
@@ -3357,7 +3394,7 @@ function applyCalcMode() {
   tab.classList.toggle('view-mode', view);
   const s4 = gn('stageCustomTK');
   if (s4) s4.classList.toggle('stage-empty-view', view && !calcCustomTKUsages.length);
-  tab.querySelectorAll('.stages-top input, .stages-top select, #calcDesc, #calcCategory').forEach(el => {
+  tab.querySelectorAll('.stages-top input, .stages-top select, #calcDesc, #calcCategory, #calcAging').forEach(el => {
     if (el.readOnly && el.tagName === 'INPUT') return;           // фіксовані ціни
     if (el.disabled !== view) el.disabled = view;
   });
@@ -3373,8 +3410,10 @@ function cancelEditRecipe() {
 // ── Рух позиції (готова продукція рецепта) ──
 function recipeMovements(recipeId) {
   const ev = [];
-  DB.productions.filter(p => p.recipeId === recipeId).forEach(p =>
-    ev.push({ date: p.date, type: 'Виробництво', note: p.note || '', qty: +p.totalKg }));
+  DB.productions.filter(p => p.recipeId === recipeId && p.released !== false).forEach(p =>
+    ev.push(p.agingUntil
+      ? { date: p.agingUntil, type: 'Після витримки', note: 'вироблено ' + fmtDT(p.date) + (p.note ? ' · ' + p.note : ''), qty: +p.totalKg }
+      : { date: p.date, type: 'Виробництво', note: p.note || '', qty: +p.totalKg }));
   DB.shipments.filter(s => s.recipeId === recipeId).forEach(s =>
     ev.push({ date: s.date, type: 'Відвантаження', note: s.client || '', qty: -s.amountKg, sum: s.totalSum }));
   ev.sort((a, b) => a.date.localeCompare(b.date));
@@ -3440,6 +3479,8 @@ function loadRecipe(id) {
   if (_descEl) { _descEl.value = r.description || ''; _descEl.style.height = 'auto'; _descEl.style.height = Math.max(36, _descEl.scrollHeight) + 'px'; }
   const _catEl = gn('calcCategory');
   if (_catEl) _catEl.value = r.category || 'permanent';
+  const _agEl = gn('calcAging');
+  if (_agEl) _agEl.value = r.agingDays != null ? r.agingDays : '';
   renderFlavorRows();
   renderCustomTKRows();
   renderRecipeBar();
@@ -3470,14 +3511,21 @@ async function saveRecipe() {
   const data = collectRecipeData();
   const desc = (gn('calcDesc')?.value || '').trim();
   const category = gn('calcCategory')?.value || 'permanent';
+  const agRaw = (gn('calcAging')?.value || '').trim(), agingDays = parseFloat(agRaw);
+  if (agRaw === '' || isNaN(agingDays) || agingDays < 0) {
+    showToast('Вкажіть термін витримки (днів) – це обов’язкове поле');
+    gn('calcAging')?.focus(); gn('calcAging')?.classList.add('inp-err');
+    return;
+  }
+  gn('calcAging')?.classList.remove('inp-err');
   if (currentRecipeId) {
     const r = DB.recipes.find(r => r.id === currentRecipeId);
-    if (r && !r.builtin) { r.data = data; r.description = desc; r.category = category; saveDB(); calcEditMode = false; renderRecipeBar(); renderRecipeList(); showToast('Рецепт збережено ✓'); return; }
+    if (r && !r.builtin) { r.data = data; r.description = desc; r.category = category; r.agingDays = agingDays; saveDB(); calcEditMode = false; renderRecipeBar(); renderRecipeList(); showToast('Рецепт збережено ✓'); return; }
   }
   const name = await uiPrompt('Назва рецепту:');
   if (!name) return;
   const id = 'r_' + Date.now();
-  DB.recipes.push({ id, name, description: desc, category, builtin: false, data });
+  DB.recipes.push({ id, name, description: desc, category, agingDays, builtin: false, data });
   currentRecipeId = id;
   calcEditMode = false;
   saveDB(); renderRecipeBar(); renderRecipeList();
@@ -3514,6 +3562,7 @@ function clearCalculator() {
   gn('nicVol').value  = 0.010;
   calcCustomTKUsages = [];
   const _cd = gn('calcDesc'); if (_cd) { _cd.value = ''; _cd.style.height = '36px'; }
+  const _ag = gn('calcAging'); if (_ag) { _ag.value = ''; _ag.classList.remove('inp-err'); }
   renderFlavorRows(); renderCustomTKRows(); syncAllToCalc(); calc();
 }
 
@@ -3862,6 +3911,7 @@ function renderRecipeList() {
       ${missingFl.length ? `<div class="rlc-meta"><div class="flav-missing" title="${escHtml(missingFl.join(', '))}">Є ароматизатори, яких немає у списку</div></div>` : ''}
       ${priceRow}
       <div class="rlc-stock${stockKg === 0 ? ' zero' : ''}">На складі: <b>${kgFmt(stockKg)}</b></div>
+      ${agingCardRow(r)}
       <div class="rlc-comment-row" onclick="event.stopPropagation()"><span class="rlc-price-lbl">Коментар:</span><span class="rlc-cbox"><div class="rlc-cview" onclick="editComment(this,'${r.id}')">${escHtml(r.comment || '')}</div></span></div>
     </div>`;
   }).join('');
@@ -3899,6 +3949,127 @@ function editComment(view, id) {
   ta.setSelectionRange(ta.value.length, ta.value.length);
   autoGrowComment(ta);
 }
+
+// ══ Витримка готової продукції ══
+// Після виробництва партія витримується agingDays днів (productions[].agingUntil, released=false),
+// а потім автоматично переходить на склад (DB.finishedGoods).
+const DAY_MS = 86400000;
+function agingBatches(recipeId) {
+  return (DB.productions || []).filter(p => p.released === false && (!recipeId || p.recipeId === recipeId))
+    .sort((a, b) => a.agingUntil.localeCompare(b.agingUntil));
+}
+function fmtLeft(ms) {
+  if (ms <= 0) return 'готово';
+  const m = Math.ceil(ms / 60000), d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60), mm = m % 60;
+  if (d) return `${d} дн${h ? ' ' + h + ' год' : ''}`;
+  if (h) return `${h} год${mm ? ' ' + mm + ' хв' : ''}`;
+  return `${mm} хв`;
+}
+function fmtDT(iso, withTime) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
+    (withTime ? ', ' + d.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' }) : '');
+}
+// Перенести на склад усі партії, у яких закінчилась витримка
+function releaseAged() {
+  if (typeof SEC !== 'undefined' && !SEC.ready) return;
+  const now = Date.now();
+  const done = [];
+  (DB.productions || []).forEach(p => {
+    if (p.released === false && new Date(p.agingUntil).getTime() <= now) {
+      p.released = true;
+      if (p.costPerKg) addFgCost(p.recipeId, p.totalKg, p.costPerKg);
+      DB.finishedGoods[p.recipeId] = (DB.finishedGoods[p.recipeId] || 0) + p.totalKg;
+      done.push(p);
+    }
+  });
+  if (!done.length) return;
+  saveDB();
+  renderRecipeList();
+  if (typeof populateShipSelect === 'function') populateShipSelect();
+  const names = [...new Set(done.map(p => cleanName(p.recipeName)))].join(', ');
+  showToast(`Витримку завершено: ${names} – на складі ✓`);
+  refreshAgingDialog();
+}
+// Оновити лічильники на картках без повного перемальовування
+function tickAging() {
+  releaseAged();
+  document.querySelectorAll('[data-aging-until]').forEach(el => {
+    el.textContent = fmtLeft(new Date(el.dataset.agingUntil) - Date.now());
+  });
+  refreshAgingDialog();
+}
+setInterval(tickAging, 30000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') tickAging(); });
+
+// Рядок «Витримка» на картці асортименту
+function agingCardRow(r) {
+  const list = agingBatches(r.id);
+  if (!list.length) return '';
+  const kg = list.reduce((t, p) => t + p.totalKg, 0);
+  const next = list[0];
+  return `<button type="button" class="rlc-aging" onclick="event.stopPropagation();openAgingInfo('${r.id}')" title="Партії на витримці">
+    <span class="rlc-aging-ico"></span>Витримка: <b>${kgFmt(kg)}</b>
+    <span class="rlc-aging-left">· ${list.length > 1 ? 'найближча ' : ''}через <span data-aging-until="${next.agingUntil}">${fmtLeft(new Date(next.agingUntil) - Date.now())}</span></span>
+    <span class="rlc-aging-more">›</span></button>`;
+}
+
+// Вікно з повною інформацією про партії на витримці
+let agingDlgRecipe = null;
+function openAgingInfo(recipeId) {
+  agingDlgRecipe = recipeId;
+  let wrap = gn('agingDlg');
+  if (!wrap) {
+    wrap = document.createElement('div');
+    wrap.id = 'agingDlg';
+    wrap.className = 'ui-dlg-wrap';
+    wrap.addEventListener('click', e => { if (e.target === wrap || e.target.closest('[data-close]')) closeAgingInfo(); });
+    document.body.appendChild(wrap);
+  }
+  refreshAgingDialog();
+}
+function closeAgingInfo() { agingDlgRecipe = null; gn('agingDlg')?.remove(); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && gn('agingDlg')) closeAgingInfo(); });
+function refreshAgingDialog() {
+  const wrap = gn('agingDlg');
+  if (!wrap || !agingDlgRecipe) return;
+  const r = DB.recipes.find(x => x.id === agingDlgRecipe);
+  const list = agingBatches(agingDlgRecipe);
+  const ready = DB.finishedGoods[agingDlgRecipe] || 0;
+  const total = list.reduce((t, p) => t + p.totalKg, 0);
+  const now = Date.now();
+  wrap.innerHTML = `<div class="ui-dlg aging-dlg" role="dialog" aria-modal="true">
+    <div class="aging-head">
+      <div><div class="aging-title">${escHtml(r ? cleanName(r.name) : '')}</div>
+      <div class="aging-sub">На витримці: <b>${kgFmt(total)}</b> · Готово на складі: <b>${kgFmt(ready)}</b></div></div>
+      <button type="button" class="aging-x" data-close aria-label="Закрити">×</button>
+    </div>
+    ${list.length ? list.map(p => {
+      const start = new Date(p.agingStart || p.date).getTime(), end = new Date(p.agingUntil).getTime();
+      const pct = Math.min(100, Math.max(0, (now - start) / Math.max(1, end - start) * 100));
+      return `<div class="aging-batch">
+        <div class="aging-row"><span class="aging-kg">${kgFmt(p.totalKg)}</span><span class="aging-left">залишилось <b>${fmtLeft(end - now)}</b></span></div>
+        <div class="aging-bar"><i style="width:${pct.toFixed(1)}%"></i></div>
+        <div class="aging-dates">
+          <span>Виготовлено: <b>${fmtDT(p.agingStart || p.date, true)}</b></span>
+          <span>Витримка: <b>${p.agingDays} ${plural(Math.round(p.agingDays), 'день', 'дні', 'днів')}</b></span>
+          <span>Готово: <b>${fmtDT(p.agingUntil, true)}</b></span>
+        </div>
+        ${p.note ? `<div class="aging-note">${escHtml(p.note)}</div>` : ''}
+      </div>`;
+    }).join('') : '<div class="log-empty">Партій на витримці немає – уся продукція вже на складі</div>'}
+    <div class="aging-foot">Після завершення витримки партія автоматично додається до кількості «На складі».</div>
+  </div>`;
+}
+
+// Поле «Термін витримки» у формі виробництва: підставляється з техкарти обраного рецепта
+function prodAgingFromRecipe() {
+  const el = gn('prodAging'), sel = gn('prodRecipe');
+  if (!el || !sel) return;
+  const r = DB.recipes.find(x => x.id === sel.value);
+  el.value = r && r.agingDays != null ? r.agingDays : '';
+}
+
 function setRecipeComment(id, val) {
   const r = DB.recipes.find(x => x.id === id);
   if (!r) return;
@@ -4556,7 +4727,9 @@ function itemMovements(key) {
   const push = (date, type, note, qty) => { if (Math.abs(qty) > 5e-4) ev.push({ date, type, note: note || "", qty }); };
   if (key.startsWith('fg_')) {
     const rid = key.slice(3);
-    DB.productions.filter(p => p.recipeId === rid).forEach(p => push(p.date, 'Виробництво', p.note, +p.totalKg));
+    DB.productions.filter(p => p.recipeId === rid && p.released !== false).forEach(p =>
+      p.agingUntil ? push(p.agingUntil, 'Після витримки', 'вироблено ' + fmtDT(p.date) + (p.note ? ' · ' + p.note : ''), +p.totalKg)
+                   : push(p.date, 'Виробництво', p.note, +p.totalKg));
     DB.shipments.filter(s => s.recipeId === rid).forEach(s => push(s.date, 'Відвантаження', s.client, -s.amountKg));
     var current = DB.finishedGoods[rid] || 0;
   } else {
@@ -5791,6 +5964,7 @@ function populateProdSelect() {
     .map(r => `<option value="${r.id}">${r.name.replace(/^(TK|ТК)\s+/i,'')}</option>`)
     .join('');
   if (prev && DB.recipes.some(r => r.id === prev)) sel.value = prev;
+  if (!prev || sel.value !== prev || !gn('prodAging')?.value) prodAgingFromRecipe();
 }
 
 // scale = у скільки разів масштабувати рецепт (рецепт × scale = потрібна кількість кг)
@@ -5918,20 +6092,33 @@ async function confirmProduction() {
   if (!recipe) return;
   const cost = calcRecipeCostData(recipe.data);
   if (cost.totalKg <= 0) { showToast('Рецепт порожній'); return; }
+  const agRaw = (gn('prodAging')?.value || '').trim(), agingDays = parseFloat(agRaw);
+  if (agRaw === '' || isNaN(agingDays) || agingDays < 0) {
+    showToast('Вкажіть термін витримки (днів)'); gn('prodAging')?.focus(); return;
+  }
   const scale = kg / cost.totalKg;
   const res = resolveDeductions(calcBatchDeduction(recipe, scale));
   const deductions = res.deductions;
   if (!(await confirmShortages(renderDeductionRows(deductions).shortages))) return;
   const actual = applyDeductions(deductions);
-  addFgCost(recipe.id, kg, cost.perKg);
-  DB.finishedGoods[recipe.id] = (DB.finishedGoods[recipe.id] || 0) + kg;
   const _dateVal = gn('prodDate')?.value;
-  const prodDate = _dateVal ? new Date(_dateVal + 'T12:00:00').toISOString() : new Date().toISOString();
+  const todayStr = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  // відлік витримки: зараз (якщо дата сьогоднішня) або полудень обраного дня
+  const startMs = !_dateVal || _dateVal === todayStr ? Date.now() : new Date(_dateVal + 'T12:00:00').getTime();
+  const prodDate = new Date(startMs).toISOString();
+  const agingUntil = new Date(startMs + agingDays * DAY_MS).toISOString();
+  const aging = new Date(agingUntil).getTime() > Date.now();
+  if (!aging) {                                   // витримка вже минула – одразу на склад
+    addFgCost(recipe.id, kg, cost.perKg);
+    DB.finishedGoods[recipe.id] = (DB.finishedGoods[recipe.id] || 0) + kg;
+  }
+  if (recipe.agingDays == null) recipe.agingDays = agingDays;
   DB.productions.push({
     id: 'p_' + Date.now(), date: prodDate,
     recipeId: recipe.id, recipeName: recipe.name,
     batches: scale, totalKg: kg, deductions: actual, note, autoMade: res.made,
-    costPerKg: cost.perKg, totalCost: cost.perKg * kg
+    costPerKg: cost.perKg, totalCost: cost.perKg * kg,
+    agingDays, agingStart: prodDate, agingUntil, released: !aging
   });
   saveDB();
   const _fmtD = iso => new Date(iso).toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'});
@@ -5944,8 +6131,9 @@ async function confirmProduction() {
   if (gn('prodBatches')) gn('prodBatches').value = 1;
   if (gn('prodNote')) gn('prodNote').value = '';
   if (gn('prodDate')) gn('prodDate').value = new Date().toISOString().slice(0,10);
+  prodAgingFromRecipe();
   updateProdPreview();
-  showToast(`Вироблено ${kgFmt(kg)} ✓`);
+  showToast(aging ? `Вироблено ${kgFmt(kg)} – на витримці до ${fmtDT(agingUntil, true)}` : `Вироблено ${kgFmt(kg)} ✓`);
 }
 
 async function deleteProduction(id) {
@@ -5953,11 +6141,14 @@ async function deleteProduction(id) {
   if (!p) return;
   const name = p.recipeName.replace(/^(TK|ТК)\s+/i,'');
   const fg = DB.finishedGoods[p.recipeId] || 0;
-  let msg = `Скасувати виробництво «${name}» ${kgFmt(p.totalKg)}?\nКомпоненти повернуться на склад, готова продукція зменшиться.`;
-  if (fg < p.totalKg - 0.001) msg += `\n\nУвага: на складі лише ${kgFmt(fg)} цієї продукції (частину вже відвантажено) – залишок стане 0.`;
+  const onAging = p.released === false;
+  let msg = onAging
+    ? `Скасувати виробництво «${name}» ${kgFmt(p.totalKg)}?\nПартія ще на витримці – вона буде видалена, компоненти повернуться на склад.`
+    : `Скасувати виробництво «${name}» ${kgFmt(p.totalKg)}?\nКомпоненти повернуться на склад, готова продукція зменшиться.`;
+  if (!onAging && fg < p.totalKg - 0.001) msg += `\n\nУвага: на складі лише ${kgFmt(fg)} цієї продукції (частину вже відвантажено) – залишок стане 0.`;
   if (!await uiConfirm(msg)) return;
   for (const [k, q] of Object.entries(p.deductions || {})) DB.inventory[k] = (DB.inventory[k] || 0) + q;
-  if (DB.recipes.some(r => r.id === p.recipeId)) DB.finishedGoods[p.recipeId] = Math.max(0, fg - p.totalKg);
+  if (!onAging && DB.recipes.some(r => r.id === p.recipeId)) DB.finishedGoods[p.recipeId] = Math.max(0, fg - p.totalKg);
   DB.productions = DB.productions.filter(x => x.id !== id);
   saveDB(); renderProdLog(); renderProdReport(); updateProdPreview(); renderRecipeList();
   showToast('Виробництво скасовано');
@@ -5981,6 +6172,7 @@ function renderProdLog() {
       <div class="log-date">${date}</div>
       <div class="log-rname">${name}${cost ? ` <span style="font-size:11px;color:var(--text2)">· ${Math.round(cost).toLocaleString('uk-UA')} ₴</span>` : ''}</div>
       <div class="log-right"><span class="log-amt">${kgFmt(p.totalKg)}</span><button class="log-del" onclick="deleteProduction('${p.id}')" title="Скасувати виробництво">×</button></div>
+      ${p.released === false ? `<div class="log-note log-aging">На витримці до ${fmtDT(p.agingUntil, true)} · залишилось ${fmtLeft(new Date(p.agingUntil) - Date.now())}</div>` : (p.agingDays ? `<div class="log-note">Витримка ${p.agingDays} дн · готово ${fmtDT(p.agingUntil)}</div>` : '')}
       ${p.note ? `<div class="log-note">${p.note.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>` : ''}
       ${p.autoMade && Object.keys(p.autoMade).length ? `<div class="log-note">Автоматично виготовлено: ${Object.entries(p.autoMade).map(([k, q]) => invItemInfo(k).name + ' ' + q.toFixed(3) + ' кг').join(', ')}</div>` : ''}
     </div>`;
