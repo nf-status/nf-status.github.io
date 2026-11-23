@@ -374,6 +374,8 @@ pre{max-width:100%;overflow-x:auto;}
 .gas-code{background:var(--bg2,#f4f4f2);border-radius:8px;padding:10px 12px;font-size:11px;line-height:1.5;max-height:260px;overflow:auto;white-space:pre;}
 .rlc-comment-row{display:flex;align-items:flex-start;gap:6px;margin-top:6px;font-size:11px;line-height:1.45;}
 .rlc-cbox{flex:1;min-width:0;display:block;}
+.rlc-cview{min-height:16px;font-size:11px;line-height:1.45;color:var(--text1);white-space:pre-wrap;overflow-wrap:anywhere;cursor:text;border-radius:3px;transition:background .15s,box-shadow .15s;}
+.rlc-cview:hover{background:var(--surface2);box-shadow:0 0 0 2px var(--surface2);}
 .rlc-comment-row .rlc-price-lbl{padding-top:0;line-height:1.45;}
 .rlc-comment{display:block;width:100%;min-width:0;resize:none;overflow:hidden;border:0;border-radius:3px;padding:0;margin:0;font:inherit;font-size:11px;line-height:1.45;color:var(--text1);background:transparent;transition:box-shadow .15s,background .15s;}
 .rlc-comment:hover{box-shadow:0 0 0 2px var(--surface2);background:var(--surface2);}
@@ -3063,7 +3065,7 @@ function getPriceForFlavor(name) {
 }
 
 // ── Calculator ─────────────────────────────────────────────
-let calcFlavors = [{ id: 1, name: '', vol: 0.210 }];   // назва підставляється після завантаження даних
+let calcFlavors = [{ id: 1, name: '', vol: 0 }];
 let nextFlavorId = 2;
 let calcCustomTKUsages = [];  // [{id, cardId, kg}]
 let nextCustomTKUId = 1;
@@ -3095,7 +3097,8 @@ function calc() {
   calcFlavors.forEach((f, i) => {
     const el = gn('flVol_' + f.id);
     const kg = el ? parseFloat(el.value) || 0 : f.vol;
-    const p = getPriceForFlavor(f.name);
+    if (!f.name && !kg) return;
+    const p = f.name ? getPriceForFlavor(f.name) : null;
     const cost = p !== null ? kg * p : 0;
     totalFlavKg += kg; totalFlavCost += cost;
     flavSegments.push({ name: f.name, kg, cost, color: COLORS[(2 + i) % COLORS.length] });
@@ -3204,13 +3207,11 @@ function calc() {
 function renderFlavorRows() {
   const opts = DB.prices.flavorings.map(f => `<option value="${f.name}">`).join('');
   const names = new Set(DB.prices.flavorings.map(fl => fl.name));
-  // Порожня назва (новий рецепт) – перший ароматизатор зі списку
-  calcFlavors.forEach(f => { if (!f.name && DB.prices.flavorings[0]) f.name = DB.prices.flavorings[0].name; });
   gn('flavorRows').innerHTML = calcFlavors.map((f, i) => {
     // Ароматизатор, якого вже немає у списку, показуємо явно, а не підміняємо першим
     const missing = f.name && !names.has(f.name)
       ? `<option value="${escHtml(f.name)}" selected>${escHtml(f.name)} – немає у списку</option>` : '';
-    const sel = missing + DB.prices.flavorings.map(fl =>
+    const sel = (f.name ? '' : '<option value="" selected disabled hidden>Оберіть аромат…</option>') + missing + DB.prices.flavorings.map(fl =>
       `<option value="${escHtml(fl.name)}"${fl.name === f.name ? ' selected' : ''}>${escHtml(fl.name)}</option>`).join('');
     return `<div class="flavor-row">
       <div class="field">
@@ -3219,7 +3220,7 @@ function renderFlavorRows() {
       </div>
       <div class="field">
         ${i === 0 ? '<label>кг</label>' : ''}
-        <input type="number" id="flVol_${f.id}" class="finp" value="${f.vol}" min="0" step="0.005" oninput="calc()">
+        <input type="number" id="flVol_${f.id}" class="finp" value="${f.vol ? f.vol : ''}" placeholder="0,000" min="0" step="0.005" oninput="calc()">
       </div>
       <button class="x-del" onclick="removeFlavor(${f.id})" title="Видалити" ${calcFlavors.length === 1 ? 'disabled' : ''}>×</button>
     </div>`;
@@ -3232,9 +3233,9 @@ function onFlavorName(id, el) {
 }
 
 function addFlavor() {
-  const defaultF = DB.prices.flavorings[0];
-  calcFlavors.push({ id: nextFlavorId++, name: defaultF ? defaultF.name : 'Аромат', vol: 0.020 });
+  calcFlavors.push({ id: nextFlavorId++, name: '', vol: 0 });
   renderFlavorRows(); calc();
+  setTimeout(() => { const sel = gn('flName_' + calcFlavors[calcFlavors.length - 1].id); sel?._ss?.btn?.click(); }, 60);
 }
 
 function removeFlavor(id) {
@@ -3425,7 +3426,7 @@ function loadRecipe(id) {
   gn('tobBaseType').value = d.tobBaseType || 'dark';
   gn('tobBaseKg').value   = d.tobBaseKg  ?? 0.600;
   calcFlavors = (d.flavors || []).map((f, i) => ({ id: nextFlavorId++, name: f.name, vol: f.vol }));
-  if (!calcFlavors.length) calcFlavors = [{ id: nextFlavorId++, name: DB.prices.flavorings[0]?.name || '', vol: 0 }];
+  if (!calcFlavors.length) calcFlavors = [{ id: nextFlavorId++, name: '', vol: 0 }];
   gn('nicVol').value  = d.nicVol  ?? 0.010;
   calcCustomTKUsages = (d.customTKUsages || []).map(u => ({ id: nextCustomTKUId++, cardId: u.cardId, kg: u.kg }));
   const _descEl = gn('calcDesc');
@@ -3443,7 +3444,7 @@ function collectRecipeData() {
   const flavors = calcFlavors.map(f => {
     const volEl = gn('flVol_' + f.id);
     return { name: f.name, vol: volEl ? parseFloat(volEl.value) || 0 : f.vol };
-  });
+  }).filter(f => f.name);
   return {
     tobBaseType: gn('tobBaseType').value,
     tobBaseKg:   v('tobBaseKg'),
@@ -3457,6 +3458,8 @@ function collectRecipeData() {
 }
 
 async function saveRecipe() {
+  const noName = calcFlavors.some(f => !f.name && (parseFloat(gn('flVol_' + f.id)?.value) || 0) > 0);
+  if (noName) { showToast('Оберіть аромат у рядку, де вказана кількість'); return; }
   const data = collectRecipeData();
   const desc = (gn('calcDesc')?.value || '').trim();
   const category = gn('calcCategory')?.value || 'permanent';
@@ -3500,7 +3503,7 @@ function deleteRecipeFromList(id) {
 function clearCalculator() {
   gn('tobBaseType').value = 'dark';
   gn('tobBaseKg').value   = 0.600;
-  calcFlavors = [{ id: nextFlavorId++, name: DB.prices.flavorings[0]?.name || '', vol: 0.210 }];
+  calcFlavors = [{ id: nextFlavorId++, name: '', vol: 0 }];
   gn('nicVol').value  = 0.010;
   calcCustomTKUsages = [];
   const _cd = gn('calcDesc'); if (_cd) { _cd.value = ''; _cd.style.height = '36px'; }
@@ -3851,10 +3854,9 @@ function renderRecipeList() {
       ${missingFl.length ? `<div class="rlc-meta"><div class="flav-missing" title="${escHtml(missingFl.join(', '))}">Є ароматизатори, яких немає у списку</div></div>` : ''}
       ${priceRow}
       <div class="rlc-stock${stockKg === 0 ? ' zero' : ''}">На складі: <b>${kgFmt(stockKg)}</b></div>
-      <div class="rlc-comment-row" onclick="event.stopPropagation()"><span class="rlc-price-lbl">Коментар:</span><span class="rlc-cbox"><textarea class="rlc-comment" rows="1" oninput="autoGrowComment(this)" onchange="setRecipeComment('${r.id}',this.value)">${escHtml(r.comment || '')}</textarea></span></div>
+      <div class="rlc-comment-row" onclick="event.stopPropagation()"><span class="rlc-price-lbl">Коментар:</span><span class="rlc-cbox"><div class="rlc-cview" onclick="editComment(this,'${r.id}')">${escHtml(r.comment || '')}</div></span></div>
     </div>`;
   }).join('');
-  grid.querySelectorAll('.rlc-comment').forEach(el => { commentRO?.observe(el); autoGrowComment(el); });
   renderTrash();
 }
 function autoGrowComment(el) {
@@ -3872,6 +3874,23 @@ const commentRO = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(es 
   const el = e.target; if (el.offsetParent && el.scrollHeight > el.clientHeight + 1) autoGrowComment(el);
 })) : null;
 document.addEventListener('focusin', e => { if (e.target.classList?.contains('rlc-comment')) autoGrowComment(e.target); });
+function editComment(view, id) {
+  if (view.parentElement.querySelector('textarea')) return;
+  const ta = document.createElement('textarea');
+  ta.className = 'rlc-comment'; ta.rows = 1;
+  ta.value = (DB.recipes.find(x => x.id === id) || {}).comment || '';
+  view.style.display = 'none';
+  view.after(ta);
+  ta.addEventListener('input', () => autoGrowComment(ta));
+  ta.addEventListener('blur', () => {
+    setRecipeComment(id, ta.value);
+    view.textContent = (DB.recipes.find(x => x.id === id) || {}).comment || '';
+    ta.remove(); view.style.display = '';
+  });
+  ta.focus();
+  ta.setSelectionRange(ta.value.length, ta.value.length);
+  autoGrowComment(ta);
+}
 function setRecipeComment(id, val) {
   const r = DB.recipes.find(x => x.id === id);
   if (!r) return;
@@ -3893,6 +3912,8 @@ function setRecipeFilter(val) {
 function openRecipeFromList(id) {
   switchTab('calc');
   loadRecipe(id);
+  window.scrollTo(0, 0);
+  requestAnimationFrame(() => window.scrollTo(0, 0));
 }
 
 function newRecipeFromList() {
@@ -3901,6 +3922,7 @@ function newRecipeFromList() {
   switchTab('calc');
   clearCalculator();
   renderRecipeBar();
+  window.scrollTo(0, 0);
 }
 
 // ── Tab Navigation ─────────────────────────────────────────
