@@ -990,7 +990,7 @@ document.documentElement.classList.add('locked', 'decoy');
         </div>
         <!-- Stacked bar -->
         <div class="res-bar-section">
-          <div class="res-bar-lbl">Частка за вагою</div>
+          <div class="res-bar-lbl">Частка в собівартості</div>
           <div style="position:relative;height:24px;border-radius:5px;overflow:hidden">
             <canvas id="calcChart" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
           </div>
@@ -3161,17 +3161,19 @@ function calc() {
     <td>${fmtH(totalCost)}</td>
   </tr>`;
 
-  // Stacked horizontal bar chart (by weight %)
+  // Stacked horizontal bar chart – частка кожної складової у собівартості
   if (calcChart) { calcChart.destroy(); calcChart = null; }
   const ctx = gn('calcChart');
-  if (ctx && segments.length > 0 && totalKg > 0) {
+  const costShare = s => totalCost > 0 ? s.cost / totalCost * 100 : 0;
+  const pctTxt = n => n.toLocaleString('uk-UA', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%';
+  if (ctx && segments.length > 0 && totalCost > 0) {
     calcChart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: [''],
         datasets: segments.map(s => ({
           label: s.name,
-          data: [parseFloat((s.kg / totalKg * 100).toFixed(2))],
+          data: [parseFloat(costShare(s).toFixed(2))],
           backgroundColor: s.color,
           barPercentage: 1,
           categoryPercentage: 1,
@@ -3190,7 +3192,7 @@ function calc() {
           legend: { display: false },
           tooltip: {
             callbacks: {
-              label: c => c.dataset.label + ': ' + c.parsed.x.toFixed(1) + '%'
+              label: c => c.dataset.label + ': ' + pctTxt(c.parsed.x)
             }
           }
         }
@@ -3201,10 +3203,10 @@ function calc() {
   applyCalcMode();
 
   // Legend
-  if (gn('barLegend') && totalKg > 0) {
-    gn('barLegend').innerHTML = segments.map(s =>
-      `<div class="res-bar-item"><span class="res-dot" style="background:${s.color}"></span>${s.name} (${(s.kg/totalKg*100).toFixed(0)}%)</div>`
-    ).join('');
+  if (gn('barLegend')) {
+    gn('barLegend').innerHTML = totalCost > 0 ? segments.map(s =>
+      `<div class="res-bar-item"><span class="res-dot" style="background:${s.color}"></span>${s.name} (${pctTxt(costShare(s))})</div>`
+    ).join('') : '';
   }
 }
 
