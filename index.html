@@ -540,7 +540,8 @@ input[type=number]::-webkit-inner-spin-button{opacity:.35;}
 .rlc-cost-num{font-size:20px;font-weight:700;color:var(--text1);letter-spacing:-.02em;}
 .rlc-meta,.rlc-price-row{border-top-color:var(--border);}
 .rlc-catbadge{font-size:10px;font-weight:600;letter-spacing:.02em;padding:2px 8px;}
-.rlc-price-inp{border-radius:6px;border-color:var(--border2);padding:4px 7px;}
+.rlc-price-inp{flex:0 0 120px;width:120px;border-radius:999px;border-color:var(--border2);padding:5px 12px;-moz-appearance:textfield;}
+.rlc-price-inp::-webkit-outer-spin-button,.rlc-price-inp::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 .tk-header,.stage-hdr{background:transparent;padding:13px 16px;}
 .tk-body,.stage-body{padding:14px 16px;}
 .tk-section-title{font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--text1);border-bottom:none;margin:6px 0 10px;}
@@ -747,7 +748,14 @@ tr.rm-wait td{background:#FFFBF3;}
 .aging-val{color:#9A6A1F;}
 .rm-filter{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--text2);margin:-4px 0 8px;}
 .rm-filter{flex-wrap:wrap;}
-tr.sg-head{cursor:pointer;}
+tr.sg-head,tr.pnl-x{cursor:pointer;}
+tr.pnl-x:hover td{background:var(--surface2);}
+tr.pnl-x.open .sg-arrow{transform:rotate(90deg);}
+tr.pnl-det{display:none;}
+tr.pnl-det.open{display:table-row;}
+tr.pnl-det td{font-size:12.5px;background:var(--surface2,#fafaf9);}
+tr.pnl-det td:first-child{padding-left:28px!important;}
+.pd-date{color:var(--text3);margin-right:10px;font-variant-numeric:tabular-nums;}
 tr.sg-head:hover td{background:var(--surface2);}
 .sg-arrow{display:inline-block;width:14px;color:var(--text3);transition:transform .15s;}
 tr.sg-head.open .sg-arrow{transform:rotate(90deg);}
@@ -4636,6 +4644,10 @@ const deltaCell = (cur, prev, inverse) => {
   return `<td class="${good ? 'up' : 'down'}">${d > 0 ? '+' : '−'}${fmtMoney(Math.abs(d))}${pct}</td>`;
 };
 
+function togglePnl(k) {
+  document.querySelectorAll(`#repBody tr[data-pd="${k}"]`).forEach(tr => tr.classList.toggle('open'));
+  document.querySelector(`#repBody tr[data-pdh="${k}"]`)?.classList.toggle('open');
+}
 function reportPnL() {
   const r = repRange(), p = computePnL(r);
   const pr = prevRange(r), pp = pr ? computePnL(pr) : null;
@@ -4650,6 +4662,19 @@ function reportPnL() {
     return `<tr class="sub"><td><i class="dot" style="background:${c.color}"></i>${c.label}</td><td>${fmtMoney(v)}</td>${pp ? `<td class="muted">${fmtMoney(prv)}</td>` + deltaCell(v, prv, true) : ''}<td class="muted">${share(v)}</td></tr>`;
   }).join('');
   const avgPrice = p.kg > 0 ? p.revenue / p.kg : 0, avgCost = p.kg > 0 ? p.cogs / p.kg : 0;
+  // Розгорнута інформація: окремі витрати та списання за період
+  const tail = `${pp ? '<td></td><td></td>' : ''}<td></td>`;
+  const dt = d => new Date(d).toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const opexItems = (DB.opexLog || []).filter(e => inRange(r, e.date + 'T12:00:00')).sort((a, b) => b.date.localeCompare(a.date));
+  const opexDet = opexItems.length ? opexItems.map(e => `<tr class="pnl-det" data-pd="opex"><td><span class="pd-date">${dt(e.date + 'T12:00:00')}</span><i class="dot" style="background:${opexCat(e.category).color}"></i>${opexCat(e.category).label}${e.name ? ' · ' + escHtml(e.name) : ''}</td><td>${fmtMoney(e.amount)}</td>${tail}</tr>`).join('')
+    : `<tr class="pnl-det" data-pd="opex"><td class="muted">Операційних витрат за цей період немає</td><td></td>${tail}</tr>`;
+  const woItems = (DB.writeoffs || []).filter(w => inRange(r, w.date)).sort((a, b) => b.date.localeCompare(a.date));
+  const woDet = woItems.length ? woItems.map(w => {
+    const q = (w.before != null && w.after != null) ? w.before - w.after : w.qty;
+    const u = invItemInfo(w.key).unit;
+    return `<tr class="pnl-det" data-pd="wo"><td><span class="pd-date">${dt(w.date)}</span>${escHtml(w.itemName || invItemInfo(w.key).name)} · ${fmtQty(q, u)} ${u}${w.reason ? `<span class="muted"> · ${escHtml(w.reason)}</span>` : ''}</td><td>${fmtMoney(writeoffValue(w))}</td>${tail}</tr>`;
+  }).join('') : `<tr class="pnl-det" data-pd="wo"><td class="muted">Списань за цей період немає</td><td></td>${tail}</tr>`;
+  const rowX = (label, k, cls, key) => row(`<span class="sg-arrow">›</span>${label}`, k, cls + ' pnl-x" data-pdh="' + key + '" onclick="togglePnl(\'' + key + '\')', true);
   return `
     <table class="fin-table">
       <thead><tr><th>Стаття</th><th>Сума</th>${pp ? `<th>Попередній період</th><th>Зміна</th>` : ''}<th>% виручки</th></tr></thead>
@@ -4657,9 +4682,11 @@ function reportPnL() {
         ${row('Виручка від продажів', 'revenue', 'strong')}
         ${row('Собівартість реалізованої продукції', 'cogs', '', true)}
         ${row('Валовий прибуток', 'gross', 'tot')}
-        ${row('Операційні витрати', 'opex', 'strong', true)}
+        ${rowX('Операційні витрати', 'opex', 'strong', 'opex')}
         ${opexRows}
-        ${row('Списання матеріалів', 'writeoffs', '', true)}
+        ${opexDet}
+        ${rowX('Списання', 'writeoffs', '', 'wo')}
+        ${woDet}
         ${row('Чистий прибуток', 'net', 'tot hl ' + (p.net >= 0 ? 'pos' : 'negv'))}
       </tbody>
     </table>
