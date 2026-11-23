@@ -722,6 +722,9 @@ input[type=number]::-webkit-inner-spin-button{opacity:.35;}
 .aging-dates{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--text2);}
 .aging-dates b{color:var(--text1);font-weight:500;}
 .aging-note{font-size:12px;color:var(--text3);margin-top:6px;}
+.aging-actions{display:flex;justify-content:flex-end;margin-top:10px;}
+.log-early{margin-left:6px;border:1px solid #E7CF9F;background:#FFF9EE;color:#7A4B00;border-radius:6px;font:inherit;font-size:11px;padding:1px 7px;cursor:pointer;}
+.log-early:hover{background:#FFF0D4;}
 .aging-foot{font-size:11.5px;color:var(--text3);margin-top:4px;}
 .chip-sep{width:1px;height:20px;background:var(--border2);margin:0 4px;flex:0 0 auto;align-self:center;}
 .mini-search{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border:1px solid var(--border2);border-radius:999px;background:var(--surface);color:var(--text3);cursor:text;transition:border-color .15s,box-shadow .15s;text-transform:none;letter-spacing:0;font-weight:400;}
@@ -3415,7 +3418,7 @@ function recipeMovements(recipeId) {
   const ev = [];
   DB.productions.filter(p => p.recipeId === recipeId && p.released !== false).forEach(p =>
     ev.push(p.agingUntil
-      ? { date: p.agingUntil, type: 'Після витримки', note: 'вироблено ' + fmtDT(p.date) + (p.note ? ' · ' + p.note : ''), qty: +p.totalKg }
+      ? { date: p.agingUntil, type: p.earlyRelease ? 'Готово достроково' : 'Після витримки', note: 'вироблено ' + fmtDT(p.date) + (p.note ? ' · ' + p.note : ''), qty: +p.totalKg }
       : { date: p.date, type: 'Виробництво', note: p.note || '', qty: +p.totalKg }));
   DB.shipments.filter(s => s.recipeId === recipeId).forEach(s =>
     ev.push({ date: s.date, type: 'Відвантаження', note: s.client || '', qty: -s.amountKg, sum: s.totalSum }));
@@ -3994,6 +3997,26 @@ function releaseAged() {
   showToast(`Витримку завершено: ${names} – на складі ✓`);
   refreshAgingDialog();
 }
+// Дострокова готовність: партія вручну переводиться на склад до кінця витримки
+async function releaseBatchNow(id) {
+  const p = (DB.productions || []).find(x => x.id === id);
+  if (!p || p.released !== false) return;
+  const left = fmtLeft(new Date(p.agingUntil) - Date.now());
+  const ok = await uiConfirm(`Позначити партію «${cleanName(p.recipeName)}» ${kgFmt(p.totalKg)} готовою достроково?\n\nДо кінця витримки залишалось ${left}. Партія одразу додасться до кількості «На складі».`, { okText: 'Готово достроково' });
+  if (!ok) return;
+  p.plannedUntil = p.agingUntil;                 // запланована дата – для історії
+  p.agingUntil = new Date().toISOString();
+  p.earlyRelease = true;
+  p.released = true;
+  if (p.costPerKg) addFgCost(p.recipeId, p.totalKg, p.costPerKg);
+  DB.finishedGoods[p.recipeId] = (DB.finishedGoods[p.recipeId] || 0) + p.totalKg;
+  saveDB();
+  renderRecipeList();
+  if (typeof populateShipSelect === 'function') populateShipSelect();
+  if (gn('prodLog')) renderProdLog();
+  refreshAgingDialog();
+  showToast(`${cleanName(p.recipeName)} ${kgFmt(p.totalKg)} – готово достроково, на складі ✓`);
+}
 // Оновити лічильники на картках без повного перемальовування
 function tickAging() {
   releaseAged();
@@ -4059,9 +4082,10 @@ function refreshAgingDialog() {
           <span>Готово: <b>${fmtDT(p.agingUntil, true)}</b></span>
         </div>
         ${p.note ? `<div class="aging-note">${escHtml(p.note)}</div>` : ''}
+        <div class="aging-actions"><button type="button" class="ops-btn outline sm" onclick="releaseBatchNow('${p.id}')">✓ Готово достроково</button></div>
       </div>`;
     }).join('') : '<div class="log-empty">Партій на витримці немає – уся продукція вже на складі</div>'}
-    <div class="aging-foot">Після завершення витримки партія автоматично додається до кількості «На складі».</div>
+    <div class="aging-foot">Після завершення витримки партія автоматично додається до кількості «На складі». Якщо продукт готовий раніше – натисніть «Готово достроково».</div>
   </div>`;
 }
 
@@ -4737,7 +4761,7 @@ function itemMovements(key) {
   if (key.startsWith('fg_')) {
     const rid = key.slice(3);
     DB.productions.filter(p => p.recipeId === rid && p.released !== false).forEach(p =>
-      p.agingUntil ? push(p.agingUntil, 'Після витримки', 'вироблено ' + fmtDT(p.date) + (p.note ? ' · ' + p.note : ''), +p.totalKg)
+      p.agingUntil ? push(p.agingUntil, p.earlyRelease ? 'Готово достроково' : 'Після витримки', 'вироблено ' + fmtDT(p.date) + (p.note ? ' · ' + p.note : ''), +p.totalKg)
                    : push(p.date, 'Виробництво', p.note, +p.totalKg));
     DB.shipments.filter(s => s.recipeId === rid).forEach(s => push(s.date, 'Відвантаження', s.client, -s.amountKg));
     var current = DB.finishedGoods[rid] || 0;
@@ -6184,7 +6208,9 @@ function renderProdLog() {
       <div class="log-date">${date}</div>
       <div class="log-rname">${name}${cost ? ` <span style="font-size:11px;color:var(--text2)">· ${Math.round(cost).toLocaleString('uk-UA')} ₴</span>` : ''}</div>
       <div class="log-right"><span class="log-amt">${kgFmt(p.totalKg)}</span><button class="log-del" onclick="deleteProduction('${p.id}')" title="Скасувати виробництво">×</button></div>
-      ${p.released === false ? `<div class="log-note log-aging">На витримці до ${fmtDT(p.agingUntil, true)} · залишилось ${fmtLeft(new Date(p.agingUntil) - Date.now())}</div>` : (p.agingDays ? `<div class="log-note">Витримка ${p.agingDays} дн · готово ${fmtDT(p.agingUntil)}</div>` : '')}
+      ${p.released === false ? `<div class="log-note log-aging">На витримці до ${fmtDT(p.agingUntil, true)} · залишилось ${fmtLeft(new Date(p.agingUntil) - Date.now())} <button type="button" class="log-early" onclick="releaseBatchNow('${p.id}')">Готово достроково</button></div>`
+        : (p.earlyRelease ? `<div class="log-note">Витримка ${p.agingDays} дн · готово достроково ${fmtDT(p.agingUntil)} (план ${fmtDT(p.plannedUntil)})</div>`
+        : (p.agingDays ? `<div class="log-note">Витримка ${p.agingDays} дн · готово ${fmtDT(p.agingUntil)}</div>` : ''))}
       ${p.note ? `<div class="log-note">${p.note.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>` : ''}
       ${p.autoMade && Object.keys(p.autoMade).length ? `<div class="log-note">Автоматично виготовлено: ${Object.entries(p.autoMade).map(([k, q]) => invItemInfo(k).name + ' ' + q.toFixed(3) + ' кг').join(', ')}</div>` : ''}
     </div>`;
