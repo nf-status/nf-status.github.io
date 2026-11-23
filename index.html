@@ -744,6 +744,7 @@ tr.rm-wait td{background:#FFFBF3;}
 .rm-sum > div.rm-tile{cursor:pointer;transition:background .15s;}
 .rm-sum > div.rm-tile:hover{background:var(--surface2);}
 .rm-sum > div.rm-tile.active{background:var(--surface2);box-shadow:inset 0 -2px 0 var(--text1);}
+.aging-val{color:#9A6A1F;}
 .rm-filter{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--text2);margin:-4px 0 8px;}
 .rm-filter button{border:0;background:transparent;font:inherit;font-size:12px;color:var(--text2);cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
 .rm-hint{font-size:11.5px;color:var(--text3);margin-top:8px;}
@@ -3486,21 +3487,21 @@ function renderRecipeMoves() {
     <div class="rm-sum">
       ${r.from ? `<div><span>На початок</span><b>${kg(opening)}</b></div>` : ''}
       <div class="rm-tile${rmFilter === 'made' ? ' active' : ''}" onclick="setRmFilter('made')"><span>Вироблено</span><b class="up">${made ? "+" : ""}${kg(made)}</b></div>
-      <div class="rm-aging${aging.length ? ' on' : ''}"${aging.length ? ` onclick="openAgingInfo('${currentRecipeId}')" title="Партії на витримці"` : ''}><span>На витримці</span><b>${kg(agingKg)}</b>${aging.length ? `<em>${aging.length > 1 ? 'найближча ' : ''}через <span data-aging-until="${aging[0].agingUntil}">${fmtLeft(new Date(aging[0].agingUntil) - Date.now())}</span> ›</em>` : ''}</div>
+      <div class="rm-tile${rmFilter === 'aging' ? ' active' : ''}" onclick="setRmFilter('aging')"><span>На витримці</span><b class="aging-val">${kg(agingKg)}</b></div>
       <div class="rm-tile${rmFilter === 'ship' ? ' active' : ''}" onclick="setRmFilter('ship')"><span>Відвантажено</span><b class="down">${shipped ? "−" : ""}${kg(shipped)}</b></div>
       <div class="rm-tile${rmFilter === 'stock' ? ' active' : ''}" onclick="setRmFilter('stock')"><span>${r.to ? 'На кінець періоду' : 'На складі зараз'}</span><b>${kg(r.to ? closing : current)}</b></div>
     </div>
-    ${rmFilter ? `<div class="rm-filter">${{ made: 'Показано: виробництво та витримка', ship: 'Показано: відвантаження', stock: 'Показано: рух складу (надходження та відвантаження)' }[rmFilter]} <button type="button" onclick="setRmFilter('')">Показати все ×</button></div>` : ''}
-    ${(() => { const rows = inR.filter(e => !rmFilter || (rmFilter === 'made' ? e.qty > 0 || e.info : rmFilter === 'ship' ? e.qty < 0 : !e.info)); return rows.length; })() ? `<table class="fin-table rm-table">
+    ${rmFilter ? `<div class="rm-filter"><span>${{ made: 'Показано: виробництво та витримка', aging: 'Показано: партії, що зараз на витримці', ship: 'Показано: відвантаження', stock: 'Показано: рух складу (надходження та відвантаження)' }[rmFilter]}${rmFilter === 'aging' && aging.length ? ` · <button type="button" onclick="openAgingInfo('${currentRecipeId}')">Детально / готово достроково</button>` : ''}</span><button type="button" onclick="setRmFilter('')">Показати все ×</button></div>` : ''}
+    ${(() => { const rows = inR.filter(e => !rmFilter || (rmFilter === 'made' ? e.qty > 0 || e.info : rmFilter === 'aging' ? e.aging : rmFilter === 'ship' ? e.qty < 0 : !e.info)); return rows.length; })() ? `<table class="fin-table rm-table">
       <thead><tr><th>Дата</th><th style="text-align:left">Операція</th><th style="text-align:left">Клієнт / примітка</th><th>Кількість</th><th>Залишок</th></tr></thead>
-      <tbody>${[...inR].filter(e => !rmFilter || (rmFilter === 'made' ? e.qty > 0 || e.info : rmFilter === 'ship' ? e.qty < 0 : !e.info)).reverse().map(e => `<tr${e.info ? ` class="rm-info${e.aging ? ' rm-wait' : ''}"` : ''}>
+      <tbody>${[...inR].filter(e => !rmFilter || (rmFilter === 'made' ? e.qty > 0 || e.info : rmFilter === 'aging' ? e.aging : rmFilter === 'ship' ? e.qty < 0 : !e.info)).reverse().map(e => `<tr${e.info ? ` class="rm-info${e.aging ? ' rm-wait' : ''}"` : ''}>
         <td class="muted" style="text-align:left">${new Date(e.date).toLocaleDateString('uk-UA', { day:'2-digit', month:'2-digit', year:'numeric' })}</td>
         <td style="text-align:left">${e.type}${e.aging ? ' <span class="rm-tag">триває</span>' : ''}${e.note ? `<div class="rm-sub">${escHtml(e.note)}</div>` : ''}</td>
         <td class="muted" style="text-align:left;white-space:normal">${escHtml(e.note)}</td>
         ${e.info ? `<td class="rm-infoqty">${kg(e.infoQty)}</td>` : `<td class="${e.qty > 0 ? 'up' : 'down'}">${e.qty > 0 ? '+' : '−'}${kg(Math.abs(e.qty))}</td>`}
         <td>${kg(e.after)}</td>
       </tr>`).join('')}</tbody></table>`
-    : `<div class="log-empty">${rmFilter === 'ship' ? 'Відвантажень за цей період немає' : rmFilter === 'made' ? 'Виробництва за цей період немає' : 'Руху за цей період немає'}</div>`}`;
+    : `<div class="log-empty">${rmFilter === 'aging' ? 'Зараз на витримці нічого немає' : rmFilter === 'ship' ? 'Відвантажень за цей період немає' : rmFilter === 'made' ? 'Виробництва за цей період немає' : 'Руху за цей період немає'}</div>`}`;
 }
 
 function onRecipeSelect() {
