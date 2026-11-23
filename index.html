@@ -689,6 +689,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.35;}
 .chip-cnt{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:999px;background:var(--surface2);color:var(--text2);font-size:11px;font-weight:600;line-height:18px;text-align:center;}
 .filter-chip.active .chip-cnt{background:rgba(255,255,255,.2);color:#fff;}
 .chip-deleted{margin-left:0;}
+.chip-sep{width:1px;height:20px;background:var(--border2);margin:0 4px;flex:0 0 auto;align-self:center;}
 .mini-search{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border:1px solid var(--border2);border-radius:999px;background:var(--surface);color:var(--text3);cursor:text;transition:border-color .15s,box-shadow .15s;text-transform:none;letter-spacing:0;font-weight:400;}
 .filter-chips .mini-search{margin-left:auto;}
 .ops-title .mini-search{margin-left:auto;height:28px;}
@@ -1022,6 +1023,9 @@ document.documentElement.classList.add('locked', 'decoy');
     <button class="filter-chip" id="chipElsewhere" onclick="setRecipeFilter('elsewhere')">Elsewhere</button>
     <button class="filter-chip" id="chipTester" onclick="setRecipeFilter('tester')">Тестер</button>
     <button class="filter-chip chip-deleted" id="chipDeleted" onclick="setRecipeFilter('deleted')" style="display:none">Видалені <span class="chip-cnt" id="trashCnt">0</span></button>
+    <span class="chip-sep" aria-hidden="true"></span>
+    <button class="filter-chip base-chip" id="chipLight" onclick="setBaseFilter('light')" title="Рецепти на Tobacco Base Light">Light</button>
+    <button class="filter-chip base-chip" id="chipStrong" onclick="setBaseFilter('dark')" title="Рецепти на Tobacco Base Dark">Strong</button>
     <label class="mini-search" title="Пошук по асортименту"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="recipeSearch" placeholder="Пошук" autocomplete="off" oninput="setRecipeSearch(this.value)"></label>
     <button class="ops-btn outline sm chip-pdf" onclick="exportCatalogPDF()" title="PDF з наявністю «Постійні смаки» та «Elsewhere» для замовника"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="vertical-align:-2px;margin-right:5px"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>PDF для замовника</button>
   </div>
@@ -3071,6 +3075,7 @@ let calcCustomTKUsages = [];  // [{id, cardId, kg}]
 let nextCustomTKUId = 1;
 let currentRecipeId = null;
 let recipeFilter = 'all';
+let recipeBaseFilter = '';   // '' | 'light' | 'dark' – тип тютюнової бази
 let calcChart = null;
 
 function v(id) { return parseFloat(gn(id)?.value) || 0; }
@@ -3817,8 +3822,9 @@ function renderRecipeList() {
   const q = recipeQuery;
   const matches = r => !q || [r.name, r.description, ...(r.data.flavors || []).map(f => f.name), r.data.tobBaseType === 'light' ? 'base light' : 'base dark']
     .some(t => String(t || '').toLowerCase().includes(q));
+  const baseOk = r => !recipeBaseFilter || (r.data?.tobBaseType === 'light' ? 'light' : 'dark') === recipeBaseFilter;
   const filtered = (recipeFilter === 'all' ? DB.recipes
-    : DB.recipes.filter(r => (r.category || 'permanent') === recipeFilter)).filter(matches);
+    : DB.recipes.filter(r => (r.category || 'permanent') === recipeFilter)).filter(matches).filter(baseOk);
   const sortedRecipes = [...filtered].sort((a,b) => a.name.localeCompare(b.name,'uk'));
   if (!sortedRecipes.length) {
     grid.innerHTML = `<div style="color:var(--text3);padding:40px;text-align:center;grid-column:1/-1">${q ? 'Нічого не знайдено за запитом «' + escHtml(q) + '»' : 'Немає рецептів у цій категорії'}</div>`;
@@ -3901,9 +3907,16 @@ function setRecipeComment(id, val) {
 let recipeQuery = '';
 function setRecipeSearch(q) { recipeQuery = String(q || '').trim().toLowerCase(); renderRecipeList(); }
 
+// Light / Strong: повторне натискання знімає фільтр; поєднується з категорією і пошуком
+function setBaseFilter(val) {
+  recipeBaseFilter = recipeBaseFilter === val ? '' : val;
+  gn('chipLight')?.classList.toggle('active', recipeBaseFilter === 'light');
+  gn('chipStrong')?.classList.toggle('active', recipeBaseFilter === 'dark');
+  if (recipeFilter === 'deleted') setRecipeFilter('all'); else renderRecipeList();
+}
 function setRecipeFilter(val) {
   recipeFilter = val;
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.filter-chip:not(.base-chip)').forEach(c => c.classList.remove('active'));
   const chipId = { all: 'chipAll', permanent: 'chipPermanent', elsewhere: 'chipElsewhere', tester: 'chipTester', deleted: 'chipDeleted' }[val] || 'chipAll';
   gn(chipId)?.classList.add('active');
   renderRecipeList();
