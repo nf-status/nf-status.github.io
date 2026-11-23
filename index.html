@@ -4062,14 +4062,8 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 
 // Рядок «Витримка» на картці асортименту
 function agingCardRow(r) {
-  const list = agingBatches(r.id);
-  if (!list.length) return '';
-  const kg = list.reduce((t, p) => t + p.totalKg, 0);
-  const next = list[0];
-  return `<button type="button" class="rlc-aging" onclick="event.stopPropagation();openAgingInfo('${r.id}')" title="Партії на витримці">
-    <span class="rlc-aging-ico"></span>Витримка: <b>${kgFmt(kg)}</b>
-    <span class="rlc-aging-left">· ${list.length > 1 ? 'найближча ' : ''}через <span data-aging-until="${next.agingUntil}">${fmtLeft(new Date(next.agingUntil) - Date.now())}</span></span>
-    <span class="rlc-aging-more">›</span></button>`;
+  const kg = agingBatches(r.id).reduce((t, p) => t + p.totalKg, 0);
+  return kg > 0 ? `<div class="rlc-stock">Витримка: <b>${kgFmt(kg)}</b></div>` : '';
 }
 
 // Вікно з повною інформацією про партії на витримці
