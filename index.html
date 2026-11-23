@@ -746,7 +746,23 @@ tr.rm-wait td{background:#FFFBF3;}
 .rm-sum > div.rm-tile.active{background:var(--surface2);box-shadow:inset 0 -2px 0 var(--text1);}
 .aging-val{color:#9A6A1F;}
 .rm-filter{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--text2);margin:-4px 0 8px;}
-.rm-filter button{border:0;background:transparent;font:inherit;font-size:12px;color:var(--text2);cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+.rm-filter{flex-wrap:wrap;}
+tr.sg-head{cursor:pointer;}
+tr.sg-head:hover td{background:var(--surface2);}
+.sg-arrow{display:inline-block;width:14px;color:var(--text3);transition:transform .15s;}
+tr.sg-head.open .sg-arrow{transform:rotate(90deg);}
+tr.sg-item{display:none;}
+tr.sg-item.open{display:table-row;}
+tr.sg-item td{font-size:12.5px;background:var(--surface2,#fafaf9);}
+tr.sg-item td:first-child{padding-left:28px!important;}
+tr.sg-item.zero td{color:var(--text3);}
+.rlc-approve{border:1px solid #BBDDC4;background:#F0FAF3;color:#1F7A3A;font:inherit;font-size:11px;font-weight:600;border-radius:7px;padding:3px 9px;cursor:pointer;}
+.rlc-approve:hover{background:#E2F5E8;}
+.ui-choice{flex-wrap:wrap;}
+.aging-progress i{background:#E0A030!important;}
+.rm-filter button{border:1px solid var(--border2);background:var(--surface);font:inherit;font-size:12px;font-weight:500;color:var(--text1);cursor:pointer;border-radius:8px;padding:4px 10px;line-height:1.4;}
+.rm-filter button:hover{background:var(--surface2);}
+.rm-filter > span{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .rm-hint{font-size:11.5px;color:var(--text3);margin-top:8px;}
 .aging-actions{display:flex;justify-content:flex-end;margin-top:10px;}
 .log-early{margin-left:6px;border:1px solid #E7CF9F;background:#FFF9EE;color:#7A4B00;border-radius:6px;font:inherit;font-size:11px;padding:1px 7px;cursor:pointer;}
@@ -1965,6 +1981,7 @@ function unlockNow(firstTime) {
     if (SEC.migrated) setTimeout(secFirstRunNotice, 400);
     setTimeout(checkExportReminder, 1500);
     setTimeout(releaseAged, 800);
+    navInit();
   }
 }
 async function secFirstRunNotice() {
@@ -3491,7 +3508,7 @@ function renderRecipeMoves() {
       <div class="rm-tile${rmFilter === 'ship' ? ' active' : ''}" onclick="setRmFilter('ship')"><span>Відвантажено</span><b class="down">${shipped ? "−" : ""}${kg(shipped)}</b></div>
       <div class="rm-tile${rmFilter === 'stock' ? ' active' : ''}" onclick="setRmFilter('stock')"><span>${r.to ? 'На кінець періоду' : 'На складі зараз'}</span><b>${kg(r.to ? closing : current)}</b></div>
     </div>
-    ${rmFilter ? `<div class="rm-filter"><span>${{ made: 'Показано: виробництво та витримка', aging: 'Показано: партії, що зараз на витримці', ship: 'Показано: відвантаження', stock: 'Показано: рух складу (надходження та відвантаження)' }[rmFilter]}${rmFilter === 'aging' && aging.length ? ` · <button type="button" onclick="openAgingInfo('${currentRecipeId}')">Детально / готово достроково</button>` : ''}</span><button type="button" onclick="setRmFilter('')">Показати все ×</button></div>` : ''}
+    ${rmFilter ? `<div class="rm-filter"><span>${{ made: 'Показано: виробництво та витримка', aging: 'Показано: партії, що зараз на витримці', ship: 'Показано: відвантаження', stock: 'Показано: рух складу (надходження та відвантаження)' }[rmFilter]}${rmFilter === 'aging' && aging.length ? ` <button type="button" onclick="openAgingInfo('${currentRecipeId}')">Детально · готово достроково</button>` : ''}</span><button type="button" onclick="setRmFilter('')">Показати все ×</button></div>` : ''}
     ${(() => { const rows = inR.filter(e => !rmFilter || (rmFilter === 'made' ? e.qty > 0 || e.info : rmFilter === 'aging' ? e.aging : rmFilter === 'ship' ? e.qty < 0 : !e.info)); return rows.length; })() ? `<table class="fin-table rm-table">
       <thead><tr><th>Дата</th><th style="text-align:left">Операція</th><th style="text-align:left">Клієнт / примітка</th><th>Кількість</th><th>Залишок</th></tr></thead>
       <tbody>${[...inR].filter(e => !rmFilter || (rmFilter === 'made' ? e.qty > 0 || e.info : rmFilter === 'aging' ? e.aging : rmFilter === 'ship' ? e.qty < 0 : !e.info)).reverse().map(e => `<tr${e.info ? ` class="rm-info${e.aging ? ' rm-wait' : ''}"` : ''}>
@@ -3921,7 +3938,7 @@ function renderRecipeList() {
   const matches = r => !q || [r.name, r.description, ...(r.data.flavors || []).map(f => f.name), r.data.tobBaseType === 'light' ? 'base light' : 'base dark']
     .some(t => String(t || '').toLowerCase().includes(q));
   const baseOk = r => !recipeBaseFilter || (r.data?.tobBaseType === 'light' ? 'light' : 'dark') === recipeBaseFilter;
-  const filtered = (recipeFilter === 'all' ? DB.recipes
+  const filtered = (recipeFilter === 'all' ? DB.recipes.filter(r => (r.category || 'permanent') !== 'tester')
     : DB.recipes.filter(r => (r.category || 'permanent') === recipeFilter)).filter(matches).filter(baseOk);
   const sortedRecipes = [...filtered].sort((a,b) => a.name.localeCompare(b.name,'uk'));
   if (!sortedRecipes.length) {
@@ -3945,7 +3962,7 @@ function renderRecipeList() {
     return `<div class="rlc" onclick="openRecipeFromList('${r.id}')">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
         <div class="rlc-catbadge ${cat === 'elsewhere' ? 'elsw' : cat === 'tester' ? 'tstr' : 'perm'}" style="margin-bottom:0">${catLabel}</div>
-        <button class="rlc-del-btn" data-delete-id="${r.id}" onclick="event.stopPropagation();deleteRecipeFromList('${r.id}')" title="Видалити рецепт">×</button>
+        <span style="display:flex;align-items:center;gap:6px">${cat === 'tester' ? `<button type="button" class="rlc-approve" onclick="event.stopPropagation();approveTester('${r.id}')">✓ Затвердити</button>` : ''}<button class="rlc-del-btn" data-delete-id="${r.id}" onclick="event.stopPropagation();deleteRecipeFromList('${r.id}')" title="Видалити рецепт">×</button></span>
       </div>
       <div class="rlc-head">
         <div class="rlc-name">${r.name.replace(/^(TK|ТК)\s+/i,'')}</div>
@@ -4151,11 +4168,13 @@ function setRecipeSearch(q) { recipeQuery = String(q || '').trim().toLowerCase()
 // Light / Strong: повторне натискання знімає фільтр; поєднується з категорією і пошуком
 function setBaseFilter(val) {
   recipeBaseFilter = recipeBaseFilter === val ? '' : val;
+  navPushSoon();
   gn('chipLight')?.classList.toggle('active', recipeBaseFilter === 'light');
   gn('chipStrong')?.classList.toggle('active', recipeBaseFilter === 'dark');
   if (recipeFilter === 'deleted') setRecipeFilter('all'); else renderRecipeList();
 }
 function setRecipeFilter(val) {
+  setTimeout(navPushSoon, 0);
   recipeFilter = val;
   document.querySelectorAll('.filter-chip:not(.base-chip)').forEach(c => c.classList.remove('active'));
   const chipId = { all: 'chipAll', permanent: 'chipPermanent', elsewhere: 'chipElsewhere', tester: 'chipTester', deleted: 'chipDeleted' }[val] || 'chipAll';
@@ -4168,6 +4187,7 @@ function openRecipeFromList(id) {
   loadRecipe(id);
   window.scrollTo(0, 0);
   requestAnimationFrame(() => window.scrollTo(0, 0));
+  navPushSoon();
 }
 
 function newRecipeFromList() {
@@ -4738,17 +4758,26 @@ function reportCash() {
 
 function reportStock() {
   const st = computeStock();
+  // готова продукція на витримці – окремою групою
+  const agingItems = Object.values(agingBatches().reduce((m, p) => {
+    const x = m[p.recipeId] = m[p.recipeId] || { name: cleanName(p.recipeName), qty: 0, unit: 'кг', value: 0, cpk: 0 };
+    x.qty += p.totalKg; x.value += p.totalKg * (p.costPerKg || 0); x.cpk = x.qty ? x.value / x.qty : 0; return m;
+  }, {}));
+  const groups = agingItems.length ? [...st.groups, { group: 'Готова продукція на витримці', items: agingItems, value: agingItems.reduce((t, i) => t + i.value, 0) }] : st.groups;
+  const total = groups.reduce((t, g) => t + g.value, 0);
   const low = [];
   st.groups.forEach(g => g.items.forEach(i => { if (i.min > 0 && i.qty < i.min) low.push({ ...i, group: g.group }); }));
   return `
     <div class="rep-note" style="margin:0 0 12px">Стан на ${new Date().toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'})}, не залежить від обраного періоду.</div>
     <table class="fin-table">
       <thead><tr><th>Група</th><th>Позицій у наявності</th><th>Вартість</th><th>Частка</th></tr></thead>
-      <tbody>${st.groups.map(g => `<tr>
-        <td>${g.group}</td><td class="muted">${g.items.filter(i => i.qty > 0.0005).length} з ${g.items.length}</td><td>${fmtMoney(g.value)}</td>
-        <td><div class="share"><span class="bar"><i style="width:${st.total > 0 ? g.value/st.total*100 : 0}%"></i></span>${fmtPct(st.total > 0 ? g.value/st.total : 0)}</div></td>
-      </tr>`).join('')}
-      <tr class="tot hl"><td>Разом запаси</td><td></td><td>${fmtMoney(st.total)}</td><td></td></tr>
+      <tbody class="sg-body">${groups.map((g, gi) => `<tr class="sg-head" data-sgh="${gi}" onclick="toggleStockGroup(${gi})">
+        <td><span class="sg-arrow">›</span>${g.group}</td><td class="muted">${g.items.filter(i => i.qty > 0.0005).length} з ${g.items.length}</td><td>${fmtMoney(g.value)}</td>
+        <td><div class="share"><span class="bar"><i style="width:${total > 0 ? g.value/total*100 : 0}%"></i></span>${fmtPct(total > 0 ? g.value/total : 0)}</div></td>
+      </tr>${[...g.items].sort((a, b) => ABC.compare(a.name, b.name)).map(i => `<tr class="sg-item${i.qty > 0.0005 ? '' : ' zero'}" data-sg="${gi}">
+        <td>${escHtml(i.name)}${i.note ? `<span class="muted"> · ${i.note}</span>` : ''}</td><td class="muted">${fmtQty(i.qty, i.unit)} ${i.unit}</td><td>${fmtMoney(i.value)}</td><td class="muted">${i.cpk ? fmtMoney(i.cpk) + '/' + (i.unit === 'г' ? 'кг' : i.unit) : '–'}</td>
+      </tr>`).join('')}`).join('')}
+      <tr class="tot hl"><td>Разом запаси</td><td></td><td>${fmtMoney(total)}</td><td></td></tr>
       </tbody>
     </table>
     <div class="rep-sec-title">Найбільші позиції за вартістю</div>
@@ -4891,6 +4920,155 @@ function movesSelectHtml() {
   </select></div>`;
 }
 
+
+// ══ Діалог вибору з кількох варіантів ══
+function uiChoice(msg, options) {
+  return new Promise(resolve => {
+    const wrap = document.createElement('div');
+    wrap.className = 'ui-dlg-wrap';
+    wrap.innerHTML = `<div class="ui-dlg" role="dialog" aria-modal="true"><div class="ui-dlg-msg"></div>
+      <div class="ui-dlg-btns ui-choice">${options.map((o, i) => `<button type="button" class="ops-btn ${o.primary ? 'primary' : 'outline'}" data-i="${i}">${escHtml(o.label)}</button>`).join('')}
+      <button type="button" class="ops-btn outline" data-i="-1">Скасувати</button></div></div>`;
+    wrap.querySelector('.ui-dlg-msg').textContent = msg;
+    const done = v => { document.removeEventListener('keydown', onKey, true); wrap.remove(); resolve(v); };
+    const onKey = e => { if (e.key === 'Escape') { e.preventDefault(); done(null); } };
+    wrap.addEventListener('click', e => {
+      const b = e.target.closest('[data-i]');
+      if (b) done(+b.dataset.i < 0 ? null : options[+b.dataset.i].value);
+      else if (e.target === wrap) done(null);
+    });
+    document.addEventListener('keydown', onKey, true);
+    document.body.appendChild(wrap);
+  });
+}
+
+// ══ Тестери: затвердження і переведення в основний асортимент ══
+async function approveTester(id) {
+  const r = DB.recipes.find(x => x.id === id);
+  if (!r) return;
+  const cat = await uiChoice(`Затвердити тестер «${cleanName(r.name)}»?\n\nОберіть категорію – після цього смак з’явиться в асортименті.`,
+    [{ label: 'Постійні смаки', value: 'permanent', primary: true }, { label: 'Elsewhere', value: 'elsewhere' }]);
+  if (!cat) return;
+  r.category = cat;
+  r.approvedAt = new Date().toISOString();
+  saveDB();
+  renderRecipeList();
+  showToast(`«${cleanName(r.name)}» затверджено → ${cat === 'elsewhere' ? 'Elsewhere' : 'Постійні смаки'} ✓`);
+}
+
+// ══ Навігація «назад / вперед»: історія переходів між вкладками, розділами, звітами й рецептами ══
+let navApplying = false, navTimer = null;
+function navCurrent() {
+  const tab = document.querySelector('.tab-btn.active')?.dataset.tab || 'recipes';
+  const st = { hk: 1, tab };
+  if (tab === 'sklad') st.sub = document.querySelector('.sklad-sub-btn.active')?.dataset.page || 'zalishky';
+  if (tab === 'reports') st.rep = currentReport;
+  if (tab === 'calc' && currentRecipeId) st.rid = currentRecipeId;
+  if (tab === 'recipes') { st.flt = recipeFilter; st.base = recipeBaseFilter; }
+  return st;
+}
+function navSame(a, b) { return a && b && ['tab', 'sub', 'rep', 'rid', 'flt', 'base'].every(k => (a[k] || '') === (b[k] || '')); }
+function navPushSoon() {
+  if (navApplying || (typeof SEC !== 'undefined' && !SEC.ready)) return;
+  clearTimeout(navTimer);
+  navTimer = setTimeout(() => {
+    const st = navCurrent();
+    if (!navSame(st, history.state)) history.pushState(st, '');
+  }, 0);
+}
+function navApply(st) {
+  navApplying = true;
+  try {
+    if (st.tab === 'calc' && st.rid && DB.recipes.some(r => r.id === st.rid)) { switchTab('calc'); loadRecipe(st.rid); window.scrollTo(0, 0); }
+    else if (st.tab === 'calc') switchTab('recipes');
+    else {
+      switchTab(st.tab);
+      if (st.tab === 'sklad' && st.sub) switchSkladPage(st.sub);
+      if (st.tab === 'reports' && st.rep) switchReport(st.rep);
+      if (st.tab === 'recipes') {
+        if (st.flt && st.flt !== recipeFilter) setRecipeFilter(st.flt);
+        if ((st.base || '') !== recipeBaseFilter) setBaseFilter(st.base || recipeBaseFilter);
+      }
+    }
+  } finally { setTimeout(() => { navApplying = false; }, 0); }
+}
+window.addEventListener('popstate', e => {
+  if (!e.state || !e.state.hk) return;
+  if (isLocked()) { history.pushState(e.state, ''); return; }
+  document.querySelectorAll('.ui-dlg-wrap').forEach(d => d.remove());
+  navApply(e.state);
+});
+function navInit() { try { history.replaceState(navCurrent(), ''); } catch (e) {} }
+
+// Свайп на сенсорному екрані: вліво – назад, вправо – вперед
+(function () {
+  let sx = 0, sy = 0, st = 0, skip = true;
+  const noSwipe = el => el.closest('input,textarea,select,.ss-pop,.ss,.tab-nav,.filter-chips,.sklad-sub,.fin-table,.rm-table,.ui-dlg-wrap,canvas,.pf-pop,#lockScreen,#decoyScreen,.stages-top input');
+  document.addEventListener('touchstart', e => {
+    if (e.touches.length !== 1) { skip = true; return; }
+    const t = e.touches[0];
+    sx = t.clientX; sy = t.clientY; st = Date.now();
+    skip = isLocked() || sx < 24 || sx > window.innerWidth - 24 || !!noSwipe(e.target);
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (skip) return;
+    const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+    if (Date.now() - st > 700 || Math.abs(dx) < 80 || Math.abs(dx) < Math.abs(dy) * 2) return;
+    if (dx < 0) history.back(); else history.forward();
+  }, { passive: true });
+})();
+
+// ══ Звіт «Витримка»: увесь тютюн, що зараз витримується ══
+function reportAging() {
+  const list = agingBatches();
+  const now = Date.now();
+  const total = list.reduce((s, p) => s + p.totalKg, 0);
+  const value = list.reduce((s, p) => s + p.totalKg * (p.costPerKg || 0), 0);
+  const byRec = {};
+  list.forEach(p => { (byRec[p.recipeId] = byRec[p.recipeId] || { name: cleanName(p.recipeName), kg: 0, n: 0, next: p.agingUntil }).kg += p.totalKg; byRec[p.recipeId].n++; });
+  const recRows = Object.entries(byRec).map(([id, v]) => ({ id, ...v })).sort((a, b) => ABC.compare(a.name, b.name));
+  const r = repRange();
+  const done = (DB.productions || []).filter(p => p.agingUntil && p.agingDays > 0 && p.released !== false && inRange(r, p.agingUntil))
+    .sort((a, b) => b.agingUntil.localeCompare(a.agingUntil));
+  return `
+    <div class="rep-note" style="margin:0 0 12px">Стан зараз. Партії автоматично переходять на склад після завершення витримки.</div>
+    <div class="rm-sum" style="margin-bottom:16px">
+      <div><span>На витримці</span><b class="aging-val">${kgFmt(total)}</b></div>
+      <div><span>Партій</span><b>${list.length}</b></div>
+      <div><span>Собівартість</span><b>${fmtMoney(value)}</b></div>
+      <div><span>Найближча готовність</span><b>${list.length ? fmtLeft(new Date(list[0].agingUntil) - now) : '–'}</b></div>
+    </div>
+    ${list.length ? `<table class="fin-table aging-table">
+      <thead><tr><th style="text-align:left">Продукт</th><th>Кількість</th><th>Виготовлено</th><th>Готово</th><th>Залишилось</th><th class="no-pdf"></th></tr></thead>
+      <tbody>${list.map(p => {
+        const start = new Date(p.agingStart || p.date).getTime(), end = new Date(p.agingUntil).getTime();
+        const pct = Math.min(100, Math.max(0, (now - start) / Math.max(1, end - start) * 100));
+        return `<tr>
+          <td style="text-align:left;white-space:normal">${escHtml(cleanName(p.recipeName))}${p.note ? `<div class="muted" style="font-size:11px">${escHtml(p.note)}</div>` : ''}</td>
+          <td class="aging-val">${kgFmt(p.totalKg)}</td>
+          <td class="muted">${fmtDT(p.agingStart || p.date)}</td>
+          <td>${fmtDT(p.agingUntil)}</td>
+          <td><div class="share"><span class="bar aging-progress"><i style="width:${pct.toFixed(0)}%"></i></span>${fmtLeft(end - now)}</div></td>
+          <td class="no-pdf"><button type="button" class="ops-btn outline sm" onclick="releaseBatchNow('${p.id}').then(()=>switchReport('aging'))">Готово достроково</button></td>
+        </tr>`; }).join('')}
+      <tr class="tot"><td>Разом</td><td class="aging-val">${kgFmt(total)}</td><td></td><td></td><td></td><td class="no-pdf"></td></tr>
+      </tbody></table>
+      <div class="rep-sec-title">За продуктами</div>
+      <table class="fin-table"><thead><tr><th style="text-align:left">Продукт</th><th>Партій</th><th>На витримці</th><th>Найближча готовність</th></tr></thead>
+      <tbody>${recRows.map(x => `<tr><td style="text-align:left">${escHtml(x.name)}</td><td class="muted">${x.n}</td><td class="aging-val">${kgFmt(x.kg)}</td><td>${fmtDT(x.next)} · ${fmtLeft(new Date(x.next) - now)}</td></tr>`).join('')}</tbody></table>`
+    : '<div class="log-empty">Зараз на витримці нічого немає</div>'}
+    <div class="rep-sec-title">Завершили витримку за обраний період</div>
+    ${done.length ? `<table class="fin-table"><thead><tr><th style="text-align:left">Продукт</th><th>Кількість</th><th>Виготовлено</th><th>Готово</th><th style="text-align:left">Як</th></tr></thead>
+      <tbody>${done.map(p => `<tr><td style="text-align:left">${escHtml(cleanName(p.recipeName))}</td><td>${kgFmt(p.totalKg)}</td><td class="muted">${fmtDT(p.agingStart || p.date)}</td><td>${fmtDT(p.agingUntil)}</td><td class="muted" style="text-align:left">${p.earlyRelease ? 'достроково (план ' + fmtDT(p.plannedUntil) + ')' : 'за терміном'}</td></tr>`).join('')}</tbody></table>`
+    : '<div class="log-empty">За цей період партій не завершувалось</div>'}`;
+}
+
+// Розгортання групи у звіті «Оцінка запасів»
+function toggleStockGroup(i) {
+  document.querySelectorAll(`#repBody tr[data-sg="${i}"]`).forEach(tr => tr.classList.toggle('open'));
+  document.querySelector(`#repBody tr[data-sgh="${i}"]`)?.classList.toggle('open');
+}
+
 const REPORTS = [
   { id: 'pnl',     title: 'Звіт про прибутки і збитки',   fn: reportPnL },
   { id: 'abc',     title: 'ABC-аналіз асортименту',       fn: reportABC },
@@ -4899,6 +5077,7 @@ const REPORTS = [
   { id: 'stock',   title: 'Оцінка запасів',               fn: reportStock },
   { id: 'opex',    title: 'Реєстр операційних витрат',    fn: reportOpexRegister },
   { id: 'moves',   title: 'Рух позиції',                  fn: reportMoves },
+  { id: 'aging',   title: 'Витримка',                     fn: reportAging },
 ];
 let currentReport = 'pnl';
 
@@ -4910,11 +5089,13 @@ function switchReport(id) {
     if (body) body.style.display = 'none';
     if (opex) opex.style.display = '';
     renderOpexLog();
+    navPushSoon();
     return;
   }
   if (opex) opex.style.display = 'none';
   const rep = REPORTS.find(x => x.id === id);
   if (body && rep) { body.style.display = ''; body.innerHTML = `<div class="rep-body-title">${rep.title}</div>` + (id === 'moves' ? movesSelectHtml() : '') + rep.fn(); }
+  navPushSoon();
 }
 
 // Короткі підсумки для карток-навігації (по одному ключовому числу на звіт)
@@ -4974,6 +5155,9 @@ function renderReportCards() {
       extra: repDelta(p.opex, pp?.opex, true) },
     { id: 'moves', lbl: 'Рух позиції', val: movesKey === '__all__' ? 'Всі позиції' : movesKey ? escHtml(movesItemInfo(movesKey).name) : 'Обрати',
       sub: movesKey === '__all__' ? (() => { const n = movesAllRows().filter(x => x.m.inR.length).length; return n ? `${n} ${plural(n,'позиція','позиції','позицій')} з рухом` : 'руху немає'; })() : movesKey ? (() => { const m = computeMoves(movesKey), u = movesItemInfo(movesKey).unit; return `+${movesQty(m.inQ, u)} · −${movesQty(m.outQ, u)}`; })() : 'будь-яка позиція складу', cls: movesKey ? 'rc-name' : 'muted-val' },
+    (() => { const l = agingBatches(), kg = l.reduce((t, p) => t + p.totalKg, 0);
+      return { id: 'aging', lbl: 'Витримка', val: kgFmt(kg), cls: kg ? 'aging-val' : 'muted-val',
+        sub: l.length ? `${l.length} ${plural(l.length, 'партія', 'партії', 'партій')} · найближча через ${fmtLeft(new Date(l[0].agingUntil) - Date.now())}` : 'нічого не витримується' }; })(),
   ];
   el.innerHTML = cards.map(c => `
     <button type="button" class="rep-card2${c.id === currentReport ? ' active' : ''}" data-rep="${c.id}" onclick="switchReport('${c.id}')">
@@ -5010,6 +5194,8 @@ const PDF_CSS = `
   @page{size:A4;margin:16mm 14mm}
   *{box-sizing:border-box;margin:0;padding:0}
   .mv-back{display:none}
+  .no-pdf{display:none}
+  .sg-arrow{display:none}
   tr.grp-row td{text-align:left;font-size:8pt;font-weight:700;text-transform:uppercase;color:#71717A;padding-top:10px}
   tr.mv-row.idle td{color:#A1A1AA}
   body{font-family:Inter,'Segoe UI',Roboto,Arial,sans-serif;color:#18181B;font-size:10.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -5267,6 +5453,7 @@ function switchTab(name) {
   const hra = gn('hdrReportActions'); if (hra) hra.style.display = name === 'reports' ? 'flex' : 'none';
   if (name === 'reports') renderReports();
   if (name === 'settings') renderSheetsStatus();
+  navPushSoon();
 }
 
 // ── Enter key for expense ──────────────────────────────────
@@ -5889,6 +6076,7 @@ function filterAuditGrid(query) {
 }
 
 function switchSkladPage(page) {
+  navPushSoon();
   document.querySelectorAll('.sklad-subpage').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sklad-sub-btn').forEach(b => b.classList.remove('active'));
   const pageEl = gn('sklPage-' + page);
