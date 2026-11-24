@@ -754,6 +754,18 @@ tr.rm-wait td{background:#FFFBF3;}
 .fx-pnl th:first-child{width:55%;}
 .fx-stock th:first-child{width:40%;}
 .fx-cash th:first-child{width:30%;}
+.fx-aging th:first-child{width:32%;}
+.fx-aging th:nth-child(2){width:16%;}
+.mob-only{display:none!important;}
+@media (max-width:640px){
+  .fx-aging th:nth-child(2),.fx-aging td:nth-child(2),.fx-aging th:nth-child(4),.fx-aging td:nth-child(4){display:none;}
+  .fx-aging th:first-child{width:44%;}
+  .fx-aging td,.fx-aging th{font-size:12px;padding-left:4px!important;padding-right:4px!important;}
+  .fx-aging .share .bar{display:none;}
+  .fx-aging td{white-space:nowrap;}
+  .fx-aging .mob-only{display:inline-block!important;margin-top:6px;}
+}
+.fx-aging tr.sg-item .ops-btn{white-space:nowrap;font-size:11px;padding:3px 8px;}
 .sg-arrow{transform-origin:50% 50%;text-align:center;}
 tr.sg-head,tr.pnl-x,tr.cm-head{cursor:pointer;}
 tr.cm-head:hover td{background:var(--surface2);}
@@ -5129,24 +5141,26 @@ function reportAging() {
       <div><span>Собівартість</span><b>${fmtMoney(value)}</b></div>
       <div><span>Найближча готовність</span><b>${list.length ? fmtLeft(new Date(list[0].agingUntil) - now) : '–'}</b></div>
     </div>
-    ${list.length ? `<table class="fin-table aging-table">
-      <thead><tr><th style="text-align:left">Продукт</th><th>Кількість</th><th>Виготовлено</th><th>Готово</th><th>Залишилось</th><th class="no-pdf"></th></tr></thead>
-      <tbody>${list.map(p => {
-        const start = new Date(p.agingStart || p.date).getTime(), end = new Date(p.agingUntil).getTime();
-        const pct = Math.min(100, Math.max(0, (now - start) / Math.max(1, end - start) * 100));
-        return `<tr>
-          <td style="text-align:left;white-space:normal">${escHtml(cleanName(p.recipeName))}${p.note ? `<div class="muted" style="font-size:11px">${escHtml(p.note)}</div>` : ''}</td>
+    ${list.length ? `<table class="fin-table aging-table fx fx-aging">
+      <thead><tr><th>Продукт</th><th>Партій</th><th>Кількість</th><th>Найближча готовність</th><th>Залишилось</th></tr></thead>
+      <tbody>${recRows.map((x, gi) => {
+        const batches = list.filter(p => p.recipeId === x.id);
+        const nextEnd = new Date(x.next).getTime(), first = batches[0];
+        const pctOf = p => { const st = new Date(p.agingStart || p.date).getTime(), en = new Date(p.agingUntil).getTime(); return Math.min(100, Math.max(0, (now - st) / Math.max(1, en - st) * 100)); };
+        return `<tr class="sg-head" data-sgh="ag${gi}" onclick="toggleStockGroup('ag${gi}')">
+          <td><span class="sg-arrow">›</span>${escHtml(x.name)}</td><td class="muted">${x.n}</td><td class="aging-val">${kgFmt(x.kg)}</td>
+          <td>${fmtDT(x.next)}</td>
+          <td><div class="share"><span class="bar aging-progress"><i style="width:${pctOf(first).toFixed(0)}%"></i></span>${fmtLeft(nextEnd - now)}</div></td></tr>
+        ${batches.map(p => `<tr class="sg-item" data-sg="ag${gi}">
+          <td>Виготовлено ${fmtDT(p.agingStart || p.date)} · ${p.agingDays} дн${p.note ? `<div class="muted" style="font-size:11px">${escHtml(p.note)}</div>` : ''}<button type="button" class="ops-btn outline sm mob-only no-pdf" onclick="event.stopPropagation();releaseBatchNow('${p.id}').then(()=>switchReport('aging'))">Готово достроково</button></td>
+          <td class="no-pdf"><button type="button" class="ops-btn outline sm" onclick="event.stopPropagation();releaseBatchNow('${p.id}').then(()=>switchReport('aging'))">Готово достроково</button></td>
           <td class="aging-val">${kgFmt(p.totalKg)}</td>
-          <td class="muted">${fmtDT(p.agingStart || p.date)}</td>
           <td>${fmtDT(p.agingUntil)}</td>
-          <td><div class="share"><span class="bar aging-progress"><i style="width:${pct.toFixed(0)}%"></i></span>${fmtLeft(end - now)}</div></td>
-          <td class="no-pdf"><button type="button" class="ops-btn outline sm" onclick="releaseBatchNow('${p.id}').then(()=>switchReport('aging'))">Готово достроково</button></td>
-        </tr>`; }).join('')}
-      <tr class="tot"><td>Разом</td><td class="aging-val">${kgFmt(total)}</td><td></td><td></td><td></td><td class="no-pdf"></td></tr>
+          <td><div class="share"><span class="bar aging-progress"><i style="width:${pctOf(p).toFixed(0)}%"></i></span>${fmtLeft(new Date(p.agingUntil) - now)}</div></td></tr>`).join('')}`;
+      }).join('')}
+      <tr class="tot"><td>Разом</td><td>${list.length}</td><td class="aging-val">${kgFmt(total)}</td><td></td><td></td></tr>
       </tbody></table>
-      <div class="rep-sec-title">За продуктами</div>
-      <table class="fin-table"><thead><tr><th style="text-align:left">Продукт</th><th>Партій</th><th>На витримці</th><th>Найближча готовність</th></tr></thead>
-      <tbody>${recRows.map(x => `<tr><td style="text-align:left">${escHtml(x.name)}</td><td class="muted">${x.n}</td><td class="aging-val">${kgFmt(x.kg)}</td><td>${fmtDT(x.next)} · ${fmtLeft(new Date(x.next) - now)}</td></tr>`).join('')}</tbody></table>`
+      <div class="rep-note">Натисніть на продукт, щоб побачити його партії та позначити готовність достроково.</div>`
     : '<div class="log-empty">Зараз на витримці нічого немає</div>'}
     <div class="rep-sec-title">Завершили витримку за обраний період</div>
     ${done.length ? `<table class="fin-table"><thead><tr><th style="text-align:left">Продукт</th><th>Кількість</th><th>Виготовлено</th><th>Готово</th><th style="text-align:left">Як</th></tr></thead>
