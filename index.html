@@ -1263,8 +1263,9 @@ h1,h2,h3{font-weight:600;}
 .tk-fab:active{transform:scale(.94);}
 
 @media (min-width:641px){
-  .app-header > #hdrReportActions.in-hdr{margin:0 max(0px, calc(50% - 521px)) 0 auto!important;flex-wrap:nowrap;}
-  .app-header > #hdrReportActions.in-hdr #repPosPick{width:234px!important;flex:0 0 234px!important;max-width:none!important;}
+  .app-header > #hdrReportActions.in-hdr{margin:0 max(4px, calc(50% - 521px)) 0 auto!important;flex-wrap:nowrap;flex:0 1 auto;min-width:0;}
+  .app-header > #hdrReportActions.in-hdr #repPosPick{width:234px!important;flex:0 1 234px!important;min-width:60px!important;max-width:none!important;}
+  .app-header > #hdrReportActions.in-hdr #repPosPick .ss,.app-header > #hdrReportActions.in-hdr #repPosPick .ss-btn{min-width:0!important;width:100%!important;}
   .app-header .tab-nav{flex:0 0 auto!important;}
 }
 </style>
@@ -6066,7 +6067,7 @@ function printReportFallback(doc) {
 function placeRepToolbar() {
   const tb = gn('hdrReportActions'), hdr = document.querySelector('.app-header'), tab = gn('tab-reports');
   if (!tb || !hdr || !tab) return;
-  const desk = matchMedia('(min-width:641px)').matches;
+  const desk = matchMedia('(min-width:900px)').matches;
   if (desk && tb.parentNode !== hdr) hdr.appendChild(tb);
   else if (!desk && tb.parentNode === hdr) tab.insertBefore(tb, tab.firstChild);
   tb.classList.toggle('in-hdr', desk);
