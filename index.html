@@ -1215,9 +1215,9 @@ h1,h2,h3{font-weight:600;}
 .rep-card2{min-height:96px!important;padding:13px 16px!important;}
 .rc-val{font-size:19px!important;}
 @media (max-width:640px){
-  .rep-cards{display:flex!important;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:0 -12px 12px!important;padding:2px 12px;}
+  .rep-cards{display:flex!important;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:3px;scrollbar-width:none;margin:0 0 10px!important;padding:3px!important;}
   .rep-cards::-webkit-scrollbar{display:none;}
-  .rep-card2{flex:0 0 42%;scroll-snap-align:start;min-height:92px!important;}
+  .rep-card2{flex:0 0 47%;scroll-snap-align:start;min-height:92px!important;}
 }
 /* Фінмодель – загальний фон, білі плитки, шрифти як у звітах */
 #tab-fin .kpi-wrap,#tab-fin .section:has(.wc-grid){background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;}
@@ -3226,7 +3226,7 @@ function applyTKMode() {
   const lbl = gn('tkModeLbl'), txt = tkEditMode ? 'Редагування – зміни зберігаються одразу' : 'Перегляд';
   if (lbl && lbl.textContent !== txt) lbl.textContent = txt;
   const fab = gn('fabAdd');
-  if (fab && tab.classList.contains('active')) fab.style.display = tkEditMode ? 'flex' : 'none';
+  if (fab && tab.classList.contains('active')) fab.style.display = 'flex';
 }
 // Натиск на комірку техкарти в режимі перегляду – одразу вмикає редагування цього поля
 document.addEventListener('click', e => {
@@ -3485,6 +3485,7 @@ function renderCustomTK() {
 // Кнопка «+» у кутку: новий рецепт в асортименті, нова техкарта в техкартах
 function onFabClick() {
   if (gn('tab-tk')?.classList.contains('active')) {
+    if (!tkEditMode) startEditTK();
     addCustomTK();
     // нова картка стоїть за абеткою, тож шукаємо її за найбільшим id
     const newest = Math.max(...DB.customTK.map(c => c.id));
@@ -6057,7 +6058,7 @@ function switchTab(name) {
   document.querySelector(`.tab-btn[data-tab="${name}"]`)?.classList.add('active');
   const fab = gn('fabAdd');
   if (fab) {
-    fab.style.display = (name === 'recipes' || (name === 'tk' && tkEditMode)) ? 'flex' : 'none';
+    fab.style.display = (name === 'recipes' || name === 'tk') ? 'flex' : 'none';
     fab.title = name === 'tk' ? 'Нова техкарта' : 'Новий рецепт';
   }
   if (name === 'recipes') renderRecipeList();
