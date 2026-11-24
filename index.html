@@ -606,7 +606,14 @@ input[type=number]::-webkit-inner-spin-button{opacity:.35;}
 .pf{position:relative;text-transform:none;letter-spacing:0;font-weight:400;margin-left:auto;}
 .pf-btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border2);background:var(--surface);border-radius:9px;padding:6px 11px;font-family:inherit;font-size:12.5px;font-weight:500;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .15s;}
 .pf-btn:hover{color:var(--text1);border-color:var(--text3);}
-.pf.active .pf-btn{color:var(--text1);border-color:var(--text1);}
+.pf.active .pf-btn{color:#fff;background:var(--text1);border-color:var(--text1);}
+.pf-btn{width:38px;height:38px;padding:0!important;justify-content:center;border-radius:10px;}
+.pf-btn .pf-lbl{display:none;}
+.rep-period{font-size:12px;font-weight:400;color:var(--text3);margin-left:10px;}
+.rep-period:empty{display:none;}
+.focus-note{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--text2);background:var(--surface2);border-radius:10px;padding:8px 12px;margin:-2px 0 14px;}
+.focus-note b{color:var(--text1);}
+.focus-note button{margin-left:auto;border:1px solid var(--border2);background:var(--surface);border-radius:8px;font:inherit;font-size:12px;font-weight:500;padding:3px 10px;cursor:pointer;color:var(--text1);}
 .pf.open .pf-btn{box-shadow:0 0 0 3px rgba(24,24,27,.07);}
 .pf-pop{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:300;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.14);padding:12px;width:300px;}
 .pf.open .pf-pop{display:block;}
@@ -675,7 +682,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:.35;}
 /* ── Картки-навігація звітів ── */
 .rep-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px;margin-bottom:16px;}
 .rep-card2{display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;font-family:inherit;color:var(--text1);cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .15s;min-width:0;}
-.rep-card2:hover{border-color:var(--border2);box-shadow:0 6px 18px rgba(0,0,0,.05);transform:translateY(-1px);}
+.rep-card2:hover{border-color:var(--border2);box-shadow:0 6px 18px rgba(0,0,0,.05);}
 .rep-card2.active{border-color:var(--text1);}
 .rc-lbl{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--text2);font-weight:500;}
 .rc-lbl svg{color:var(--text3);transition:transform .15s,color .15s;}
@@ -747,6 +754,11 @@ tr.rm-wait td{background:#FFFBF3;}
 .rm-sum > div.rm-tile.active{background:var(--surface2);box-shadow:inset 0 -2px 0 var(--text1);}
 .aging-val{color:#9A6A1F;}
 .rm-filter{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--text2);margin:-4px 0 8px;}
+.rep-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:14px;}
+.rep-tb-search{flex:1 1 260px;min-width:0;}
+.rep-tb-search .ss,.rep-tb-search select{width:100%;}
+.rep-tb-right{display:flex;align-items:center;gap:8px;flex:0 0 auto;margin-left:auto;}
+@media (max-width:640px){.rep-tb-search{flex:1 1 0;}}
 .rm-filter{flex-wrap:wrap;}
 /* Таблиці з розгортанням: фіксована ширина колонок, щоб вони не «стрибали» */
 /* місце під смугу прокрутки завжди зарезервоване – сторінка не «смикається», коли стає довшою */
@@ -781,7 +793,7 @@ html{scrollbar-gutter:stable;}
 .sg-arrow{transform-origin:50% 50%;text-align:center;}
 tr.sg-head,tr.pnl-x,tr.cm-head{cursor:pointer;}
 tr.cm-head:hover td{background:var(--surface2);}
-tr.cm-head.open .sg-arrow{transform:rotate(90deg);}
+tr.cm-head.open .sg-arrow svg{transform:rotate(90deg);}
 .cm-cnt{display:inline-block;font-size:10.5px;font-weight:600;color:var(--text3);background:var(--surface2);border-radius:8px;padding:0 6px;margin-left:4px;text-transform:none;vertical-align:1px;}
 tr.cm-op{display:none;}
 tr.cm-op.open{display:table-row;}
@@ -797,15 +809,16 @@ tr.cm-op td b{font-weight:600;color:var(--text1);}
   .cash-table td:nth-child(5){white-space:nowrap;vertical-align:top;}
 }
 tr.pnl-x:hover td{background:var(--surface2);}
-tr.pnl-x.open .sg-arrow{transform:rotate(90deg);}
+tr.pnl-x.open .sg-arrow svg{transform:rotate(90deg);}
 tr.pnl-det{display:none;}
 tr.pnl-det.open{display:table-row;}
 tr.pnl-det td{font-size:12.5px;background:var(--surface2,#fafaf9);}
 tr.pnl-det td:first-child{padding-left:28px!important;}
 .pd-date{color:var(--text3);margin-right:10px;font-variant-numeric:tabular-nums;}
 tr.sg-head:hover td{background:var(--surface2);}
-.sg-arrow{display:inline-block;width:14px;color:var(--text3);transition:transform .15s;}
-tr.sg-head.open .sg-arrow{transform:rotate(90deg);}
+.sg-arrow{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;margin-right:4px;vertical-align:-2px;color:var(--text3);}
+.sg-arrow svg{display:block;transition:transform .15s;}
+tr.sg-head.open .sg-arrow svg{transform:rotate(90deg);}
 tr.sg-item{display:none;}
 tr.sg-item.open{display:table-row;}
 tr.sg-item td{font-size:12.5px;background:var(--surface2,#fafaf9);}
@@ -983,11 +996,11 @@ document.documentElement.classList.add('locked', 'decoy');
     <div class="lock-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
     <div class="lock-title">Hookah</div>
     <div class="lock-sub">Введіть пароль для входу</div>
-    <input type="password" id="lockPin" class="lock-inp" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="64" placeholder="Пароль"
+    <input type="password" id="lockPin" onclick="bioFromField(event)" class="lock-inp" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="64" placeholder="Пароль"
       oninput="lockInput(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();unlockAttempt();}">
     <div class="lock-err" id="lockErr"></div>
     <button type="button" class="full-action-btn" onclick="unlockAttempt()">Увійти</button>
-    <button type="button" class="lock-bio" id="lockBioBtn" style="display:none" onclick="bioUnlock()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3H5a2 2 0 0 0-2 2v2M17 3h2a2 2 0 0 1 2 2v2M7 21H5a2 2 0 0 1-2-2v-2M17 21h2a2 2 0 0 0 2-2v-2"/><path d="M9 9v1M15 9v1M12 9v4h-1M9 16c1.7 1.3 4.3 1.3 6 0"/></svg>Face ID / Touch ID</button>
+    <button type="button" class="lock-bio" id="lockBioBtn" style="display:none!important" onclick="bioUnlock()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3H5a2 2 0 0 0-2 2v2M17 3h2a2 2 0 0 1 2 2v2M7 21H5a2 2 0 0 1-2-2v-2M17 21h2a2 2 0 0 0 2-2v-2"/><path d="M9 9v1M15 9v1M12 9v4h-1M9 16c1.7 1.3 4.3 1.3 6 0"/></svg>Face ID / Touch ID</button>
   </div>
 </div>
 
@@ -1002,18 +1015,7 @@ document.documentElement.classList.add('locked', 'decoy');
     <button class="tab-btn" data-tab="fin" onclick="switchTab('fin')">Фінансова модель</button>
     <button class="tab-btn tab-icon" data-tab="settings" onclick="switchTab('settings')" title="Налаштування" aria-label="Налаштування">⚙<span id="syncDot" class="sync-dot off"></span></button>
   </nav>
-  <div class="hdr-actions" id="hdrReportActions" style="display:none">
-    <div class="pf" data-cb="renderReports"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="repFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="repTo" class="finp" onchange="pfChanged(this)"></label></div></div></div>
-        <div class="pdf-wrap">
-          <button type="button" class="ops-btn primary" onclick="togglePdfMenu(event)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>PDF
-          </button>
-          <div class="pdf-menu" id="pdfMenu">
-            <button type="button" onclick="exportReportPDF('current')">Поточний звіт</button>
-            <button type="button" onclick="exportReportPDF('all')">Повний пакет звітів</button>
-          </div>
-        </div>
-  </div>
+
 </div>
 <div id="exportBar" class="export-bar" style="display:none">
   <span id="exportBarText"></span>
@@ -1150,7 +1152,7 @@ document.documentElement.classList.add('locked', 'decoy');
     </div>
 
   <div class="ops-box" id="recipeMoves" style="display:none;margin-top:16px">
-    <div class="ops-title"><span>Рух позиції</span><div class="pf" data-cb="renderRecipeMoves"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="rmFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="rmTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+    <div class="ops-title"><span>Рух позиції</span><div class="pf" data-cb="renderRecipeMoves"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="rmFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="rmTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
     <div id="recipeMovesBody"></div>
   </div>
 </div>
@@ -1231,11 +1233,11 @@ document.documentElement.classList.add('locked', 'decoy');
       <button class="full-action-btn" onclick="confirmProduction()">✓ Підтвердити виробництво</button>
     </div>
     <div class="ops-box">
-      <div class="ops-title"><span>Журнал виробництва</span><div class="pf" data-cb="renderProdLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="prodLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="prodLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+      <div class="ops-title"><span>Журнал виробництва</span><div class="pf" data-cb="renderProdLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="prodLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="prodLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
       <div class="log-wrap" id="prodLog"><div class="log-empty">Записів немає</div></div>
     </div>
     <div class="ops-box">
-      <div class="ops-title"><span>Звіт за період</span><div class="pf" data-cb="renderProdReport"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="prodRepFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="prodRepTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+      <div class="ops-title"><span>Звіт за період</span><div class="pf" data-cb="renderProdReport"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="prodRepFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="prodRepTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
       <div id="prodReport"><div class="log-empty">Оберіть період або натисніть «Показати весь час»</div></div>
     </div>
     <div class="ops-box">
@@ -1289,7 +1291,7 @@ document.documentElement.classList.add('locked', 'decoy');
       <button class="full-action-btn" onclick="confirmShipment()">✓ Підтвердити відвантаження</button>
     </div>
     <div class="ops-box">
-      <div class="ops-title"><span>Журнал відвантажень</span><div class="pf" data-cb="renderShipLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="shipLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="shipLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+      <div class="ops-title"><span>Журнал відвантажень</span><div class="pf" data-cb="renderShipLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="shipLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="shipLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
       <div class="log-wrap" id="shipLog"><div class="log-empty">Записів немає</div></div>
     </div>
     </div>
@@ -1303,7 +1305,7 @@ document.documentElement.classList.add('locked', 'decoy');
         <button class="full-action-btn" onclick="confirmAudit()">✓ Зберегти інвентаризацію</button>
       </div>
       <div class="ops-box">
-        <div class="ops-title"><span>Журнал інвентаризацій</span><div class="pf" data-cb="renderAuditLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="auditLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="auditLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+        <div class="ops-title"><span>Журнал інвентаризацій</span><div class="pf" data-cb="renderAuditLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="auditLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="auditLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
         <div class="log-wrap" id="auditLogEl"><div class="log-empty">Інвентаризацій ще не проводилось</div></div>
       </div>
       <div class="ops-box">
@@ -1377,7 +1379,7 @@ document.documentElement.classList.add('locked', 'decoy');
         <button class="full-action-btn" onclick="confirmReceipt()">✓ Зберегти прихід</button>
       </div>
       <div class="ops-box">
-        <div class="ops-title"><span>Журнал приходів</span><div class="pf" data-cb="renderReceiptLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="receiptLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="receiptLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+        <div class="ops-title"><span>Журнал приходів</span><div class="pf" data-cb="renderReceiptLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="receiptLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="receiptLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
         <div class="log-wrap" id="receiptLog"><div class="log-empty">Приходів ще не було</div></div>
       </div>
     </div>
@@ -1405,7 +1407,7 @@ document.documentElement.classList.add('locked', 'decoy');
         <button class="full-action-btn" onclick="confirmWriteoff()">✓ Підтвердити списання</button>
       </div>
       <div class="ops-box">
-        <div class="ops-title"><span>Журнал списань</span><div class="pf" data-cb="renderWriteoffLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="writeoffLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="writeoffLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+        <div class="ops-title"><span>Журнал списань</span><div class="pf" data-cb="renderWriteoffLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="writeoffLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="writeoffLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
         <div class="log-wrap" id="writeoffLog"><div class="log-empty">Списань ще не проводилось</div></div>
       </div>
     </div>
@@ -1416,6 +1418,21 @@ document.documentElement.classList.add('locked', 'decoy');
 <!-- ══════════════ TAB: ЗВІТИ ══════════════ -->
 <div id="tab-reports" class="tab-page">
   <div class="ops-page rep-page">
+    <div class="rep-toolbar" id="hdrReportActions">
+      <div class="rep-tb-search" id="repPosPick"></div>
+      <div class="rep-tb-right">  
+    <div class="pf" data-cb="renderReports"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="repFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="repTo" class="finp" onchange="pfChanged(this)"></label></div></div></div>
+        <div class="pdf-wrap">
+          <button type="button" class="ops-btn primary" onclick="togglePdfMenu(event)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>PDF
+          </button>
+          <div class="pdf-menu" id="pdfMenu">
+            <button type="button" onclick="exportReportPDF('current')">Поточний звіт</button>
+            <button type="button" onclick="exportReportPDF('all')">Повний пакет звітів</button>
+          </div>
+        </div>
+        </div>
+    </div>
     <div class="rep-cards" id="repCards"></div>
     <div class="ops-box" id="repBody"></div>
 
@@ -2031,7 +2048,7 @@ async function unlockAttempt(passArg, fromBio) {
   inp.focus();
 }
 function unlockNow(firstTime) {
-  gn('lockPin').value = ''; gn('lockErr').textContent = '';
+  gn('lockPin').value = ''; gn('lockErr').textContent = ''; bioFails = 0; renderBioLock();
   SEC.lastAct = Date.now();
   document.documentElement.classList.remove('locked', 'decoy');
   document.title = 'Hookah';
@@ -2059,7 +2076,7 @@ function decoyTap() {
     document.documentElement.classList.remove('decoy');
     document.title = 'Hookah';
     renderBioLock();
-    setTimeout(() => gn('lockPin')?.focus(), 50);
+    if (!bioInfo()) setTimeout(() => gn('lockPin')?.focus(), 50);
   }
 }
 function lockNow() {
@@ -2067,7 +2084,7 @@ function lockNow() {
   document.querySelectorAll('.ui-dlg-wrap').forEach(d => d.remove());
   document.documentElement.classList.add('locked', 'decoy');
   document.title = '404 Not Found';
-  renderBioLock();
+  bioFails = 0; renderBioLock();
 }
 // ── Автоблокування після 10 хв без дій ──
 ['pointerdown', 'keydown', 'touchstart', 'wheel', 'input'].forEach(ev =>
@@ -2160,11 +2177,30 @@ async function bioUnlock() {
     const k = await bioWrapKey(false);
     const pass = new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64dec(b.iv) }, k, b64dec(b.ct)));
     await unlockAttempt(pass, true);
+    return isLocked() ? 'fail' : 'ok';
   } catch (e) {
-    if (!(e && e.name === 'NotAllowedError')) err.textContent = 'Не вдалося – увійдіть паролем';
+    return e && e.name === 'NotAllowedError' ? 'cancel' : 'fail';
   }
 }
-function renderBioLock() { const btn = gn('lockBioBtn'); if (btn) btn.style.display = bioInfo() ? '' : 'none'; }
+// Face ID / Touch ID запускається натисканням на поле пароля; після 3 невдач – лише пароль
+let bioFails = 0, bioBusy = false;
+async function bioFromField(e) {
+  if (!bioInfo() || bioBusy || bioFails >= 3 || lockWaitLeft()) return;
+  bioBusy = true;
+  const inp = gn('lockPin');
+  inp.blur();
+  const res = await bioUnlock();
+  bioBusy = false;
+  if (res === 'ok') return;
+  bioFails = res === 'cancel' ? 3 : bioFails + 1;
+  if (bioFails >= 3) {
+    inp.readOnly = false;
+    gn('lockErr').textContent = 'Не вдалося розпізнати – введіть пароль';
+    setTimeout(() => inp.focus(), 50);
+  } else gn('lockErr').textContent = 'Не розпізнано – натисніть на поле ще раз';
+}
+function renderBioLock() {
+  const inp = gn('lockPin'); if (inp) { inp.readOnly = !!bioInfo() && bioFails < 3; inp.placeholder = inp.readOnly ? 'Натисніть для Face ID / Touch ID' : 'Пароль'; } }
 async function renderBioSettings() {
   const box = gn('bioRow'); if (!box) return;
   const avail = await bioAvailable();
@@ -4474,7 +4510,9 @@ function pfLabel(f, t) {
 }
 function pfUpdateLabel(pf) {
   const [f, t] = pfInputs(pf);
-  pf.querySelector('.pf-lbl').textContent = pfLabel(f.value, t.value);
+  const lbl = pfLabel(f.value, t.value);
+  pf.querySelector('.pf-lbl').textContent = lbl;
+  const b = pf.querySelector('.pf-btn'); if (b) b.title = 'Період: ' + lbl.toLowerCase();
   pf.classList.toggle('active', !!(f.value || t.value));
 }
 function pfApply(pf) {
@@ -4572,7 +4610,7 @@ function renderOpexLog() {
   const el = gn('opexLogEl'), sumEl = gn('opexSummary');
   if (!el) return;
   const r = repRange();
-  const list = (DB.opexLog || []).filter(e => inRange(r, e.date + 'T12:00:00')).sort((a,b) => b.date.localeCompare(a.date));
+  const list = (DB.opexLog || []).filter(e => inRange(r, e.date + 'T12:00:00') && !repFocus).sort((a,b) => b.date.localeCompare(a.date));
   if (!list.length) {
     if (sumEl) sumEl.innerHTML = '';
     el.innerHTML = '<div class="log-empty">Витрат за цей період немає</div>';
@@ -4630,15 +4668,15 @@ function writeoffValue(w) {
 }
 
 function computePnL(r) {
-  const ships = DB.shipments.filter(s => inRange(r, s.date));
+  const ships = DB.shipments.filter(s => inRange(r, s.date) && fShip(s));
   const revenue = ships.reduce((s, x) => s + (x.totalSum || 0), 0);
   const cogs    = ships.reduce((s, x) => s + shipCostOf(x), 0);
   const kg      = ships.reduce((s, x) => s + x.amountKg, 0);
-  const opexList = (DB.opexLog || []).filter(e => inRange(r, e.date + 'T12:00:00'));
+  const opexList = (DB.opexLog || []).filter(e => inRange(r, e.date + 'T12:00:00') && !repFocus);
   const opexByCat = {};
   opexList.forEach(e => { opexByCat[e.category] = (opexByCat[e.category] || 0) + e.amount; });
   const opex = opexList.reduce((s, e) => s + e.amount, 0);
-  const writeoffs = (DB.writeoffs || []).filter(w => inRange(r, w.date)).reduce((s, w) => s + writeoffValue(w), 0);
+  const writeoffs = (DB.writeoffs || []).filter(w => inRange(r, w.date) && fItem(w.key)).reduce((s, w) => s + writeoffValue(w), 0);
   const gross = revenue - cogs;
   const net = gross - opex - writeoffs;
   return { revenue, cogs, gross, opex, opexByCat, writeoffs, net, kg, count: ships.length };
@@ -4650,17 +4688,17 @@ function computeStock() {
     const items = g.items.map(it => {
       const qty = DB.inventory[it.key] || 0;
       const cpk = getItemCostPerKg(it.key);
-      return { name: it.name, unit: it.unit, qty, cpk, value: toKg(it.key, qty) * cpk, min: (DB.invMin || {})[it.key] || 0 };
+      return { key: it.key, name: it.name, unit: it.unit, qty, cpk, value: toKg(it.key, qty) * cpk, min: (DB.invMin || {})[it.key] || 0 };
     });
     groups.push({ group: g.group, items });
   });
   groups.push({ group: 'Ароматизатори', items: (DB.prices.flavorings || []).map(f => {
     const key = 'flav_' + f.name, qty = DB.inventory[key] || 0;
-    return { name: f.name, unit: 'кг', qty, cpk: f.price || 0, value: qty * (f.price || 0), min: (DB.invMin || {})[key] || 0 };
+    return { key, name: f.name, unit: 'кг', qty, cpk: f.price || 0, value: qty * (f.price || 0), min: (DB.invMin || {})[key] || 0 };
   })});
   groups.push({ group: 'Готова продукція', items: DB.recipes.map(r => {
     const qty = DB.finishedGoods[r.id] || 0, cpk = shipCostPerKg(r);
-    return { name: cleanName(r.name), unit: 'кг', qty, cpk, value: qty * cpk, min: 0 };
+    return { key: 'fg_' + r.id, name: cleanName(r.name), unit: 'кг', qty, cpk, value: qty * cpk, min: 0 };
   })});
   groups.forEach(g => { g.value = g.items.reduce((s, i) => s + i.value, 0); });
   return { groups, total: groups.reduce((s, g) => s + g.value, 0) };
@@ -4712,16 +4750,16 @@ function reportPnL() {
   // Розгорнута інформація: окремі витрати та списання за період
   const tail = `${pp ? '<td></td><td></td>' : ''}<td></td>`;
   const dt = d => new Date(d).toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  const opexItems = (DB.opexLog || []).filter(e => inRange(r, e.date + 'T12:00:00')).sort((a, b) => b.date.localeCompare(a.date));
+  const opexItems = (DB.opexLog || []).filter(e => inRange(r, e.date + 'T12:00:00') && !repFocus).sort((a, b) => b.date.localeCompare(a.date));
   const opexDet = opexItems.length ? opexItems.map(e => `<tr class="pnl-det" data-pd="opex"><td><span class="pd-date">${dt(e.date + 'T12:00:00')}</span><i class="dot" style="background:${opexCat(e.category).color}"></i>${opexCat(e.category).label}${e.name ? ' · ' + escHtml(e.name) : ''}</td><td>${fmtMoney(e.amount)}</td>${tail}</tr>`).join('')
     : `<tr class="pnl-det" data-pd="opex"><td class="muted">Операційних витрат за цей період немає</td><td></td>${tail}</tr>`;
-  const woItems = (DB.writeoffs || []).filter(w => inRange(r, w.date)).sort((a, b) => b.date.localeCompare(a.date));
+  const woItems = (DB.writeoffs || []).filter(w => inRange(r, w.date) && fItem(w.key)).sort((a, b) => b.date.localeCompare(a.date));
   const woDet = woItems.length ? woItems.map(w => {
     const q = (w.before != null && w.after != null) ? w.before - w.after : w.qty;
     const u = invItemInfo(w.key).unit;
     return `<tr class="pnl-det" data-pd="wo"><td><span class="pd-date">${dt(w.date)}</span>${escHtml(w.itemName || invItemInfo(w.key).name)} · ${fmtQty(q, u)} ${u}${w.reason ? `<span class="muted"> · ${escHtml(w.reason)}</span>` : ''}</td><td>${fmtMoney(writeoffValue(w))}</td>${tail}</tr>`;
   }).join('') : `<tr class="pnl-det" data-pd="wo"><td class="muted">Списань за цей період немає</td><td></td>${tail}</tr>`;
-  const rowX = (label, k, cls, key) => row(`<span class="sg-arrow">›</span>${label}`, k, cls + ' pnl-x" data-pdh="' + key + '" onclick="togglePnl(\'' + key + '\')', true);
+  const rowX = (label, k, cls, key) => row(`<span class="sg-arrow"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M3.5 2l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>${label}`, k, cls + ' pnl-x" data-pdh="' + key + '" onclick="togglePnl(\'' + key + '\')', true);
   return `
     <table class="fin-table fx fx-pnl">
       <thead><tr><th>Стаття</th><th>Сума</th>${pp ? `<th>Попередній період</th><th>Зміна</th>` : ''}<th>% виручки</th></tr></thead>
@@ -4755,7 +4793,7 @@ function reportPnL() {
 function reportABC() {
   const r = repRange();
   const map = {};
-  DB.shipments.filter(s => inRange(r, s.date)).forEach(s => {
+  DB.shipments.filter(s => inRange(r, s.date) && fShip(s)).forEach(s => {
     if (!map[s.recipeId]) map[s.recipeId] = { name: cleanName(s.recipeName), kg: 0, revenue: 0, cost: 0 };
     const m = map[s.recipeId];
     m.kg += s.amountKg; m.revenue += s.totalSum || 0; m.cost += shipCostOf(s);
@@ -4791,7 +4829,7 @@ function reportABC() {
 function reportClients() {
   const r = repRange();
   const map = {};
-  DB.shipments.filter(s => inRange(r, s.date)).forEach(s => {
+  DB.shipments.filter(s => inRange(r, s.date) && fShip(s)).forEach(s => {
     const name = (s.client || '').trim() || 'Без клієнта';
     if (!map[name]) map[name] = { name, n: 0, kg: 0, revenue: 0, cost: 0, last: s.date };
     const m = map[name];
@@ -4835,13 +4873,13 @@ function reportCash() {
     months[m][k] += v;
     months[m].ops.push({ date: d, k, v, label });
   };
-  DB.shipments.filter(s => inRange(r, s.date)).forEach(s =>
+  DB.shipments.filter(s => inRange(r, s.date) && fShip(s)).forEach(s =>
     add(s.date, 'inflow', s.totalSum || 0, `<b>Відвантаження</b> · ${escHtml(cleanName(s.recipeName))} · ${kgFmt(s.amountKg)}${s.client ? ' · ' + escHtml(s.client) : ''}`));
-  (DB.receipts || []).filter(x => inRange(r, x.date) && x.price).forEach(x => {
+  (DB.receipts || []).filter(x => inRange(r, x.date) && x.price && fItem(x.key)).forEach(x => {
     const u = invItemInfo(x.key).unit;
     add(x.date, 'purchases', toKg(x.key, x.qty) * x.price, `<b>Прихід</b> · ${escHtml(x.itemName || invItemInfo(x.key).name)} · ${fmtQty(x.qty, u)} ${u} × ${fmtMoney(x.price)}/кг`);
   });
-  (DB.opexLog || []).filter(e => inRange(r, e.date + 'T12:00:00')).forEach(e =>
+  (DB.opexLog || []).filter(e => inRange(r, e.date + 'T12:00:00') && !repFocus).forEach(e =>
     add(e.date + 'T12:00:00', 'opex', e.amount, `<b>${opexCat(e.category).label}</b>${e.name ? ' · ' + escHtml(e.name) : ''}`));
   const keys = Object.keys(months).sort();
   if (!keys.length) return `<div class="log-empty">Немає руху коштів за цей період</div>`;
@@ -4858,7 +4896,7 @@ function reportCash() {
       <td><span class="pd-date">${dt(o.date)}</span>${o.label}</td>
       <td>${o.k === 'inflow' ? fmtMoney(o.v) : ''}</td><td class="muted">${o.k === 'purchases' ? neg(o.v) : ''}</td><td class="muted">${o.k === 'opex' ? neg(o.v) : ''}</td>
       <td>${signed(o.k === 'inflow' ? o.v : -o.v)}</td><td></td></tr>`).join('');
-    return `<tr class="cm-head" data-cmh="${k}" onclick="toggleCashMonth('${k}')"><td style="text-transform:capitalize"><span class="sg-arrow">›</span>${label} <span class="cm-cnt">${m.ops.length}</span></td><td>${fmtMoney(m.inflow)}</td><td class="muted">${neg(m.purchases)}</td><td class="muted">${neg(m.opex)}</td><td>${signed(net)}</td><td>${cum < 0 ? '−' : ''}${fmtMoney(Math.abs(cum))}</td></tr>${ops}`;
+    return `<tr class="cm-head" data-cmh="${k}" onclick="toggleCashMonth('${k}')"><td style="text-transform:capitalize"><span class="sg-arrow"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M3.5 2l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>${label} <span class="cm-cnt">${m.ops.length}</span></td><td>${fmtMoney(m.inflow)}</td><td class="muted">${neg(m.purchases)}</td><td class="muted">${neg(m.opex)}</td><td>${signed(net)}</td><td>${cum < 0 ? '−' : ''}${fmtMoney(Math.abs(cum))}</td></tr>${ops}`;
   }).join('');
   const tnet = T.inflow - T.purchases - T.opex;
   return `
@@ -4874,11 +4912,17 @@ function reportCash() {
 function reportStock() {
   const st = computeStock();
   // готова продукція на витримці – окремою групою
-  const agingItems = Object.values(agingBatches().reduce((m, p) => {
+  const agingItems = Object.values(agingBatches().filter(fAging).reduce((m, p) => {
     const x = m[p.recipeId] = m[p.recipeId] || { name: cleanName(p.recipeName), qty: 0, unit: 'кг', value: 0, cpk: 0 };
     x.qty += p.totalKg; x.value += p.totalKg * (p.costPerKg || 0); x.cpk = x.qty ? x.value / x.qty : 0; return m;
   }, {}));
-  const groups = agingItems.length ? [...st.groups, { group: 'Готова продукція на витримці', items: agingItems, value: agingItems.reduce((t, i) => t + i.value, 0) }] : st.groups;
+  let groups = agingItems.length ? [...st.groups, { group: 'Готова продукція на витримці', items: agingItems, value: agingItems.reduce((t, i) => t + i.value, 0) }] : st.groups;
+  if (repFocus) {
+    groups = groups.map(g => {
+      const items = g.items.filter(i => i.key === repFocus || (g.group === 'Готова продукція на витримці'));
+      return { ...g, items, value: items.reduce((t, i) => t + i.value, 0) };
+    }).filter(g => g.items.length);
+  }
   const total = groups.reduce((t, g) => t + g.value, 0);
   const low = [];
   st.groups.forEach(g => g.items.forEach(i => { if (i.min > 0 && i.qty < i.min) low.push({ ...i, group: g.group }); }));
@@ -4887,7 +4931,7 @@ function reportStock() {
     <table class="fin-table fx fx-stock">
       <thead><tr><th>Група</th><th>Позицій у наявності</th><th>Частка / ціна</th><th>Вартість</th></tr></thead>
       <tbody class="sg-body">${groups.map((g, gi) => `<tr class="sg-head" data-sgh="${gi}" onclick="toggleStockGroup(${gi})">
-        <td><span class="sg-arrow">›</span>${g.group}</td><td class="muted">${g.items.filter(i => i.qty > 0.0005).length} з ${g.items.length}</td>
+        <td><span class="sg-arrow"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M3.5 2l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>${g.group}</td><td class="muted">${g.items.filter(i => i.qty > 0.0005).length} з ${g.items.length}</td>
         <td><div class="share"><span class="bar"><i style="width:${total > 0 ? g.value/total*100 : 0}%"></i></span>${fmtPct(total > 0 ? g.value/total : 0)}</div></td><td>${fmtMoney(g.value)}</td>
       </tr>${[...g.items].sort((a, b) => ABC.compare(a.name, b.name)).map(i => `<tr class="sg-item${i.qty > 0.0005 ? '' : ' zero'}" data-sg="${gi}">
         <td>${escHtml(i.name)}${i.note ? `<span class="muted"> · ${i.note}</span>` : ''}</td><td class="muted">${fmtQty(i.qty, i.unit)} ${i.unit}</td><td class="muted">${i.cpk ? fmtMoney(i.cpk) + '/' + (i.unit === 'г' ? 'кг' : i.unit) : '–'}</td><td>${fmtMoney(i.value)}</td>
@@ -4909,11 +4953,29 @@ function reportStock() {
 
 function reportOpexRegister() {
   const r = repRange();
-  const ops = (DB.opexLog || []).filter(e => inRange(r, e.date + 'T12:00:00')).sort((a,b) => a.date.localeCompare(b.date));
+  const ops = (DB.opexLog || []).filter(e => inRange(r, e.date + 'T12:00:00') && !repFocus).sort((a,b) => a.date.localeCompare(b.date));
   if (!ops.length) return '<div class="log-empty">Витрат за цей період немає</div>';
   return `<table class="fin-table opex-list"><thead><tr><th>Дата</th><th style="text-align:left">Категорія</th><th style="text-align:left">Коментар</th><th>Сума</th></tr></thead><tbody>
     ${ops.map(e => `<tr><td>${new Date(e.date + 'T12:00:00').toLocaleDateString('uk-UA')}</td><td class="muted" style="text-align:left">${opexCat(e.category).label}</td><td style="text-align:left">${escHtml(e.name)}</td><td>${fmtMoney(e.amount)}</td></tr>`).join('')}
     <tr class="tot"><td>Разом</td><td></td><td></td><td>${fmtMoney(ops.reduce((s,e) => s + e.amount, 0))}</td></tr></tbody></table>`;
+}
+
+// ══ Універсальний пошук у звітах: обрана позиція фільтрує всі звіти й плитки ══
+let repFocus = '';                 // '' – усі позиції; інакше ключ (fg_<id>, flav_<назва>, ключ складу)
+const focusRid = () => repFocus.startsWith('fg_') ? repFocus.slice(3) : null;
+const fShip = s => !repFocus || s.recipeId === focusRid();
+const fItem = key => !repFocus || key === repFocus;
+const fAging = p => !repFocus || p.recipeId === focusRid();
+function setRepFocus(key) {
+  repFocus = key && key !== '__all__' ? key : '';
+  movesKey = repFocus || '__all__';
+  if (repFocus && currentReport === 'opex') currentReport = 'moves';
+  renderReports();
+}
+function focusNote() {
+  if (!repFocus) return '';
+  const i = movesItemInfo(repFocus);
+  return `<div class="focus-note">Показано лише для: <b>${escHtml(i.name)}</b><button type="button" onclick="setRepFocus('')">Усі позиції ×</button></div>`;
 }
 
 // ── Звіт «Рух позиції»: усі операції з обраною позицією за період ──
@@ -4993,7 +5055,7 @@ function reportMovesAll() {
     <thead><tr><th style="text-align:left">Позиція</th><th>На початок</th><th>Надійшло</th><th>Витрачено</th><th>На кінець</th><th>Операцій</th></tr></thead>
     <tbody>${groups.map(g => `<tr class="grp-row"><td colspan="6">${escHtml(g)}</td></tr>` + rows.filter(r => r.group === g).map(r => {
       const q = n => movesQty(n, r.unit), m = r.m, idle = !m.inR.length;
-      return `<tr class="mv-row${idle ? ' idle' : ''}" data-key="${escHtml(r.key)}" onclick="movesKey=this.dataset.key;renderReports()">
+      return `<tr class="mv-row${idle ? ' idle' : ''}" data-key="${escHtml(r.key)}" onclick="setRepFocus(this.dataset.key)">
         <td style="text-align:left">${escHtml(r.name)}</td><td>${q(m.opening)}</td>
         <td class="up">${m.inQ ? '+' + q(m.inQ) : '–'}</td><td class="down">${m.outQ ? '−' + q(m.outQ) : '–'}</td>
         <td>${q(m.closing)}</td><td class="muted">${m.inR.length || '–'}</td></tr>`; }).join('')).join('')}
@@ -5006,7 +5068,7 @@ function reportMoves() {
   const m = computeMoves(movesKey);
   const q = n => movesQty(n, info.unit);
   return `
-    <div class="rep-sec-title" style="margin-top:4px"><a class="mv-back" onclick="movesKey='__all__';renderReports()">← Всі позиції</a> ${escHtml(info.name)} <span class="muted" style="font-weight:400">· ${escHtml(info.group)}</span></div>
+    <div class="rep-sec-title" style="margin-top:4px"><a class="mv-back" onclick="setRepFocus('')">← Всі позиції</a> ${escHtml(info.name)} <span class="muted" style="font-weight:400">· ${escHtml(info.group)}</span></div>
     <div class="rm-sum">
       <div><span>На початок</span><b>${q(m.opening)}</b></div>
       <div><span>Надійшло</span><b class="up">${m.inQ ? '+' : ''}${q(m.inQ)}</b></div>
@@ -5027,6 +5089,13 @@ function reportMoves() {
       </tbody></table>`
     : '<div class="log-empty">Руху за цей період немає</div>'}
     <div class="rep-note">Залишок після кожної операції рахується від поточного залишку на складі. Інвентаризації до цього оновлення не містять даних про коригування і не показуються.</div>`;
+}
+function renderRepPosPick() {
+  const el = gn('repPosPick'); if (!el) return;
+  el.innerHTML = `<select id="repFocusSel" class="finp" onchange="setRepFocus(this.value)">
+    <option value=""${repFocus ? '' : ' selected'}>Усі позиції – пошук…</option>
+    ${movesOptions().map(g => `<optgroup label="${escHtml(g.label)}">${g.items.map(i => `<option value="${escHtml(i.key)}"${i.key === repFocus ? ' selected' : ''}>${escHtml(i.name)}</option>`).join('')}</optgroup>`).join('')}
+  </select>`;
 }
 function movesSelectHtml() {
   return `<div class="moves-pick"><select id="movesItem" class="finp" onchange="movesKey=this.value;renderReports()">
@@ -5135,7 +5204,7 @@ function navInit() { try { history.replaceState(navCurrent(), ''); } catch (e) {
 
 // ══ Звіт «Витримка»: увесь тютюн, що зараз витримується ══
 function reportAging() {
-  const list = agingBatches();
+  const list = agingBatches().filter(fAging);
   const now = Date.now();
   const total = list.reduce((s, p) => s + p.totalKg, 0);
   const value = list.reduce((s, p) => s + p.totalKg * (p.costPerKg || 0), 0);
@@ -5143,7 +5212,7 @@ function reportAging() {
   list.forEach(p => { (byRec[p.recipeId] = byRec[p.recipeId] || { name: cleanName(p.recipeName), kg: 0, n: 0, next: p.agingUntil }).kg += p.totalKg; byRec[p.recipeId].n++; });
   const recRows = Object.entries(byRec).map(([id, v]) => ({ id, ...v })).sort((a, b) => ABC.compare(a.name, b.name));
   const r = repRange();
-  const done = (DB.productions || []).filter(p => p.agingUntil && p.agingDays > 0 && p.released !== false && inRange(r, p.agingUntil))
+  const done = (DB.productions || []).filter(p => p.agingUntil && p.agingDays > 0 && p.released !== false && inRange(r, p.agingUntil) && fAging(p))
     .sort((a, b) => b.agingUntil.localeCompare(a.agingUntil));
   return `
     <div class="rep-note" style="margin:0 0 12px">Стан зараз. Партії автоматично переходять на склад після завершення витримки.</div>
@@ -5160,7 +5229,7 @@ function reportAging() {
         const nextEnd = new Date(x.next).getTime(), first = batches[0];
         const pctOf = p => { const st = new Date(p.agingStart || p.date).getTime(), en = new Date(p.agingUntil).getTime(); return Math.min(100, Math.max(0, (now - st) / Math.max(1, en - st) * 100)); };
         return `<tr class="sg-head" data-sgh="ag${gi}" onclick="toggleStockGroup('ag${gi}')">
-          <td><span class="sg-arrow">›</span>${escHtml(x.name)}</td><td class="muted">${x.n}</td><td class="aging-val">${kgFmt(x.kg)}</td>
+          <td><span class="sg-arrow"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M3.5 2l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>${escHtml(x.name)}</td><td class="muted">${x.n}</td><td class="aging-val">${kgFmt(x.kg)}</td>
           <td>${fmtDT(x.next)}</td>
           <td><div class="share"><span class="bar aging-progress"><i style="width:${pctOf(first).toFixed(0)}%"></i></span>${fmtLeft(nextEnd - now)}</div></td></tr>
         ${batches.map(p => `<tr class="sg-item" data-sg="ag${gi}">
@@ -5198,10 +5267,29 @@ const REPORTS = [
 ];
 let currentReport = 'pnl';
 
+// Тримаємо сторінку звітів достатньо високою, щоб коротший звіт не «відкидав» прокрутку вгору.
+// Запас зменшується сам, коли користувач гортає вгору.
+function repHoldHeight(y) {
+  const page = document.querySelector('.rep-page');
+  if (!page || !page.offsetParent) return;
+  const top = page.getBoundingClientRect().top + window.scrollY;
+  const need = Math.max(0, Math.ceil(y + window.innerHeight - top));
+  page.style.minHeight = need ? need + 'px' : '';
+}
+window.addEventListener('scroll', () => {
+  const page = document.querySelector('.rep-page');
+  if (page && page.style.minHeight) repHoldHeight(window.scrollY);
+}, { passive: true });
 function switchReport(id) {
   currentReport = id;
   document.querySelectorAll('#repCards .rep-card2').forEach(b => b.classList.toggle('active', b.dataset.rep === id));
   const body = gn('repBody'), opex = gn('opexView');
+  if (id === 'opex' && repFocus) {
+    if (opex) opex.style.display = 'none';
+    if (body) { body.style.display = ''; body.innerHTML = `<div class="rep-body-title">Операційні витрати</div>` + focusNote() + '<div class="log-empty">Операційні витрати не прив’язані до окремих позицій</div>'; }
+    navPushSoon();
+    return;
+  }
   if (id === 'opex') {
     if (body) body.style.display = 'none';
     if (opex) opex.style.display = '';
@@ -5211,7 +5299,11 @@ function switchReport(id) {
   }
   if (opex) opex.style.display = 'none';
   const rep = REPORTS.find(x => x.id === id);
-  if (body && rep) { body.style.display = ''; body.innerHTML = `<div class="rep-body-title">${rep.title}</div>` + (id === 'moves' ? movesSelectHtml() : '') + rep.fn(); }
+  // зберігаємо висоту сторінки й прокрутку, щоб екран не «стрибав» при зміні звіту
+  const y = window.scrollY;
+  repHoldHeight(y);
+  if (body && rep) { body.style.display = ''; const pr = repRange(); const pfEl = document.querySelector('#hdrReportActions .pf'); const per = pfEl ? pfLabel(...pfInputs(pfEl).map(i => i.value)) : ''; body.innerHTML = `<div class="rep-body-title">${rep.title}${id !== 'stock' ? `<span class="rep-period">${per}</span>` : ''}</div>` + focusNote() + (repFocus && id === 'opex' ? '' : rep.fn()); }
+  if (window.scrollY !== y) window.scrollTo(0, y);
   navPushSoon();
 }
 
@@ -5219,7 +5311,7 @@ function switchReport(id) {
 function reportSummaries() {
   const r = repRange(), p = computePnL(r);
   const pr = prevRange(r), pp = pr ? computePnL(pr) : null;
-  const ships = DB.shipments.filter(s => inRange(r, s.date));
+  const ships = DB.shipments.filter(s => inRange(r, s.date) && fShip(s));
   // ABC
   const byRec = {};
   ships.forEach(s => { byRec[s.recipeId] = byRec[s.recipeId] || { revenue: 0 }; byRec[s.recipeId].revenue += s.totalSum || 0; });
@@ -5231,7 +5323,7 @@ function reportSummaries() {
   ships.forEach(s => { const k = (s.client || '').trim() || 'Без клієнта'; byCl[k] = (byCl[k] || 0) + (s.totalSum || 0); });
   const clients = Object.entries(byCl).sort((a, b) => b[1] - a[1]);
   // Рух коштів
-  const purchases = (DB.receipts || []).filter(x => inRange(r, x.date) && x.price).reduce((s, x) => s + toKg(x.key, x.qty) * x.price, 0);
+  const purchases = (DB.receipts || []).filter(x => inRange(r, x.date) && x.price && fItem(x.key)).reduce((s, x) => s + toKg(x.key, x.qty) * x.price, 0);
   const cashNet = p.revenue - purchases - p.opex;
   // Запаси
   const st = computeStock();
@@ -5265,14 +5357,16 @@ function renderReportCards() {
       sub: S.clients.length ? `топ: ${escHtml(S.clients[0][0])} · ${fmtPct(p.revenue > 0 ? S.clients[0][1] / p.revenue : 0)}` : 'відвантажень немає' },
     { id: 'cash', lbl: 'Рух коштів', val: signed(S.cashNet), cls: S.cashNet < 0 ? 'down' : '',
       sub: `надійшло ${fmtMoney(p.revenue)} · сплачено ${fmtMoney(S.purchases + p.opex)}` },
-    { id: 'stock', lbl: 'Запаси', val: fmtMoney(S.st.total),
+    repFocus ? (() => { const it = S.st.groups.flatMap(g => g.items).find(i => i.key === repFocus) || { qty: 0, value: 0, unit: 'кг' };
+        return { id: 'stock', lbl: 'Запаси', val: fmtMoney(it.value), sub: `на складі ${fmtQty(it.qty, it.unit)} ${it.unit}` }; })()
+    : { id: 'stock', lbl: 'Запаси', val: fmtMoney(S.st.total),
       sub: S.low ? `<span class="down">${S.low} ${plural(S.low, 'позиція', 'позиції', 'позицій')} нижче мінімуму</span>` : 'на сьогодні' },
     { id: 'opex', lbl: 'Витрати', val: fmtMoney(p.opex),
       sub: S.topCat ? `найбільше: ${opexCat(S.topCat[0]).label} · ${fmtPct(p.opex > 0 ? S.topCat[1] / p.opex : 0)}` : 'витрат немає',
       extra: repDelta(p.opex, pp?.opex, true) },
     { id: 'moves', lbl: 'Рух позиції', val: movesKey === '__all__' ? 'Всі позиції' : movesKey ? escHtml(movesItemInfo(movesKey).name) : 'Обрати',
       sub: movesKey === '__all__' ? (() => { const n = movesAllRows().filter(x => x.m.inR.length).length; return n ? `${n} ${plural(n,'позиція','позиції','позицій')} з рухом` : 'руху немає'; })() : movesKey ? (() => { const m = computeMoves(movesKey), u = movesItemInfo(movesKey).unit; return `+${movesQty(m.inQ, u)} · −${movesQty(m.outQ, u)}`; })() : 'будь-яка позиція складу', cls: movesKey ? 'rc-name' : 'muted-val' },
-    (() => { const l = agingBatches(), kg = l.reduce((t, p) => t + p.totalKg, 0);
+    (() => { const l = agingBatches().filter(fAging), kg = l.reduce((t, p) => t + p.totalKg, 0);
       return { id: 'aging', lbl: 'Витримка', val: kgFmt(kg), cls: kg ? 'aging-val' : 'muted-val',
         sub: l.length ? `${l.length} ${plural(l.length, 'партія', 'партії', 'партій')} · найближча через ${fmtLeft(new Date(l[0].agingUntil) - Date.now())}` : 'нічого не витримується' }; })(),
   ];
@@ -5301,6 +5395,7 @@ function kpiHtml() {
 }
 
 function renderReports() {
+  renderRepPosPick();
   renderReportCards();
   switchReport(currentReport);
   renderOpexLog();
@@ -5567,7 +5662,6 @@ function switchTab(name) {
   if (name === 'recipes') renderRecipeList();
   if (name === 'sklad') { switchSkladPage('zalishky'); renderInventory(); renderAuditLog(); }
   if (name === 'fin') renderFin();
-  const hra = gn('hdrReportActions'); if (hra) hra.style.display = name === 'reports' ? 'flex' : 'none';
   if (name === 'reports') renderReports();
   if (name === 'settings') renderSheetsStatus();
   navPushSoon();
