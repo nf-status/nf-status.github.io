@@ -764,7 +764,7 @@ tr.rm-wait td{background:#FFFBF3;}
 /* місце під смугу прокрутки завжди зарезервоване – сторінка не «смикається», коли стає довшою */
 html{scrollbar-gutter:stable;}
 .fin-table.fx{table-layout:fixed;width:100%;}
-.fin-table.fx td:first-child{white-space:normal;overflow-wrap:anywhere;}
+.fin-table.fx td:first-child{white-space:normal;overflow-wrap:break-word;}
 .fx-pnl th:first-child{width:55%;}
 .fx-stock th:first-child{width:40%;}
 .fx-cash th:first-child{width:30%;}
@@ -804,6 +804,23 @@ tr.cm-op td b{font-weight:600;color:var(--text1);}
   .fin-table.cash-table{display:table;width:100%;}
   .fx-cash th:first-child{width:auto;}
   .fin-table.fx{display:table;}
+  .fin-table.fx td,.fin-table.fx th{font-size:12.5px;padding-left:4px!important;padding-right:4px!important;}
+  .fin-table.fx th{white-space:normal;}
+  .fin-table.fx .share .bar{display:none;}
+  .fx-stock th:nth-child(2),.fx-stock td:nth-child(2){display:none;}
+  .fx-stock th:first-child{width:52%;}
+  .fx-stock td,.fx-stock th{white-space:nowrap;}
+  .fx-stock td:first-child{white-space:normal;}
+  .fx-pnl th:first-child{width:50%;}
+  .fx-pnl th:nth-child(3),.fx-pnl td:nth-child(3),.fx-pnl th:nth-child(4),.fx-pnl td:nth-child(4){display:none;}
+  .fx-pnl th:last-child,.fx-pnl td:last-child{display:table-cell;}
+  .fx-pnl td{white-space:nowrap;}
+  .fx-pnl td:first-child{white-space:normal;}
+  .fin-table.top-pos{display:table;width:100%;table-layout:fixed;}
+  .top-pos th:nth-child(2),.top-pos td:nth-child(2),.top-pos th:nth-child(4),.top-pos td:nth-child(4){display:none;}
+  .top-pos th:first-child{width:46%;}
+  .top-pos td,.top-pos th{font-size:12.5px;padding-left:4px!important;padding-right:4px!important;white-space:nowrap;}
+  .top-pos td:first-child{white-space:normal;}
   .cash-table th:nth-child(2),.cash-table td:nth-child(2),.cash-table th:nth-child(3),.cash-table td:nth-child(3),
   .cash-table th:nth-child(4),.cash-table td:nth-child(4),.cash-table th:nth-child(6),.cash-table td:nth-child(6){display:none;}
   .cash-table td:nth-child(5){white-space:nowrap;vertical-align:top;}
@@ -4940,7 +4957,7 @@ function reportStock() {
       </tbody>
     </table>
     <div class="rep-sec-title">Найбільші позиції за вартістю</div>
-    <table class="fin-table">
+    <table class="fin-table top-pos">
       <thead><tr><th>Позиція</th><th>Група</th><th>Залишок</th><th>Ціна / собів.</th><th>Вартість</th></tr></thead>
       <tbody>${st.groups.flatMap(g => g.items.map(i => ({ ...i, group: g.group }))).filter(i => i.value > 0).sort((a,b) => b.value - a.value).slice(0, 10).map(i => `<tr>
         <td>${escHtml(i.name)}</td><td class="muted">${i.group}</td><td>${fmtQty(i.qty, i.unit)} ${i.unit}</td><td class="muted">${fmtMoney(i.cpk)}/кг</td><td>${fmtMoney(i.value)}</td>
