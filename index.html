@@ -1263,12 +1263,14 @@ h1,h2,h3{font-weight:600;}
 .tk-fab:active{transform:scale(.94);}
 
 @media (min-width:641px){
-  .app-header > #hdrReportActions.in-hdr{margin:0 max(4px, calc(50% - 521px)) 0 auto!important;flex-wrap:nowrap;flex:0 1000 auto;min-width:auto;}
-  .app-header > #hdrReportActions.in-hdr #repPosPick{width:auto!important;flex:0 1 234px!important;min-width:44px!important;max-width:234px!important;}
+  .app-header.rep-hdr{padding-left:max(24px, calc(50% - 520px))!important;padding-right:max(24px, calc(50% - 520px))!important;}
+  .app-header > #hdrReportActions.in-hdr{margin:0!important;flex:1 1 0!important;min-width:auto!important;justify-content:flex-end!important;flex-wrap:nowrap!important;}
+  .app-header > #hdrReportActions.in-hdr .rep-tb-right{flex:0 0 auto;}
+  .app-header > #hdrReportActions.in-hdr #repPosPick{width:auto!important;flex:0 1 234px!important;min-width:40px!important;max-width:234px!important;margin-left:auto!important;contain:inline-size;}
   .app-header > #hdrReportActions.in-hdr #repPosPick .ss,.app-header > #hdrReportActions.in-hdr #repPosPick .ss-btn{min-width:0!important;width:100%!important;}
-  .app-header .tab-nav{flex:0 1 auto!important;min-width:0;overflow-x:auto;scrollbar-width:none;}
-  .app-header .tab-nav::-webkit-scrollbar{display:none;}
-  .app-header .tab-nav .tab-btn{flex:0 0 auto;}
+  .app-header.rep-hdr .tab-nav{flex:0 1 auto!important;min-width:0;overflow-x:auto;scrollbar-width:none;}
+  .app-header.rep-hdr .tab-nav::-webkit-scrollbar{display:none;}
+  .app-header.rep-hdr .tab-nav .tab-btn{flex:0 0 auto;}
 }
 @media (min-width:641px){.app-header > #hdrReportActions.in-hdr #repPosPick{overflow:hidden;}.app-header > #hdrReportActions.in-hdr #repPosPick *{min-width:0!important;}.app-header > #hdrReportActions.in-hdr #repPosPick .ss-btn{overflow:hidden;white-space:nowrap;text-overflow:clip;}}
 </style>
@@ -6074,7 +6076,9 @@ function placeRepToolbar() {
   if (desk && tb.parentNode !== hdr) hdr.appendChild(tb);
   else if (!desk && tb.parentNode === hdr) tab.insertBefore(tb, tab.firstChild);
   tb.classList.toggle('in-hdr', desk);
-  tb.style.display = (desk && !tab.classList.contains('active')) ? 'none' : '';
+  const on = tab.classList.contains('active');
+  tb.style.display = (desk && !on) ? 'none' : '';
+  hdr.classList.toggle('rep-hdr', desk && on);
 }
 window.addEventListener('resize', placeRepToolbar);
 setTimeout(() => { const _sw = switchTab; switchTab = function () { const r = _sw.apply(this, arguments); placeRepToolbar(); return r; }; placeRepToolbar(); }, 0);
