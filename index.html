@@ -749,6 +749,8 @@ tr.rm-wait td{background:#FFFBF3;}
 .rm-filter{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--text2);margin:-4px 0 8px;}
 .rm-filter{flex-wrap:wrap;}
 /* Таблиці з розгортанням: фіксована ширина колонок, щоб вони не «стрибали» */
+/* місце під смугу прокрутки завжди зарезервоване – сторінка не «смикається», коли стає довшою */
+html{scrollbar-gutter:stable;}
 .fin-table.fx{table-layout:fixed;width:100%;}
 .fin-table.fx td:first-child{white-space:normal;overflow-wrap:anywhere;}
 .fx-pnl th:first-child{width:55%;}
@@ -5162,7 +5164,7 @@ function reportAging() {
           <td>${fmtDT(x.next)}</td>
           <td><div class="share"><span class="bar aging-progress"><i style="width:${pctOf(first).toFixed(0)}%"></i></span>${fmtLeft(nextEnd - now)}</div></td></tr>
         ${batches.map(p => `<tr class="sg-item" data-sg="ag${gi}">
-          <td>Виготовлено ${fmtDT(p.agingStart || p.date)} · ${p.agingDays} дн${p.note ? `<div class="muted" style="font-size:11px">${escHtml(p.note)}</div>` : ''}<button type="button" class="ops-btn outline sm mob-only no-pdf" onclick="event.stopPropagation();releaseBatchNow('${p.id}').then(()=>switchReport('aging'))">Готово достроково</button></td>
+          <td><span class="muted">Виготовлено</span> ${fmtDT(p.agingStart || p.date)}<span class="muted"> · ${p.agingDays} дн</span>${p.note ? `<div class="muted" style="font-size:11px">${escHtml(p.note)}</div>` : ''}<button type="button" class="ops-btn outline sm mob-only no-pdf" onclick="event.stopPropagation();releaseBatchNow('${p.id}').then(()=>switchReport('aging'))">Готово достроково</button></td>
           <td class="no-pdf"><button type="button" class="ops-btn outline sm" onclick="event.stopPropagation();releaseBatchNow('${p.id}').then(()=>switchReport('aging'))">Готово достроково</button></td>
           <td class="aging-val">${kgFmt(p.totalKg)}</td>
           <td>${fmtDT(p.agingUntil)}</td>
@@ -5170,7 +5172,7 @@ function reportAging() {
       }).join('')}
       <tr class="tot"><td>Разом</td><td>${list.length}</td><td class="aging-val">${kgFmt(total)}</td><td></td><td></td></tr>
       </tbody></table>
-      <div class="rep-note">Натисніть на продукт, щоб побачити його партії та позначити готовність достроково.</div>`
+`
     : '<div class="log-empty">Зараз на витримці нічого немає</div>'}
     <div class="rep-sec-title">Завершили витримку за обраний період</div>
     ${done.length ? `<table class="fin-table"><thead><tr><th style="text-align:left">Продукт</th><th>Кількість</th><th>Виготовлено</th><th>Готово</th><th style="text-align:left">Як</th></tr></thead>
