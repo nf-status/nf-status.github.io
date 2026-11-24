@@ -748,7 +748,21 @@ tr.rm-wait td{background:#FFFBF3;}
 .aging-val{color:#9A6A1F;}
 .rm-filter{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--text2);margin:-4px 0 8px;}
 .rm-filter{flex-wrap:wrap;}
-tr.sg-head,tr.pnl-x{cursor:pointer;}
+tr.sg-head,tr.pnl-x,tr.cm-head{cursor:pointer;}
+tr.cm-head:hover td{background:var(--surface2);}
+tr.cm-head.open .sg-arrow{transform:rotate(90deg);}
+.cm-cnt{display:inline-block;font-size:10.5px;font-weight:600;color:var(--text3);background:var(--surface2);border-radius:8px;padding:0 6px;margin-left:4px;text-transform:none;vertical-align:1px;}
+tr.cm-op{display:none;}
+tr.cm-op.open{display:table-row;}
+tr.cm-op td{font-size:12px;background:var(--surface2,#fafaf9);}
+tr.cm-op td:first-child{padding-left:28px!important;white-space:normal!important;}
+tr.cm-op td b{font-weight:600;color:var(--text1);}
+@media (max-width:640px){
+  .fin-table.cash-table{display:table;width:100%;}
+  .cash-table th:nth-child(2),.cash-table td:nth-child(2),.cash-table th:nth-child(3),.cash-table td:nth-child(3),
+  .cash-table th:nth-child(4),.cash-table td:nth-child(4),.cash-table th:nth-child(6),.cash-table td:nth-child(6){display:none;}
+  .cash-table td:nth-child(5){white-space:nowrap;vertical-align:top;}
+}
 tr.pnl-x:hover td{background:var(--surface2);}
 tr.pnl-x.open .sg-arrow{transform:rotate(90deg);}
 tr.pnl-det{display:none;}
@@ -4773,33 +4787,55 @@ function reportClients() {
     <div class="rep-note">Клієнт береться з поля «Клієнт / Примітка» у відвантаженні. Щоб звіт був точним, вписуйте назву клієнта однаково.</div>`;
 }
 
+// Рух коштів: місяці розгортаються до окремих операцій
+function toggleCashMonth(k) {
+  document.querySelectorAll(`#repBody tr[data-cm="${k}"]`).forEach(tr => tr.classList.toggle('open'));
+  document.querySelector(`#repBody tr[data-cmh="${k}"]`)?.classList.toggle('open');
+}
 function reportCash() {
   const r = repRange();
   const months = {};
   const bucket = d => { const x = new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}`; };
-  const add = (d, k, v) => { const m = bucket(d); if (!months[m]) months[m] = { inflow: 0, purchases: 0, opex: 0 }; months[m][k] += v; };
-  DB.shipments.filter(s => inRange(r, s.date)).forEach(s => add(s.date, 'inflow', s.totalSum || 0));
-  (DB.receipts || []).filter(x => inRange(r, x.date) && x.price).forEach(x => add(x.date, 'purchases', toKg(x.key, x.qty) * x.price));
-  (DB.opexLog || []).filter(e => inRange(r, e.date + 'T12:00:00')).forEach(e => add(e.date + 'T12:00:00', 'opex', e.amount));
+  const add = (d, k, v, label) => {
+    const m = bucket(d);
+    if (!months[m]) months[m] = { inflow: 0, purchases: 0, opex: 0, ops: [] };
+    months[m][k] += v;
+    months[m].ops.push({ date: d, k, v, label });
+  };
+  DB.shipments.filter(s => inRange(r, s.date)).forEach(s =>
+    add(s.date, 'inflow', s.totalSum || 0, `<b>Відвантаження</b> · ${escHtml(cleanName(s.recipeName))} · ${kgFmt(s.amountKg)}${s.client ? ' · ' + escHtml(s.client) : ''}`));
+  (DB.receipts || []).filter(x => inRange(r, x.date) && x.price).forEach(x => {
+    const u = invItemInfo(x.key).unit;
+    add(x.date, 'purchases', toKg(x.key, x.qty) * x.price, `<b>Прихід</b> · ${escHtml(x.itemName || invItemInfo(x.key).name)} · ${fmtQty(x.qty, u)} ${u} × ${fmtMoney(x.price)}/кг`);
+  });
+  (DB.opexLog || []).filter(e => inRange(r, e.date + 'T12:00:00')).forEach(e =>
+    add(e.date + 'T12:00:00', 'opex', e.amount, `<b>${opexCat(e.category).label}</b>${e.name ? ' · ' + escHtml(e.name) : ''}`));
   const keys = Object.keys(months).sort();
   if (!keys.length) return `<div class="log-empty">Немає руху коштів за цей період</div>`;
+  const neg = v => v ? '−' + fmtMoney(v) : fmtMoney(0);
+  const signed = v => `<span class="${v >= 0 ? 'up' : 'down'}">${v > 0 ? '+' : v < 0 ? '−' : ''}${fmtMoney(Math.abs(v))}</span>`;
+  const dt = d => new Date(d).toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit' });
   let cum = 0;
   const T = { inflow: 0, purchases: 0, opex: 0 };
   const rows = keys.map(k => {
     const m = months[k], net = m.inflow - m.purchases - m.opex;
     cum += net; T.inflow += m.inflow; T.purchases += m.purchases; T.opex += m.opex;
     const label = new Date(k + '-15').toLocaleDateString('uk-UA', { month: 'long', year: 'numeric' });
-    return `<tr><td style="text-transform:capitalize">${label}</td><td>${fmtMoney(m.inflow)}</td><td class="muted">−${fmtMoney(m.purchases)}</td><td class="muted">−${fmtMoney(m.opex)}</td><td class="${net >= 0 ? 'up' : 'down'}">${net >= 0 ? '' : '−'}${fmtMoney(Math.abs(net))}</td><td>${cum < 0 ? '−' : ''}${fmtMoney(Math.abs(cum))}</td></tr>`;
+    const ops = [...m.ops].sort((a, b) => b.date.localeCompare(a.date)).map(o => `<tr class="cm-op" data-cm="${k}">
+      <td><span class="pd-date">${dt(o.date)}</span>${o.label}</td>
+      <td>${o.k === 'inflow' ? fmtMoney(o.v) : ''}</td><td class="muted">${o.k === 'purchases' ? neg(o.v) : ''}</td><td class="muted">${o.k === 'opex' ? neg(o.v) : ''}</td>
+      <td>${signed(o.k === 'inflow' ? o.v : -o.v)}</td><td></td></tr>`).join('');
+    return `<tr class="cm-head" data-cmh="${k}" onclick="toggleCashMonth('${k}')"><td style="text-transform:capitalize"><span class="sg-arrow">›</span>${label} <span class="cm-cnt">${m.ops.length}</span></td><td>${fmtMoney(m.inflow)}</td><td class="muted">${neg(m.purchases)}</td><td class="muted">${neg(m.opex)}</td><td>${signed(net)}</td><td>${cum < 0 ? '−' : ''}${fmtMoney(Math.abs(cum))}</td></tr>${ops}`;
   }).join('');
   const tnet = T.inflow - T.purchases - T.opex;
   return `
-    <table class="fin-table">
+    <table class="fin-table cash-table">
       <thead><tr><th>Місяць</th><th>Надходження</th><th>Закупівлі</th><th>Опер. витрати</th><th>Чистий потік</th><th>Наростаючим</th></tr></thead>
       <tbody>${rows}
-        <tr class="tot hl"><td>Разом</td><td>${fmtMoney(T.inflow)}</td><td>−${fmtMoney(T.purchases)}</td><td>−${fmtMoney(T.opex)}</td><td class="${tnet >= 0 ? 'up' : 'down'}">${tnet >= 0 ? '' : '−'}${fmtMoney(Math.abs(tnet))}</td><td></td></tr>
+        <tr class="tot hl"><td>Разом</td><td>${fmtMoney(T.inflow)}</td><td>${neg(T.purchases)}</td><td>${neg(T.opex)}</td><td>${signed(tnet)}</td><td></td></tr>
       </tbody>
     </table>
-    <div class="rep-note">Спрощений рух коштів: відвантаження вважається оплаченим у день відвантаження, прихід із ціною – оплаченим у день приходу. Приходи без ціни не враховуються.</div>`;
+    <div class="rep-note">Натисніть на місяць, щоб побачити всі операції. Спрощений рух коштів: відвантаження вважається оплаченим у день відвантаження, прихід із ціною – оплаченим у день приходу. Приходи без ціни не враховуються.</div>`;
 }
 
 function reportStock() {
