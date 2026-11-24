@@ -754,15 +754,15 @@ tr.rm-wait td{background:#FFFBF3;}
 .rm-sum > div.rm-tile.active{background:var(--surface2);box-shadow:inset 0 -2px 0 var(--text1);}
 .aging-val{color:#9A6A1F;}
 .rm-filter{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--text2);margin:-4px 0 8px;}
-.rep-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:14px;}
-.rep-tb-search{flex:1 1 260px;min-width:0;}
+.rep-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.rep-tb-search{flex:0 1 260px;min-width:0;}
 #repPosPick .ss-btn,#repPosPick select{height:38px!important;min-height:38px;border:1px solid var(--border2);border-radius:999px!important;background-color:var(--surface);padding:0 14px 0 36px!important;line-height:normal;display:flex;align-items:center;font-size:13px;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23A1A1AA' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E")!important;background-repeat:no-repeat;background-position:14px center!important;background-size:14px 14px;}
 #repPosPick.empty .ss-btn,#repPosPick.empty select{color:var(--text3);}
 #repPosPick .ss-btn:hover{border-color:var(--text3);}
 .rep-tb-search .ss,.rep-tb-search select{width:100%;}
 .rep-tb-right{display:flex;align-items:center;gap:8px;flex:0 0 auto;margin-left:auto;}
-@media (max-width:640px){.rep-tb-search{flex:1 1 0;}}
+@media (max-width:640px){.rep-tb-search{flex:1 1 0;max-width:none;}}
 .rm-filter{flex-wrap:wrap;}
 /* Таблиці з розгортанням: фіксована ширина колонок, щоб вони не «стрибали» */
 /* місце під смугу прокрутки завжди зарезервоване – сторінка не «смикається», коли стає довшою */
@@ -938,12 +938,16 @@ html.decoy #decoyScreen{display:flex;position:fixed;inset:0;z-index:5001;flex-di
 .dc-text{font-size:14px;color:#57606a;max-width:360px;line-height:1.6;}
 .dc-foot{position:absolute;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom));font-size:11px;color:#c4c9cf;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;cursor:default;-webkit-tap-highlight-color:transparent;padding:8px;}
 html.locked #lockScreen{display:flex;position:fixed;inset:0;z-index:5000;align-items:center;justify-content:center;background:var(--bg);padding:20px;}
-.lock-card{width:100%;max-width:320px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px 28px 28px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.06);}
-.lock-icon{width:48px;height:48px;margin:0 auto 14px;border-radius:14px;background:var(--surface2);color:var(--text1);display:flex;align-items:center;justify-content:center;}
+.lock-card{width:100%;max-width:280px;background:transparent;border:0;padding:0;text-align:center;box-shadow:none;}
+.lock-icon{width:56px;height:56px;margin:0 auto;border-radius:50%;background:var(--surface2);color:var(--text1);display:flex;align-items:center;justify-content:center;}
 .lock-title{font-size:20px;font-weight:700;letter-spacing:-.02em;}
+.lock-row{display:flex;align-items:center;margin-top:22px;}
+.lock-row .lock-inp{flex:1;min-width:0;}
+.lock-go{flex:0 0 48px;width:48px;height:48px;border:0;border-radius:12px;background:var(--text1);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity .15s;}
+.lock-go:hover{opacity:.85;}
 .lock-sub{font-size:13px;color:var(--text2);margin:4px 0 20px;}
-.lock-inp{display:block;width:100%;height:48px;border:1px solid var(--border2);border-radius:12px;text-align:center;font-family:inherit;font-size:18px;letter-spacing:.12em;color:var(--text1);outline:none;transition:border-color .15s,box-shadow .15s;}
-.lock-inp:focus{border-color:var(--text3);box-shadow:0 0 0 3px rgba(24,24,27,.07);}
+.lock-inp{display:block;width:100%;height:50px;border:1px solid transparent;border-radius:999px;background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.06),0 6px 20px rgba(0,0,0,.04);text-align:center;font-family:inherit;font-size:18px;letter-spacing:.12em;color:var(--text1);outline:none;transition:border-color .15s,box-shadow .15s;}
+.lock-inp:focus{border-color:var(--border2);box-shadow:0 1px 3px rgba(0,0,0,.06),0 6px 20px rgba(0,0,0,.04);}
 .lock-inp::placeholder{color:var(--border2);}
 .lock-inp::placeholder{letter-spacing:0;font-size:15px;}
 .lock-bio{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;height:44px;border:1px solid var(--border2);border-radius:12px;background:transparent;color:var(--text1);font:inherit;font-size:14px;font-weight:500;cursor:pointer;}
@@ -1015,12 +1019,11 @@ document.documentElement.classList.add('locked', 'decoy');
 <div id="lockScreen" aria-modal="true" role="dialog">
   <div class="lock-card">
     <div class="lock-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
-    <div class="lock-title">Hookah</div>
-    <div class="lock-sub">Введіть пароль для входу</div>
-    <input type="password" id="lockPin" onclick="bioFromField(event)" class="lock-inp" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="64" placeholder="Пароль"
+    <div class="lock-row">
+      <input type="password" id="lockPin" enterkeyhint="go" onclick="bioFromField(event)" class="lock-inp" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="64" placeholder=""
       oninput="lockInput(this)" onkeydown="if(event.key==='Enter'){event.preventDefault();unlockAttempt();}">
+    </div>
     <div class="lock-err" id="lockErr"></div>
-    <button type="button" class="full-action-btn" onclick="unlockAttempt()">Увійти</button>
     <button type="button" class="lock-bio" id="lockBioBtn" style="display:none!important" onclick="bioUnlock()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3H5a2 2 0 0 0-2 2v2M17 3h2a2 2 0 0 1 2 2v2M7 21H5a2 2 0 0 1-2-2v-2M17 21h2a2 2 0 0 0 2-2v-2"/><path d="M9 9v1M15 9v1M12 9v4h-1M9 16c1.7 1.3 4.3 1.3 6 0"/></svg>Face ID / Touch ID</button>
   </div>
 </div>
@@ -2221,7 +2224,7 @@ async function bioFromField(e) {
   } else gn('lockErr').textContent = 'Не розпізнано – натисніть на поле ще раз';
 }
 function renderBioLock() {
-  const inp = gn('lockPin'); if (inp) { inp.readOnly = !!bioInfo() && bioFails < 3; inp.placeholder = inp.readOnly ? 'Натисніть для Face ID / Touch ID' : 'Пароль'; } }
+  const inp = gn('lockPin'); if (inp) { inp.readOnly = !!bioInfo() && bioFails < 3; inp.placeholder = ''; } }
 async function renderBioSettings() {
   const box = gn('bioRow'); if (!box) return;
   const avail = await bioAvailable();
