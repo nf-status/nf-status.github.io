@@ -1247,6 +1247,26 @@ h1,h2,h3{font-weight:600;}
 #tab-tk.view-mode .tk-body .field,#tab-tk.view-mode .ec-row,#tab-tk.view-mode .ctk-row{cursor:pointer;}
 @media (min-width:641px){html:not(.locked):not(.decoy) body{zoom:.9;}}
 #tab-tk .tk-cost-row + .btn-add-flavor{margin:0 0 4px!important;}
+
+/* ── Раунд 7 ── */
+#tab-recipes .filter-chips .chip-pdf{height:40px!important;min-height:40px!important;}
+@media (min-width:641px){#tab-recipes .filter-chips .mini-search{width:234px!important;flex:0 0 234px!important;height:34px!important;min-height:34px!important;}}
+#tab-sklad{container-type:inline-size;}
+@media (min-width:641px){
+  .ops-page > .sklad-subnav{display:flex!important;width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important;box-sizing:border-box;height:44px;align-items:stretch;}
+  .ops-page > .sklad-subnav .sklad-sub-btn{flex:1 1 0!important;display:flex;align-items:center;justify-content:center;}
+}
+#tab-tk .tk-first-title{height:0!important;margin:0!important;padding:0!important;overflow:visible!important;}
+#tab-tk .tk-toolbar{position:fixed;right:84px;bottom:24px;z-index:200;display:flex;gap:10px;}
+.tk-fab{width:48px;height:48px;border-radius:50%;border:0;background:#fff;color:var(--text1);box-shadow:0 0 0 .5px rgba(60,60,67,.2),0 6px 20px rgba(0,0,0,.10);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;}
+.tk-fab.dark{background:#1C1C1E;color:#fff;}
+.tk-fab:active{transform:scale(.94);}
+
+@media (min-width:641px){
+  .app-header > #hdrReportActions.in-hdr{margin:0 max(0px, calc(50% - 521px)) 0 auto!important;flex-wrap:nowrap;}
+  .app-header > #hdrReportActions.in-hdr #repPosPick{width:234px!important;flex:0 0 234px!important;max-width:none!important;}
+  .app-header .tab-nav{flex:0 0 auto!important;}
+}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -1742,9 +1762,9 @@ document.documentElement.classList.add('locked', 'decoy');
   <div class="tk-section-title tk-first-title">
     <span></span>
     <div class="tk-toolbar">
-      <button class="btn-sm btn-save" id="btnTKEdit" onclick="startEditTK()">Редагувати</button>
-      <button class="btn-sm btn-cancel" id="btnTKCancel" style="display:none" onclick="cancelEditTK()">Скасувати</button>
-      <button class="btn-sm btn-save" id="btnTKDone" style="display:none" onclick="finishEditTK()">Готово</button>
+      <button class="tk-fab" id="btnTKEdit" onclick="startEditTK()" title="Редагувати" aria-label="Редагувати"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></button>
+      <button class="tk-fab" id="btnTKCancel" style="display:none" onclick="cancelEditTK()" title="Скасувати" aria-label="Скасувати"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <button class="tk-fab dark" id="btnTKDone" style="display:none" onclick="finishEditTK()" title="Готово" aria-label="Готово"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
     </div>
   </div>
   <div class="tk-card" style="margin-bottom:14px">
@@ -6042,6 +6062,18 @@ function printReportFallback(doc) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Панель звітів (пошук, період, PDF) – на комп'ютері в шапці поруч із вкладками
+function placeRepToolbar() {
+  const tb = gn('hdrReportActions'), hdr = document.querySelector('.app-header'), tab = gn('tab-reports');
+  if (!tb || !hdr || !tab) return;
+  const desk = matchMedia('(min-width:641px)').matches;
+  if (desk && tb.parentNode !== hdr) hdr.appendChild(tb);
+  else if (!desk && tb.parentNode === hdr) tab.insertBefore(tb, tab.firstChild);
+  tb.classList.toggle('in-hdr', desk);
+  tb.style.display = (desk && !tab.classList.contains('active')) ? 'none' : '';
+}
+window.addEventListener('resize', placeRepToolbar);
+setTimeout(() => { const _sw = switchTab; switchTab = function () { const r = _sw.apply(this, arguments); placeRepToolbar(); return r; }; placeRepToolbar(); }, 0);
 function switchTab(name) {
   if (name === 'settings') setTimeout(() => { renderSyncSettings(); renderBioSettings(); checkExportReminder(); }, 0);
   // Виробництво та відвантаження тепер – розділи «Складу»
@@ -7606,6 +7638,7 @@ new MutationObserver(muts => muts.forEach(m => m.addedNodes.forEach(n => {
 }))).observe(document.body, { childList: true, subtree: true });
 document.querySelectorAll('.pf').forEach(pfUpdateLabel);
 decorateTK();
+placeRepToolbar();
 renderBioLock();
 // Стежимо за висотою етапів рецепта і тримаємо колонки пропорційними
 if (window.ResizeObserver) {
