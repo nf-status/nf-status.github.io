@@ -1243,6 +1243,10 @@ h1,h2,h3{font-weight:600;}
 .filter-chips .mini-search{height:40px!important;}
 @media (max-width:640px){.filter-chips .mini-search{flex:0 0 calc(100% - 96px)!important;width:auto!important;max-width:none!important;box-sizing:border-box;}.filter-chips .chip-pdf{margin-right:0!important;}}
 
+#tab-tk.view-mode .tk-body .field input:disabled,#tab-tk.view-mode .tk-body .field .ss-btn:disabled,#tab-tk.view-mode .ec-row input:disabled,#tab-tk.view-mode .ctk-row input:disabled,#tab-tk.view-mode .ctk-name:disabled{pointer-events:none;}
+#tab-tk.view-mode .tk-body .field,#tab-tk.view-mode .ec-row,#tab-tk.view-mode .ctk-row{cursor:pointer;}
+@media (min-width:641px){html:not(.locked):not(.decoy) body{zoom:.9;}}
+#tab-tk .tk-cost-row + .btn-add-flavor{margin:0 0 4px!important;}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -1926,7 +1930,6 @@ document.documentElement.classList.add('locked', 'decoy');
   </div>
 
   <!-- Custom TK section -->
-  <div class="tk-section-title" style="margin-top:6px">Додаткові компоненти</div>
   <div id="customTKContainer"></div>
 
 </div>
@@ -3225,6 +3228,16 @@ function applyTKMode() {
   const fab = gn('fabAdd');
   if (fab && tab.classList.contains('active')) fab.style.display = tkEditMode ? 'flex' : 'none';
 }
+// Натиск на комірку техкарти в режимі перегляду – одразу вмикає редагування цього поля
+document.addEventListener('click', e => {
+  const tab = gn('tab-tk');
+  if (!tab || !tab.classList.contains('view-mode')) return;
+  const cell = e.target.closest('#tab-tk .tk-body .field, #tab-tk .ec-row, #tab-tk .ctk-row, #customTKContainer .tk-header');
+  if (!cell) return;
+  startEditTK();
+  const inp = cell.querySelector('input:not([type=hidden]), .ss-btn');
+  if (inp) setTimeout(() => { inp.focus(); if (inp.select) try { inp.select(); } catch(_) {} }, 30);
+});
 function startEditTK() {
   tkSnapshot = JSON.stringify({ techCards: DB.techCards, customTK: DB.customTK });
   tkEditMode = true;
@@ -3380,6 +3393,8 @@ function decorateTK() {
       body.appendChild(row);
     }
     row.appendChild(badge);
+    const add = body.querySelector(':scope > .btn-add-flavor');
+    if (add) body.appendChild(add);
   });
   document.querySelectorAll('#tab-tk .tk-body .field').forEach(f => {
     const lab = f.querySelector(':scope > label');
