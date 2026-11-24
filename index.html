@@ -1263,7 +1263,7 @@ h1,h2,h3{font-weight:600;}
 .tk-fab:active{transform:scale(.94);}
 
 @media (min-width:641px){
-  .app-header.rep-hdr{padding-left:max(24px, calc(50% - 520px))!important;padding-right:max(24px, calc(50% - 520px))!important;}
+  .app-header{padding-left:max(24px, calc(50% - var(--hw, 1152px) / 2))!important;padding-right:max(24px, calc(50% - var(--hw, 1152px) / 2))!important;}
   .app-header > #hdrReportActions.in-hdr{margin:0!important;flex:1 1 0!important;min-width:auto!important;justify-content:flex-end!important;flex-wrap:nowrap!important;}
   .app-header > #hdrReportActions.in-hdr .rep-tb-right{flex:0 0 auto;}
   .app-header > #hdrReportActions.in-hdr #repPosPick{width:auto!important;flex:0 1 234px!important;min-width:40px!important;max-width:234px!important;margin-left:auto!important;contain:inline-size;}
@@ -1273,6 +1273,7 @@ h1,h2,h3{font-weight:600;}
   .app-header.rep-hdr .tab-nav .tab-btn{flex:0 0 auto;}
 }
 @media (min-width:641px){.app-header > #hdrReportActions.in-hdr #repPosPick{overflow:hidden;}.app-header > #hdrReportActions.in-hdr #repPosPick *{min-width:0!important;}.app-header > #hdrReportActions.in-hdr #repPosPick .ss-btn{overflow:hidden;white-space:nowrap;text-overflow:clip;}}
+#repPosPick .ss-btn,#repPosPick select{height:34px!important;min-height:34px!important;border:0!important;box-shadow:0 0 0 1px rgba(60,60,67,.13)!important;background-color:#fff!important;}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -6079,6 +6080,10 @@ function placeRepToolbar() {
   const on = tab.classList.contains('active');
   tb.style.display = (desk && !on) ? 'none' : '';
   hdr.classList.toggle('rep-hdr', desk && on);
+  // шапка вирівнюється по ширині вмісту активної вкладки
+  const act = document.querySelector('.tab-btn.active')?.dataset.tab || 'recipes';
+  const HW = { sklad: 940, settings: 940, reports: 1040 };
+  hdr.style.setProperty('--hw', (HW[act] || 1152) + 'px');
 }
 window.addEventListener('resize', placeRepToolbar);
 setTimeout(() => { const _sw = switchTab; switchTab = function () { const r = _sw.apply(this, arguments); placeRepToolbar(); return r; }; placeRepToolbar(); }, 0);
