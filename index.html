@@ -748,6 +748,13 @@ tr.rm-wait td{background:#FFFBF3;}
 .aging-val{color:#9A6A1F;}
 .rm-filter{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--text2);margin:-4px 0 8px;}
 .rm-filter{flex-wrap:wrap;}
+/* Таблиці з розгортанням: фіксована ширина колонок, щоб вони не «стрибали» */
+.fin-table.fx{table-layout:fixed;width:100%;}
+.fin-table.fx td:first-child{white-space:normal;overflow-wrap:anywhere;}
+.fx-pnl th:first-child{width:55%;}
+.fx-stock th:first-child{width:40%;}
+.fx-cash th:first-child{width:30%;}
+.sg-arrow{transform-origin:50% 50%;text-align:center;}
 tr.sg-head,tr.pnl-x,tr.cm-head{cursor:pointer;}
 tr.cm-head:hover td{background:var(--surface2);}
 tr.cm-head.open .sg-arrow{transform:rotate(90deg);}
@@ -759,6 +766,8 @@ tr.cm-op td:first-child{padding-left:28px!important;white-space:normal!important
 tr.cm-op td b{font-weight:600;color:var(--text1);}
 @media (max-width:640px){
   .fin-table.cash-table{display:table;width:100%;}
+  .fx-cash th:first-child{width:auto;}
+  .fin-table.fx{display:table;}
   .cash-table th:nth-child(2),.cash-table td:nth-child(2),.cash-table th:nth-child(3),.cash-table td:nth-child(3),
   .cash-table th:nth-child(4),.cash-table td:nth-child(4),.cash-table th:nth-child(6),.cash-table td:nth-child(6){display:none;}
   .cash-table td:nth-child(5){white-space:nowrap;vertical-align:top;}
@@ -4690,7 +4699,7 @@ function reportPnL() {
   }).join('') : `<tr class="pnl-det" data-pd="wo"><td class="muted">Списань за цей період немає</td><td></td>${tail}</tr>`;
   const rowX = (label, k, cls, key) => row(`<span class="sg-arrow">›</span>${label}`, k, cls + ' pnl-x" data-pdh="' + key + '" onclick="togglePnl(\'' + key + '\')', true);
   return `
-    <table class="fin-table">
+    <table class="fin-table fx fx-pnl">
       <thead><tr><th>Стаття</th><th>Сума</th>${pp ? `<th>Попередній період</th><th>Зміна</th>` : ''}<th>% виручки</th></tr></thead>
       <tbody>
         ${row('Виручка від продажів', 'revenue', 'strong')}
@@ -4829,7 +4838,7 @@ function reportCash() {
   }).join('');
   const tnet = T.inflow - T.purchases - T.opex;
   return `
-    <table class="fin-table cash-table">
+    <table class="fin-table cash-table fx fx-cash">
       <thead><tr><th>Місяць</th><th>Надходження</th><th>Закупівлі</th><th>Опер. витрати</th><th>Чистий потік</th><th>Наростаючим</th></tr></thead>
       <tbody>${rows}
         <tr class="tot hl"><td>Разом</td><td>${fmtMoney(T.inflow)}</td><td>${neg(T.purchases)}</td><td>${neg(T.opex)}</td><td>${signed(tnet)}</td><td></td></tr>
@@ -4851,7 +4860,7 @@ function reportStock() {
   st.groups.forEach(g => g.items.forEach(i => { if (i.min > 0 && i.qty < i.min) low.push({ ...i, group: g.group }); }));
   return `
     <div class="rep-note" style="margin:0 0 12px">Стан на ${new Date().toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'})}, не залежить від обраного періоду.</div>
-    <table class="fin-table">
+    <table class="fin-table fx fx-stock">
       <thead><tr><th>Група</th><th>Позицій у наявності</th><th>Частка / ціна</th><th>Вартість</th></tr></thead>
       <tbody class="sg-body">${groups.map((g, gi) => `<tr class="sg-head" data-sgh="${gi}" onclick="toggleStockGroup(${gi})">
         <td><span class="sg-arrow">›</span>${g.group}</td><td class="muted">${g.items.filter(i => i.qty > 0.0005).length} з ${g.items.length}</td>
