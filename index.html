@@ -1304,6 +1304,10 @@ h1,h2,h3{font-weight:600;}
 .inv-subtotal{display:flex;justify-content:flex-end;gap:16px;flex-wrap:wrap;font-size:12px!important;}
 .inv-subtotal strong{color:var(--text1);font-weight:500;}
 #hdrStockActions:not(.in-hdr){margin-left:auto;}
+
+.inv-subtotal{gap:6px!important;padding:10px 0 14px!important;border-top:0!important;margin:0!important;}
+.inv-subtotal .ist{display:inline-flex;align-items:baseline;gap:6px;background:#F2F2F7;border-radius:999px;padding:5px 12px;font-size:12px;color:var(--text2);}
+.inv-subtotal .ist b{font-weight:500;color:var(--text1);font-variant-numeric:tabular-nums;font-size:13px;}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -6433,8 +6437,7 @@ function getAllInvItems() {
 
 // Підсумок групи складу: кількість позицій, вага, сума
 function invSubtotal(n, kg, sum) {
-  const pl = n % 10 === 1 && n % 100 !== 11 ? 'позиція' : ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100) ? 'позиції' : 'позицій');
-  return `<div class="inv-subtotal"><span>${n} ${pl}</span><span>Вага: <strong>${kgFmt(kg)}</strong></span><span>Сума: <strong>${Math.round(sum).toLocaleString('uk-UA')} грн</strong></span></div>`;
+  return `<div class="inv-subtotal"><span class="ist">Позицій <b>${n}</b></span><span class="ist">Вага <b>${kgFmt(kg)}</b></span><span class="ist">Сума <b>${Math.round(sum).toLocaleString('uk-UA')} грн</b></span></div>`;
 }
 function renderInventory() {
   const grid = gn('sklGrid');
