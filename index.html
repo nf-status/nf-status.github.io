@@ -1264,17 +1264,46 @@ h1,h2,h3{font-weight:600;}
 
 @media (min-width:641px){
   .app-header{padding-left:max(24px, calc(50% - var(--hw, 1152px) / 2))!important;padding-right:max(24px, calc(50% - var(--hw, 1152px) / 2))!important;}
-  .app-header > #hdrReportActions.in-hdr{margin:0!important;flex:1 1 0!important;min-width:auto!important;justify-content:flex-end!important;flex-wrap:nowrap!important;}
-  .app-header > #hdrReportActions.in-hdr .rep-tb-right{flex:0 0 auto;}
-  .app-header > #hdrReportActions.in-hdr #repPosPick{width:auto!important;flex:0 1 234px!important;min-width:40px!important;max-width:234px!important;margin-left:auto!important;contain:inline-size;}
-  .app-header > #hdrReportActions.in-hdr #repPosPick .ss,.app-header > #hdrReportActions.in-hdr #repPosPick .ss-btn{min-width:0!important;width:100%!important;}
+  .app-header > .rep-toolbar.in-hdr{margin:0!important;flex:1 1 0!important;min-width:auto!important;justify-content:flex-end!important;flex-wrap:nowrap!important;}
+  .app-header > .rep-toolbar.in-hdr .rep-tb-right{flex:0 0 auto;}
+  .app-header > .rep-toolbar.in-hdr .rep-tb-search{width:auto!important;flex:0 1 234px!important;min-width:40px!important;max-width:234px!important;margin-left:auto!important;contain:inline-size;}
+  .app-header > .rep-toolbar.in-hdr .rep-tb-search .ss,.app-header > .rep-toolbar.in-hdr .rep-tb-search .ss-btn{min-width:0!important;width:100%!important;}
   .app-header.rep-hdr .tab-nav{flex:0 1 auto!important;min-width:0;overflow-x:auto;scrollbar-width:none;}
   .app-header.rep-hdr .tab-nav::-webkit-scrollbar{display:none;}
   .app-header.rep-hdr .tab-nav .tab-btn{flex:0 0 auto;}
 }
-@media (min-width:641px){.app-header > #hdrReportActions.in-hdr #repPosPick *{min-width:0!important;}.app-header > #hdrReportActions.in-hdr #repPosPick .ss-btn{overflow:hidden;white-space:nowrap;text-overflow:clip;}}
+@media (min-width:641px){.app-header > .rep-toolbar.in-hdr .rep-tb-search *{min-width:0!important;}.app-header > .rep-toolbar.in-hdr .rep-tb-search .ss-btn{overflow:hidden;white-space:nowrap;text-overflow:clip;}}
 #repPosPick .ss-btn,#repPosPick select{height:34px!important;min-height:34px!important;border:0!important;box-shadow:inset 0 0 0 1px rgba(60,60,67,.13)!important;background-color:#fff!important;}
 #repPosPick .ss-btn,#repPosPick select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='%23B4B4B9' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E")!important;background-size:13px 13px!important;background-position:14px center!important;}
+
+/* ── Раунд 8: пошук і PDF асортименту в шапці, Light/Strong ── */
+.rec-search .mini-search{width:100%!important;flex:1 1 auto!important;max-width:none!important;box-sizing:border-box;}
+.app-header > .rep-toolbar.in-hdr .rec-search .mini-search{height:34px!important;min-height:34px!important;}
+.rec-toolbar .chip-pdf{height:40px!important;}
+.ls-seg{display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:999px;background:rgba(118,118,128,.12);align-self:center;margin:0 auto 0 10px;}
+.ls-seg .filter-chip{height:28px!important;min-height:28px!important;padding:0 12px!important;font-size:13px!important;border:0!important;box-shadow:none!important;background:transparent!important;color:var(--text1)!important;}
+.ls-seg .filter-chip.active{background:#fff!important;color:#000!important;box-shadow:0 1px 3px rgba(0,0,0,.12)!important;}
+#tab-recipes .filter-chips{align-items:center;}
+@media (max-width:640px){
+  .filter-chips #hdrRecipeActions{order:-1;flex:1 1 100%;display:flex;flex-wrap:nowrap!important;gap:8px;margin:0;}
+  .filter-chips #hdrRecipeActions .rec-search .mini-search{flex:1 1 auto!important;width:100%!important;}
+  .filter-chips #hdrRecipeActions .rec-search{flex:1 1 auto;min-width:0;}
+  .filter-chips #hdrRecipeActions .rep-tb-right{margin:0!important;}
+  .ls-seg{margin:0;}
+}
+
+/* ── Раунд 9 ── */
+.ops-actions{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.ops-title{display:flex;align-items:center;gap:10px;}
+.sx{display:flex;align-items:center;height:44px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 1px rgba(60,60,67,.13);transition:width .25s ease;width:44px;overflow:hidden;flex-direction:row-reverse;}
+.sx.open{width:200px;}
+.sx-btn{flex:0 0 44px;width:44px;height:44px;border:0;background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text1);cursor:pointer;padding:0;}
+.sx-inp{flex:1 1 auto;min-width:0;width:0;border:0!important;outline:0;background:transparent!important;box-shadow:none!important;font-size:16px;padding:0 0 0 16px!important;height:44px;font-family:inherit;color:var(--text1);}
+.sx:not(.open) .sx-inp{padding:0!important;}
+@media (max-width:640px){.sx.open{width:150px;}}
+.inv-subtotal{display:flex!important;justify-content:flex-end;gap:16px;flex-wrap:wrap;font-size:12px!important;}
+.inv-subtotal strong{color:var(--text1);font-weight:500;}
+#hdrStockActions:not(.in-hdr){margin-left:auto;}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -1458,7 +1487,7 @@ document.documentElement.classList.add('locked', 'decoy');
     </div>
 
   <div class="ops-box" id="recipeMoves" style="display:none;margin-top:16px">
-    <div class="ops-title"><span>Рух позиції</span><div class="pf" data-cb="renderRecipeMoves"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="rmFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="rmTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+    <div class="ops-title"><span>Рух позиції</span><div class="pf" data-cb="renderRecipeMoves"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label><input type="date" id="rmFrom" class="finp" onchange="pfChanged(this)"></label><label><input type="date" id="rmTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
     <div id="recipeMovesBody"></div>
   </div>
 </div>
@@ -1471,11 +1500,8 @@ document.documentElement.classList.add('locked', 'decoy');
     <button class="filter-chip" id="chipElsewhere" onclick="setRecipeFilter('elsewhere')">Elsewhere</button>
     <button class="filter-chip" id="chipTester" onclick="setRecipeFilter('tester')">Тестер</button>
     <button class="filter-chip chip-deleted" id="chipDeleted" onclick="setRecipeFilter('deleted')" style="display:none">Видалені <span class="chip-cnt" id="trashCnt">0</span></button>
-    <span class="chip-sep" aria-hidden="true"></span>
-    <button class="filter-chip base-chip" id="chipLight" onclick="setBaseFilter('light')" title="Рецепти на Tobacco Base Light">Light</button>
-    <button class="filter-chip base-chip" id="chipStrong" onclick="setBaseFilter('dark')" title="Рецепти на Tobacco Base Dark">Strong</button>
-    <label class="mini-search" title="Пошук по асортименту"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="recipeSearch" placeholder="" autocomplete="off" oninput="setRecipeSearch(this.value)"></label>
-    <button class="ops-btn primary chip-pdf" onclick="exportCatalogPDF()" title="PDF з наявністю «Постійні смаки» та «Elsewhere» для замовника"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>PDF</button>
+    <span class="ls-seg"><button class="filter-chip base-chip" id="chipLight" onclick="setBaseFilter('light')" title="Рецепти на Tobacco Base Light">Light</button><button class="filter-chip base-chip" id="chipStrong" onclick="setBaseFilter('dark')" title="Рецепти на Tobacco Base Dark">Strong</button></span>
+    <div class="rep-toolbar rec-toolbar" id="hdrRecipeActions"><div class="rep-tb-search rec-search"><label class="mini-search" title="Пошук по асортименту"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="recipeSearch" placeholder="" autocomplete="off" oninput="setRecipeSearch(this.value)"></label></div><div class="rep-tb-right"><button class="ops-btn primary chip-pdf" onclick="exportCatalogPDF()" title="PDF з наявністю «Постійні смаки» та «Elsewhere» для замовника"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>PDF</button></div></div>
   </div>
   <div class="rlc-grid" id="recipeListGrid"></div>
 </div>
@@ -1496,7 +1522,7 @@ document.documentElement.classList.add('locked', 'decoy');
     <!-- Page: Залишки -->
     <div class="sklad-subpage active" id="sklPage-zalishky">
       <div class="ops-box">
-        <div class="ops-title"><span>Складські залишки</span><label class="mini-search" title="Пошук по складу"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="invSearch" placeholder="" autocomplete="off" oninput="filterInventory(this.value)"></label></div>
+        <div class="ops-title"><span>Складські залишки</span><div class="rep-toolbar rec-toolbar" id="hdrStockActions"><div class="rep-tb-search rec-search"><label class="mini-search" title="Пошук по складу"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="invSearch" placeholder="" autocomplete="off" oninput="filterInventory(this.value)"></label></div></div></div>
         <div id="invWarnBanner" class="inv-warn-banner" style="display:none"></div>
         <div id="sklGrid"></div>
       </div>
@@ -1539,11 +1565,11 @@ document.documentElement.classList.add('locked', 'decoy');
       <button class="full-action-btn" onclick="confirmProduction()">✓ Підтвердити виробництво</button>
     </div>
     <div class="ops-box">
-      <div class="ops-title"><span>Журнал виробництва</span><div class="pf" data-cb="renderProdLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="prodLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="prodLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+      <div class="ops-title"><span>Журнал виробництва</span><div class="ops-actions"><div class="sx" data-target="prodLog"><input class="sx-inp" type="text" enterkeyhint="search" autocomplete="off" oninput="sxFilter(this)" onkeydown="if(event.key==='Escape')sxClose(this)"><button type="button" class="sx-btn" onclick="sxToggle(this)" title="Пошук" aria-label="Пошук"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div><div class="pf" data-cb="renderProdLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label><input type="date" id="prodLogFrom" class="finp" onchange="pfChanged(this)"></label><label><input type="date" id="prodLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div></div>
       <div class="log-wrap" id="prodLog"><div class="log-empty">Записів немає</div></div>
     </div>
     <div class="ops-box">
-      <div class="ops-title"><span>Звіт за період</span><div class="pf" data-cb="renderProdReport"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="prodRepFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="prodRepTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+      <div class="ops-title"><span>Звіт за період</span><div class="ops-actions"><div class="sx" data-target="prodReport"><input class="sx-inp" type="text" enterkeyhint="search" autocomplete="off" oninput="sxFilter(this)" onkeydown="if(event.key==='Escape')sxClose(this)"><button type="button" class="sx-btn" onclick="sxToggle(this)" title="Пошук" aria-label="Пошук"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div><div class="pf" data-cb="renderProdReport"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label><input type="date" id="prodRepFrom" class="finp" onchange="pfChanged(this)"></label><label><input type="date" id="prodRepTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div></div>
       <div id="prodReport"><div class="log-empty">Оберіть період або натисніть «Показати весь час»</div></div>
     </div>
     <div class="ops-box">
@@ -1597,7 +1623,7 @@ document.documentElement.classList.add('locked', 'decoy');
       <button class="full-action-btn" onclick="confirmShipment()">✓ Підтвердити відвантаження</button>
     </div>
     <div class="ops-box">
-      <div class="ops-title"><span>Журнал відвантажень</span><div class="pf" data-cb="renderShipLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="shipLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="shipLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+      <div class="ops-title"><span>Журнал відвантажень</span><div class="ops-actions"><div class="sx" data-target="shipLog"><input class="sx-inp" type="text" enterkeyhint="search" autocomplete="off" oninput="sxFilter(this)" onkeydown="if(event.key==='Escape')sxClose(this)"><button type="button" class="sx-btn" onclick="sxToggle(this)" title="Пошук" aria-label="Пошук"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div><div class="pf" data-cb="renderShipLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label><input type="date" id="shipLogFrom" class="finp" onchange="pfChanged(this)"></label><label><input type="date" id="shipLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div></div>
       <div class="log-wrap" id="shipLog"><div class="log-empty">Записів немає</div></div>
     </div>
     </div>
@@ -1605,13 +1631,12 @@ document.documentElement.classList.add('locked', 'decoy');
     <!-- Page: Інвентаризація -->
     <div class="sklad-subpage" id="sklPage-inventaryzatsia">
       <div class="ops-box">
-        <div class="ops-title"><span>Введіть фактичні залишки</span></div>
-        <input type="text" id="auditSearch" class="finp" placeholder="" style="margin-bottom:12px" oninput="filterAuditGrid(this.value)">
+        <div class="ops-title"><span>Введіть фактичні залишки</span><div class="ops-actions"><div class="sx" data-target="auditGrid"><input class="sx-inp" type="text" enterkeyhint="search" autocomplete="off" oninput="sxFilter(this)" onkeydown="if(event.key==='Escape')sxClose(this)"><button type="button" class="sx-btn" onclick="sxToggle(this)" title="Пошук" aria-label="Пошук"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div></div></div>
         <div id="auditGrid" style="margin-bottom:12px"></div>
         <button class="full-action-btn" onclick="confirmAudit()">✓ Зберегти інвентаризацію</button>
       </div>
       <div class="ops-box">
-        <div class="ops-title"><span>Журнал інвентаризацій</span><div class="pf" data-cb="renderAuditLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="auditLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="auditLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+        <div class="ops-title"><span>Журнал інвентаризацій</span><div class="pf" data-cb="renderAuditLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label><input type="date" id="auditLogFrom" class="finp" onchange="pfChanged(this)"></label><label><input type="date" id="auditLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
         <div class="log-wrap" id="auditLogEl"><div class="log-empty">Інвентаризацій ще не проводилось</div></div>
       </div>
       <div class="ops-box">
@@ -1685,7 +1710,7 @@ document.documentElement.classList.add('locked', 'decoy');
         <button class="full-action-btn" onclick="confirmReceipt()">✓ Зберегти прихід</button>
       </div>
       <div class="ops-box">
-        <div class="ops-title"><span>Журнал приходів</span><div class="pf" data-cb="renderReceiptLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="receiptLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="receiptLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+        <div class="ops-title"><span>Журнал приходів</span><div class="ops-actions"><div class="sx" data-target="receiptLog"><input class="sx-inp" type="text" enterkeyhint="search" autocomplete="off" oninput="sxFilter(this)" onkeydown="if(event.key==='Escape')sxClose(this)"><button type="button" class="sx-btn" onclick="sxToggle(this)" title="Пошук" aria-label="Пошук"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div><div class="pf" data-cb="renderReceiptLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label><input type="date" id="receiptLogFrom" class="finp" onchange="pfChanged(this)"></label><label><input type="date" id="receiptLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div></div>
         <div class="log-wrap" id="receiptLog"><div class="log-empty">Приходів ще не було</div></div>
       </div>
     </div>
@@ -1713,7 +1738,7 @@ document.documentElement.classList.add('locked', 'decoy');
         <button class="full-action-btn" onclick="confirmWriteoff()">✓ Підтвердити списання</button>
       </div>
       <div class="ops-box">
-        <div class="ops-title"><span>Журнал списань</span><div class="pf" data-cb="renderWriteoffLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="writeoffLogFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="writeoffLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+        <div class="ops-title"><span>Журнал списань</span><div class="ops-actions"><div class="sx" data-target="writeoffLog"><input class="sx-inp" type="text" enterkeyhint="search" autocomplete="off" oninput="sxFilter(this)" onkeydown="if(event.key==='Escape')sxClose(this)"><button type="button" class="sx-btn" onclick="sxToggle(this)" title="Пошук" aria-label="Пошук"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div><div class="pf" data-cb="renderWriteoffLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label><input type="date" id="writeoffLogFrom" class="finp" onchange="pfChanged(this)"></label><label><input type="date" id="writeoffLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div></div>
         <div class="log-wrap" id="writeoffLog"><div class="log-empty">Списань ще не проводилось</div></div>
       </div>
     </div>
@@ -1727,7 +1752,7 @@ document.documentElement.classList.add('locked', 'decoy');
     <div class="rep-toolbar" id="hdrReportActions">
       <div class="rep-tb-search" id="repPosPick"></div>
       <div class="rep-tb-right">  
-    <div class="pf" data-cb="renderReports"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label>З<input type="date" id="repFrom" class="finp" onchange="pfChanged(this)"></label><label>По<input type="date" id="repTo" class="finp" onchange="pfChanged(this)"></label></div></div></div>
+    <div class="pf" data-cb="renderReports"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label><input type="date" id="repFrom" class="finp" onchange="pfChanged(this)"></label><label><input type="date" id="repTo" class="finp" onchange="pfChanged(this)"></label></div></div></div>
         <div class="pdf-wrap">
           <button type="button" class="ops-btn primary" onclick="togglePdfMenu(event)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>PDF
@@ -6072,15 +6097,24 @@ function printReportFallback(doc) {
 // ─────────────────────────────────────────────────────────────────────────────
 // Панель звітів (пошук, період, PDF) – на комп'ютері в шапці поруч із вкладками
 function placeRepToolbar() {
-  const tb = gn('hdrReportActions'), hdr = document.querySelector('.app-header'), tab = gn('tab-reports');
-  if (!tb || !hdr || !tab) return;
+  const hdr = document.querySelector('.app-header');
+  if (!hdr) return;
   const desk = matchMedia('(min-width:641px)').matches;
-  if (desk && tb.parentNode !== hdr) hdr.appendChild(tb);
-  else if (!desk && tb.parentNode === hdr) tab.insertBefore(tb, tab.firstChild);
-  tb.classList.toggle('in-hdr', desk);
-  const on = tab.classList.contains('active');
-  tb.style.display = (desk && !on) ? 'none' : '';
-  hdr.classList.toggle('rep-hdr', desk && on);
+  let anyOn = false;
+  [['hdrReportActions', 'tab-reports', t => t.insertBefore(gn('hdrReportActions'), t.firstChild)],
+   ['hdrRecipeActions', 'tab-recipes', t => t.querySelector('.filter-chips').appendChild(gn('hdrRecipeActions'))],
+   ['hdrStockActions', 'tab-sklad', () => gn('sklPage-zalishky').querySelector('.ops-title').appendChild(gn('hdrStockActions')), () => gn('sklPage-zalishky')?.classList.contains('active')]
+  ].forEach(([id, tabId, putHome, extra]) => {
+    const tb = gn(id), tab = gn(tabId);
+    if (!tb || !tab) return;
+    const on = tab.classList.contains('active') && (!extra || extra());
+    if (desk && tb.parentNode !== hdr) hdr.appendChild(tb);
+    else if (!desk && tb.parentNode === hdr) putHome(tab);
+    tb.classList.toggle('in-hdr', desk);
+    tb.style.display = (desk && !on) ? 'none' : '';
+    if (desk && on) anyOn = true;
+  });
+  hdr.classList.toggle('rep-hdr', anyOn);
   // шапка вирівнюється по ширині вмісту активної вкладки
   const act = document.querySelector('.tab-btn.active')?.dataset.tab || 'recipes';
   const HW = { sklad: 940, settings: 940, reports: 1040 };
@@ -6315,14 +6349,14 @@ function renderInvAromaManage() {
   groups.sort((a, b) => (a.pref === '') - (b.pref === ''));   // «Інші» – в кінці
   let html = '';
   groups.forEach(g => {
-    let sum = 0;
+    let sum = 0, kgSum = 0;
     html += `<div class="inv-group-hdr">${g.pref ? 'Ароматизатори ' + escHtml(g.pref) : 'Інші ароматизатори'}</div>`;
     g.items.forEach(f => {
       const key = 'flav_' + f.name;
       const qty = DB.inventory[key] || 0;
       const minV = (DB.invMin || {})[key] || 0;
       const fprice = f.price || 0;
-      sum += qty * fprice;
+      sum += qty * fprice; kgSum += qty;
       const low = qty < 0.001;
       const warn = !low && minV > 0 && qty < minV;
       html += `<div class="inv-row inv-row5${low ? ' inv-low' : (warn ? ' inv-warn' : '')}">
@@ -6333,7 +6367,7 @@ function renderInvAromaManage() {
         <button class="x-del inv-x" onclick="deleteAroma(${f.id})" title="Видалити ароматизатор">×</button>
       </div>`;
     });
-    html += `<div class="inv-subtotal">Сума: <strong>${Math.round(sum).toLocaleString('uk-UA')} грн</strong></div>`;
+    html += invSubtotal(g.items.length, kgSum, sum);
   });
   el.innerHTML = html;
 }
@@ -6398,6 +6432,11 @@ function getAllInvItems() {
   return items;
 }
 
+// Підсумок групи складу: кількість позицій, вага, сума
+function invSubtotal(n, kg, sum) {
+  const pl = n % 10 === 1 && n % 100 !== 11 ? 'позиція' : ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100) ? 'позиції' : 'позицій');
+  return `<div class="inv-subtotal"><span>${n} ${pl}</span><span>Вага: <strong>${kgFmt(kg)}</strong></span><span>Сума: <strong>${Math.round(sum).toLocaleString('uk-UA')} грн</strong></span></div>`;
+}
 function renderInventory() {
   const grid = gn('sklGrid');
   if (!grid) return;
@@ -6407,9 +6446,10 @@ function renderInventory() {
 
   getInvGroups().forEach(g => {
     html += `<div class="inv-group-hdr">${g.group}</div>`;
-    let groupTotal = 0;
+    let groupTotal = 0, groupKg = 0;
     g.items.forEach(item => {
       const qty = DB.inventory[item.key] || 0;
+      groupKg += item.unit === 'г' ? qty / 1000 : qty;
       const low = qty < 0.001;
       const disp = fmtQty(qty, item.unit);
       const minV = (DB.invMin || {})[item.key] || 0;
@@ -6427,7 +6467,7 @@ function renderInventory() {
       </div>`;
     });
     grandTotal += groupTotal;
-    html += `<div class="inv-subtotal">Сума: <strong>${Math.round(groupTotal).toLocaleString('uk-UA')} грн</strong></div>`;
+    html += invSubtotal(g.items.length, groupKg, groupTotal);
   });
 
   // Flavors: include in grand total (rows rendered in aroma manage box below)
@@ -6734,7 +6774,36 @@ function filterAuditGrid(query) {
   });
 }
 
+
+// ── Кнопка пошуку в розділах складу: розгортається в поле, фільтрує рядки розділу ──
+function sxToggle(btn) {
+  const sx = btn.closest('.sx'), inp = sx.querySelector('.sx-inp');
+  if (sx.classList.contains('open') && !inp.value) { sxClose(inp); return; }
+  sx.classList.add('open'); setTimeout(() => inp.focus(), 30);
+}
+function sxClose(inp) { const sx = inp.closest('.sx'); inp.value = ''; sxFilter(inp); sx.classList.remove('open'); inp.blur(); }
+function sxApply(sx) {
+  const el = gn(sx.dataset.target); if (!el) return;
+  const q = (sx.querySelector('.sx-inp').value || '').trim().toLowerCase();
+  if (sx.dataset.target === 'auditGrid') { filterAuditGrid(q); return; }
+  let rows = el.querySelectorAll('.log-entry');
+  if (!rows.length) rows = el.querySelectorAll('tbody tr, .inv-row');
+  rows.forEach(r => { r.style.display = (!q || r.textContent.toLowerCase().includes(q)) ? '' : 'none'; });
+}
+function sxFilter(inp) {
+  const sx = inp.closest('.sx'); sxApply(sx);
+  const el = gn(sx.dataset.target);
+  if (el && !el._sxObs) {   // після перемальовування списку фільтр застосовується знову
+    el._sxObs = new MutationObserver(() => { if (sx.querySelector('.sx-inp').value) sxApply(sx); });
+    el._sxObs.observe(el, { childList: true });
+  }
+}
+document.addEventListener('click', e => {
+  document.querySelectorAll('.sx.open').forEach(sx => { if (!sx.contains(e.target) && !sx.querySelector('.sx-inp').value) sx.classList.remove('open'); });
+});
+
 function switchSkladPage(page) {
+  setTimeout(placeRepToolbar, 0);
   navPushSoon();
   document.querySelectorAll('.sklad-subpage').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sklad-sub-btn').forEach(b => b.classList.remove('active'));
