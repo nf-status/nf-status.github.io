@@ -5882,9 +5882,9 @@ const PDF_CSS = `
   body{font-family:Inter,'Segoe UI',Roboto,Arial,sans-serif;color:#18181B;font-size:10.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   header{border-bottom:2px solid #18181B;padding-bottom:10px;margin-bottom:16px}
   .brand{font-size:8pt;letter-spacing:.18em;text-transform:uppercase;color:#71717A}
-  h1{font-size:20pt;font-weight:600;letter-spacing:-.02em;margin:4px 0}
+  h1{font-size:20pt;font-weight:600;letter-spacing:normal;margin:4px 0}
   .meta{font-size:9pt;color:#71717A}
-  h2{font-size:13pt;font-weight:600;margin:0 0 10px;letter-spacing:-.01em}
+  h2{font-size:13pt;font-weight:600;margin:0 0 10px;letter-spacing:normal}
   section{margin-top:22px;page-break-inside:auto}
   section+section{page-break-before:always}
   .kpi-row{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #E4E4E7;border-radius:8px;overflow:hidden}
@@ -5997,7 +5997,8 @@ async function blocksToPdf(doc) {
   const host = document.createElement('div');
   host.style.cssText = `position:fixed;left:-10000px;top:0;width:${PX_W}px;background:#fff;z-index:-1`;
   host.innerHTML = `<style>${scopedPdfCss()}</style><div class="pdfdoc" style="width:${PX_W}px;padding:0;background:#fff">${doc.blocks.map(b => `<div class="pdf-block">${b}</div>`).join('')}</div>`;
-  document.body.appendChild(host);
+  // поза <body>, щоб масштаб сторінки (zoom) не спотворював PDF
+  document.documentElement.appendChild(host);
   try {
     if (document.fonts?.ready) await document.fonts.ready;
     const { jsPDF } = window.jspdf;
@@ -6012,7 +6013,8 @@ async function blocksToPdf(doc) {
       const top = block.getBoundingClientRect().top;
       // Межі рядків таблиць – щоб не різати рядок навпіл
       const cuts = [...block.querySelectorAll('tr, .abc-sum, .metric-grid, .kpi-row, .rep-note, .rep-sec-title, h2, .cat-item')]
-        .map(el => el.getBoundingClientRect().bottom - top).filter(v => v > 0).sort((a, b) => a - b);
+        .flatMap(el => { const r = el.getBoundingClientRect(); return el.matches('.cat-item, .rep-sec-title, h2') ? [r.top - top, r.bottom - top] : [r.bottom - top]; })
+        .filter(v => v > 0).sort((a, b) => a - b);
       const canvas = await html2canvas(block, { scale: 2, backgroundColor: '#ffffff', logging: false, useCORS: true });
       const k = canvas.height / block.offsetHeight;
       const H = block.offsetHeight;
@@ -6068,7 +6070,7 @@ function buildCatalogDoc() {
     if (!list.length) return '';
     const kgSum = list.reduce((s, r) => s + (DB.finishedGoods[r.id] || 0), 0);
     totalKg += kgSum; totalPos += list.length;
-    return `<section class="cat-sec"><h2>${c.title}<span class="cat-count">${list.length} ${plural(list.length, 'позиція', 'позиції', 'позицій')}</span></h2>
+    return `<section class="cat-sec"><h2><span class="cat-title">${c.title}</span><span class="cat-count">${list.length} ${plural(list.length, 'позиція', 'позиції', 'позицій')}</span></h2>
       ${list.map(r => {
         const kg = DB.finishedGoods[r.id] || 0;
         return `<div class="cat-item${kg < 0.0005 ? ' out' : ''}">
