@@ -1309,6 +1309,7 @@ html{background:var(--bg);min-height:100%;}
 .inv-subtotal{gap:6px!important;padding:10px 0 14px!important;border-top:0!important;margin:0!important;}
 .inv-subtotal .ist{display:inline-flex;align-items:baseline;gap:6px;background:#F2F2F7;border-radius:999px;padding:5px 12px;font-size:12px;color:var(--text2);}
 .inv-subtotal .ist b{font-weight:500;color:var(--text1);font-variant-numeric:tabular-nums;font-size:13px;}
+#tab-calc.view-mode #calcName{display:none!important;}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -1373,6 +1374,7 @@ document.documentElement.classList.add('locked', 'decoy');
     <button class="btn-sm btn-cancel" id="btnCancelEdit" style="display:none" onclick="cancelEditRecipe()">Скасувати</button>
     <button class="btn-sm btn-delete" id="btnDeleteRecipe" style="display:none" onclick="deleteRecipe()">Видалити</button>
   </div>
+  <input id="calcName" class="finp" type="text" placeholder="Назва продукту" autocomplete="off" style="display:block;width:100%;margin-bottom:8px;">
   <textarea id="calcDesc" class="finp" rows="1" placeholder="Опис рецепту..." style="display:block;width:100%;margin-bottom:8px;padding:8px 10px;font-size:13px;min-height:36px;" oninput="this.style.height='auto';this.style.height=Math.max(36,this.scrollHeight)+'px'"></textarea>
   <div class="calc-meta-row">
     <select id="calcCategory" class="finp" style="height:36px;padding:0 10px;font-size:12px;font-weight:500">
@@ -3964,7 +3966,7 @@ function applyCalcMode() {
   tab.classList.toggle('view-mode', view);
   const s4 = gn('stageCustomTK');
   if (s4) s4.classList.toggle('stage-empty-view', view && !calcCustomTKUsages.length);
-  tab.querySelectorAll('.stages-top input, .stages-top select, #calcDesc, #calcCategory, #calcAging').forEach(el => {
+  tab.querySelectorAll('.stages-top input, .stages-top select, #calcName, #calcDesc, #calcCategory, #calcAging').forEach(el => {
     if (el.readOnly && el.tagName === 'INPUT') return;           // фіксовані ціни
     if (el.disabled !== view) el.disabled = view;
   });
@@ -4074,6 +4076,7 @@ function loadRecipe(id) {
   if (!calcFlavors.length) calcFlavors = [{ id: nextFlavorId++, name: '', vol: 0 }];
   gn('nicVol').value  = d.nicVol  ?? 0.010;
   calcCustomTKUsages = (d.customTKUsages || []).map(u => ({ id: nextCustomTKUId++, cardId: u.cardId, kg: u.kg }));
+  if (gn('calcName')) gn('calcName').value = r.name || '';
   const _descEl = gn('calcDesc');
   if (_descEl) { _descEl.value = r.description || ''; _descEl.style.height = 'auto'; _descEl.style.height = Math.max(36, _descEl.scrollHeight) + 'px'; }
   const _catEl = gn('calcCategory');
@@ -4109,6 +4112,11 @@ async function saveRecipe() {
   if (noName) { showToast('Оберіть аромат у рядку, де вказана кількість'); return; }
   const data = collectRecipeData();
   const desc = (gn('calcDesc')?.value || '').trim();
+  const newName = (gn('calcName')?.value || '').trim();
+  if (currentRecipeId && !newName) { showToast('Вкажіть назву продукту'); gn('calcName')?.focus(); return; }
+  if (newName && DB.recipes.some(x => x.id !== currentRecipeId && x.name.trim().toLowerCase() === newName.toLowerCase())) {
+    showToast('Продукт з такою назвою вже є'); gn('calcName')?.focus(); return;
+  }
   const category = gn('calcCategory')?.value || 'permanent';
   const agRaw = (gn('calcAging')?.value || '').trim(), agingDays = parseFloat(agRaw);
   if (agRaw === '' || isNaN(agingDays) || agingDays < 0) {
@@ -4119,9 +4127,9 @@ async function saveRecipe() {
   gn('calcAging')?.classList.remove('inp-err');
   if (currentRecipeId) {
     const r = DB.recipes.find(r => r.id === currentRecipeId);
-    if (r && !r.builtin) { r.data = data; r.description = desc; r.category = category; r.agingDays = agingDays; saveDB(); calcEditMode = false; renderRecipeBar(); renderRecipeList(); showToast('Рецепт збережено ✓'); return; }
+    if (r && !r.builtin) { if (newName) r.name = newName; r.data = data; r.description = desc; r.category = category; r.agingDays = agingDays; saveDB(); calcEditMode = false; renderRecipeBar(); renderRecipeList(); showToast('Рецепт збережено ✓'); return; }
   }
-  const name = await uiPrompt('Назва рецепту:');
+  const name = newName || (await uiPrompt('Назва рецепту:') || '').trim();
   if (!name) return;
   const id = 'r_' + Date.now();
   DB.recipes.push({ id, name, description: desc, category, agingDays, builtin: false, data });
@@ -4161,6 +4169,7 @@ function clearCalculator() {
   gn('nicVol').value  = 0.010;
   calcCustomTKUsages = [];
   const _cd = gn('calcDesc'); if (_cd) { _cd.value = ''; _cd.style.height = '36px'; }
+  if (gn('calcName')) gn('calcName').value = '';
   const _ag = gn('calcAging'); if (_ag) { _ag.value = ''; _ag.classList.remove('inp-err'); }
   renderFlavorRows(); renderCustomTKRows(); syncAllToCalc(); calc();
 }
