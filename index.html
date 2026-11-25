@@ -6530,10 +6530,13 @@ function renderFinishedGoods() {
   if (!el) return;
   const recipes = DB.recipes;
   if (!recipes.length) { el.innerHTML = '<div class="log-empty">Немає рецептів</div>'; return; }
+  let totKg = 0, totSum = 0;
   el.innerHTML = [...recipes]
     .sort((a,b) => a.name.localeCompare(b.name,'uk'))
     .map(r => {
       const kg = DB.finishedGoods[r.id] || 0;
+      totKg += kg;
+      if (kg > 0) { try { totSum += kg * (calcRecipeCostData(r.data).perKg || 0); } catch (_) {} }
       const name = r.name.replace(/^(TK|ТК)\s+/i,'');
       const low = kg < 0.001;
       return `<div class="inv-row${low ? ' inv-low' : ''}">
@@ -6541,7 +6544,7 @@ function renderFinishedGoods() {
         <div class="inv-qty ${low ? 'low' : 'ok'}">${kgFmt(kg)}</div>
         <div></div>
       </div>`;
-    }).join('');
+    }).join('') + invSubtotal(recipes.length, totKg, totSum);
 }
 
 
