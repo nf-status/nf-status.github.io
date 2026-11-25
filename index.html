@@ -1301,7 +1301,7 @@ h1,h2,h3{font-weight:600;}
 .sx-inp{flex:1 1 auto;min-width:0;width:0;border:0!important;outline:0;background:transparent!important;box-shadow:none!important;font-size:16px;padding:0 0 0 16px!important;height:44px;font-family:inherit;color:var(--text1);}
 .sx:not(.open) .sx-inp{padding:0!important;}
 @media (max-width:640px){.sx.open{width:150px;}}
-.inv-subtotal{display:flex!important;justify-content:flex-end;gap:16px;flex-wrap:wrap;font-size:12px!important;}
+.inv-subtotal{display:flex;justify-content:flex-end;gap:16px;flex-wrap:wrap;font-size:12px!important;}
 .inv-subtotal strong{color:var(--text1);font-weight:500;}
 #hdrStockActions:not(.in-hdr){margin-left:auto;}
 </style>
@@ -1522,7 +1522,7 @@ document.documentElement.classList.add('locked', 'decoy');
     <!-- Page: Залишки -->
     <div class="sklad-subpage active" id="sklPage-zalishky">
       <div class="ops-box">
-        <div class="ops-title"><span>Складські залишки</span><div class="rep-toolbar rec-toolbar" id="hdrStockActions"><div class="rep-tb-search rec-search"><label class="mini-search" title="Пошук по складу"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="invSearch" placeholder="" autocomplete="off" oninput="filterInventory(this.value)"></label></div></div></div>
+        <div class="ops-title"><span>Складські залишки</span><div class="ops-actions"><div class="sx" data-target="sklGrid"><input class="sx-inp" type="text" enterkeyhint="search" autocomplete="off" oninput="sxFilter(this)" onkeydown="if(event.key==='Escape')sxClose(this)"><button type="button" class="sx-btn" onclick="sxToggle(this)" title="Пошук" aria-label="Пошук"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div></div></div>
         <div id="invWarnBanner" class="inv-warn-banner" style="display:none"></div>
         <div id="sklGrid"></div>
       </div>
@@ -6102,8 +6102,7 @@ function placeRepToolbar() {
   const desk = matchMedia('(min-width:641px)').matches;
   let anyOn = false;
   [['hdrReportActions', 'tab-reports', t => t.insertBefore(gn('hdrReportActions'), t.firstChild)],
-   ['hdrRecipeActions', 'tab-recipes', t => t.querySelector('.filter-chips').appendChild(gn('hdrRecipeActions'))],
-   ['hdrStockActions', 'tab-sklad', () => gn('sklPage-zalishky').querySelector('.ops-title').appendChild(gn('hdrStockActions')), () => gn('sklPage-zalishky')?.classList.contains('active')]
+   ['hdrRecipeActions', 'tab-recipes', t => t.querySelector('.filter-chips').appendChild(gn('hdrRecipeActions'))]
   ].forEach(([id, tabId, putHome, extra]) => {
     const tb = gn(id), tab = gn(tabId);
     if (!tb || !tab) return;
@@ -6786,6 +6785,7 @@ function sxApply(sx) {
   const el = gn(sx.dataset.target); if (!el) return;
   const q = (sx.querySelector('.sx-inp').value || '').trim().toLowerCase();
   if (sx.dataset.target === 'auditGrid') { filterAuditGrid(q); return; }
+  if (sx.dataset.target === 'sklGrid') { filterInventory(q); return; }
   let rows = el.querySelectorAll('.log-entry');
   if (!rows.length) rows = el.querySelectorAll('tbody tr, .inv-row');
   rows.forEach(r => { r.style.display = (!q || r.textContent.toLowerCase().includes(q)) ? '' : 'none'; });
