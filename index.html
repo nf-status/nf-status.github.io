@@ -1898,27 +1898,23 @@ document.documentElement.classList.add('locked', 'decoy');
     </div>
   </div>
 
-  <!-- Tobacco prep -->
-  <div class="tk-card" style="margin-bottom:14px">
+  <!-- Tobacco prep: Burley та Virginia -->
+  <div class="tk-grid">
+  <div class="tk-card">
     <div class="tk-header">
-      <div><div class="tk-name">Підготовка тютюну</div><div class="tk-sub">Сушка + нарізка + відбраковка</div></div>
+      <div><div class="tk-name">Підготовка Burley</div><div class="tk-sub">Сушка + нарізка + відбраковка</div></div>
       <div class="tk-cost-badge" id="tkTobPrepBadge">–</div>
     </div>
     <div class="tk-body">
       <div class="g3" style="margin-bottom:10px">
-        <div class="field"><label>Сировина (кг)</label>
+        <div class="field"><label>Сировина Burley (кг)</label>
           <input type="number" class="finp" id="tk_tp_raw" value="1.000" min="0.001" step="0.100" oninput="onTKChange()"></div>
         <div class="field"><label>Початкова вологість (%)</label>
           <input type="number" class="finp" id="tk_tp_init" value="20" min="1" max="90" step="1" oninput="onTKChange()"></div>
         <div class="field"><label>Цільова вологість (%)</label>
           <input type="number" class="finp" id="tk_tp_targ" value="10" min="1" max="89" step="1" oninput="onTKChange()"></div>
       </div>
-      <div class="g2" style="margin-bottom:10px">
-        <div class="field"><label>Тип тютюну</label>
-          <select class="finp" id="tk_tp_type" onchange="onTKChange()" style="height:36px;padding:0 8px">
-            <option value="burley">Burley</option>
-            <option value="virginia">Virginia</option>
-          </select></div>
+      <div class="g1" style="margin-bottom:10px">
         <div class="field"><label>Відходи після нарізки (%)</label>
           <input type="number" class="finp" id="tk_tp_waste" value="5" min="0" max="50" step="1" oninput="onTKChange()"></div>
       </div>
@@ -1931,6 +1927,34 @@ document.documentElement.classList.add('locked', 'decoy');
       </div>
     </div>
   </div>
+  <div class="tk-card">
+    <div class="tk-header">
+      <div><div class="tk-name">Підготовка Virginia</div><div class="tk-sub">Сушка + нарізка + відбраковка</div></div>
+      <div class="tk-cost-badge" id="tkTobPrepVBadge">–</div>
+    </div>
+    <div class="tk-body">
+      <div class="g3" style="margin-bottom:10px">
+        <div class="field"><label>Сировина Virginia (кг)</label>
+          <input type="number" class="finp" id="tk_tpv_raw" value="1.000" min="0.001" step="0.100" oninput="onTKChange()"></div>
+        <div class="field"><label>Початкова вологість (%)</label>
+          <input type="number" class="finp" id="tk_tpv_init" value="20" min="1" max="90" step="1" oninput="onTKChange()"></div>
+        <div class="field"><label>Цільова вологість (%)</label>
+          <input type="number" class="finp" id="tk_tpv_targ" value="10" min="1" max="89" step="1" oninput="onTKChange()"></div>
+      </div>
+      <div class="g1" style="margin-bottom:10px">
+        <div class="field"><label>Відходи після нарізки (%)</label>
+          <input type="number" class="finp" id="tk_tpv_waste" value="5" min="0" max="50" step="1" oninput="onTKChange()"></div>
+      </div>
+      <div class="tk-flow">
+        <div class="tk-block"><div class="val" id="tk_tpv_raw_v">1.000</div><div class="lbl">Сировина кг</div></div>
+        <div class="tk-arrow">→</div>
+        <div class="tk-block"><div class="val" id="tk_tpv_dried_v">–</div><div class="lbl">Після сушки кг</div></div>
+        <div class="tk-arrow">→</div>
+        <div class="tk-block" style="background:rgba(0,0,0,.06)"><div class="val" id="tk_tpv_prep_v" style="color:var(--navy)">–</div><div class="lbl">Підгот. лист кг</div></div>
+      </div>
+    </div>
+  </div>
+  </div>
 
   <!-- Tobacco Base -->
   <div class="tk-grid">
@@ -1942,7 +1966,7 @@ document.documentElement.classList.add('locked', 'decoy');
       </div>
       <div class="tk-body">
         <div class="g2" style="margin-bottom:10px">
-          <div class="field"><label>Virginia (кг)</label>
+          <div class="field"><label>Підготовлена Virginia (кг)</label>
             <input type="number" class="finp" id="tk_bl_leaf" value="0.600" min="0" step="0.010" oninput="onTKChange()"></div>
           <div class="field"><label>Mix Light (кг)</label>
             <input type="number" class="finp" id="tk_bl_mix" value="0.350" min="0" step="0.010" oninput="onTKChange()"></div>
@@ -1969,9 +1993,9 @@ document.documentElement.classList.add('locked', 'decoy');
       </div>
       <div class="tk-body">
         <div class="g2" style="margin-bottom:10px">
-          <div class="field"><label>Burley (кг)</label>
+          <div class="field"><label>Підготовлена Burley (кг)</label>
             <input type="number" class="finp" id="tk_bd_burley" value="0.400" min="0" step="0.010" oninput="onTKChange()"></div>
-          <div class="field"><label>Virginia (кг)</label>
+          <div class="field"><label>Підготовлена Virginia (кг)</label>
             <input type="number" class="finp" id="tk_bd_virginia" value="0.200" min="0" step="0.010" oninput="onTKChange()"></div>
         </div>
         <div class="g2" style="margin-bottom:10px">
@@ -2928,7 +2952,8 @@ const DEFAULT_TECH_CARDS = {
   invSyrup:     { sugarKg: 1.000, waterKg: 0.430, citricG: 5, sodaG: 0, outputKg: 1.380 },
   mixLight:     { glyKg: 0.500, invKg: 0.500, outputKg: 0.950, extra: [] },
   mixDark:      { glyKg: 0.500, invKg: 0.500, outputKg: 0.950, extra: [] },
-  tobPrep:      { tobType: 'burley', initMoist: 20, targMoist: 10, wastePct: 5, rawKg: 1.000 },
+  tobPrep:      { initMoist: 20, targMoist: 10, wastePct: 5, rawKg: 1.000 },   // Burley
+  tobPrepV:     { initMoist: 20, targMoist: 10, wastePct: 5, rawKg: 1.000 },   // Virginia
   tobBaseLight: { prepLeafKg: 0.600, mixKg: 0.350, outputKg: 0.900, extra: [] },
   tobBaseDark:  { burleyLeafKg: 0.400, virginiaLeafKg: 0.200, mixKg: 0.400, outputKg: 0.900, extra: [] },
 };
@@ -2955,6 +2980,7 @@ function normalizeDB(d) {
   out.prices.hiddenBuiltin = Array.isArray(dp.hiddenBuiltin) ? dp.hiddenBuiltin : [];
   out.recipes   = Array.isArray(d.recipes) ? d.recipes : clone(DEFAULT_RECIPES);
   out.techCards = deepMerge(DEFAULT_TECH_CARDS, d.techCards || {});
+  if (d.techCards?.tobPrep && !d.techCards.tobPrepV) out.techCards.tobPrepV = { ...out.techCards.tobPrep };   // раніше була одна підготовка на обидва сорти
   DB_ARRAY_KEYS.forEach(k  => { out[k] = Array.isArray(d[k]) ? d[k] : []; });
   DB_OBJECT_KEYS.forEach(k => { out[k] = (d[k] && typeof d[k] === 'object' && !Array.isArray(d[k])) ? d[k] : {}; });
   out.flavorSet = d.flavorSet || null;
@@ -3240,15 +3266,18 @@ function computeTK() {
   const mixDarkCPKg = tk.mixDark.outputKg > 0 ? mdIn / tk.mixDark.outputKg : 0;
 
   // Tobacco prep
-  const { rawKg=1, initMoist=20, targMoist=10, wastePct=5, tobType='burley' } = tk.tobPrep;
-  const rawTobPrice = tobType === 'burley' ? tobP.burley : tobP.virginia;
-  const driedKg = rawKg > 0 ? rawKg * (1 - initMoist/100) / Math.max(0.01, 1 - targMoist/100) : 0;
-  const preparedLeafKg = driedKg * (1 - wastePct/100);
-  const prepLeafCPKg = preparedLeafKg > 0 ? rawKg * rawTobPrice / preparedLeafKg : 0;
+  // Підготовка окремо для кожного сорту: сушка + нарізка + відбраковка
+  const prepOf = (pr, price) => {
+    const { rawKg=1, initMoist=20, targMoist=10, wastePct=5 } = pr || {};
+    const dried = rawKg > 0 ? rawKg * (1 - initMoist/100) / Math.max(0.01, 1 - targMoist/100) : 0;
+    const prepared = dried * (1 - wastePct/100);
+    return { rawKg, dried, prepared, cpkg: prepared > 0 ? rawKg * price / prepared : 0 };
+  };
+  const pB = prepOf(tk.tobPrep, tobP.burley), pV = prepOf(tk.tobPrepV || tk.tobPrep, tobP.virginia);
+  const rawKg = pB.rawKg, driedKg = pB.dried, preparedLeafKg = pB.prepared, prepLeafCPKg = pB.cpkg;
 
   // Собівартість підготовленого листа окремо для кожного сорту
-  const burleyPrepCPKg   = preparedLeafKg > 0 ? rawKg * tobP.burley   / preparedLeafKg : 0;
-  const virginiaPrepCPKg = preparedLeafKg > 0 ? rawKg * tobP.virginia / preparedLeafKg : 0;
+  const burleyPrepCPKg = pB.cpkg, virginiaPrepCPKg = pV.cpkg;
 
   // Tobacco Base Light – лист Virginia (незалежно від селектора в «Підготовці»)
   const blIn = tk.tobBaseLight.prepLeafKg * virginiaPrepCPKg + tk.tobBaseLight.mixKg * mixLightCPKg + extraCost(tk.tobBaseLight.extra);
@@ -3258,7 +3287,7 @@ function computeTK() {
   const bdIn = (tk.tobBaseDark.burleyLeafKg||0) * burleyPrepCPKg + (tk.tobBaseDark.virginiaLeafKg||0) * virginiaPrepCPKg + tk.tobBaseDark.mixKg * mixDarkCPKg + extraCost(tk.tobBaseDark.extra);
   const tobBaseDarkCPKg = tk.tobBaseDark.outputKg > 0 ? bdIn / tk.tobBaseDark.outputKg : 0;
 
-  return { invSyrupCPKg, mixLightCPKg, mixDarkCPKg, prepLeafCPKg, burleyPrepCPKg, virginiaPrepCPKg, driedKg, preparedLeafKg, rawKg, tobBaseLightCPKg, tobBaseDarkCPKg };
+  return { invSyrupCPKg, mixLightCPKg, mixDarkCPKg, prepLeafCPKg, burleyPrepCPKg, virginiaPrepCPKg, driedKg, preparedLeafKg, rawKg, prepB: pB, prepV: pV, tobBaseLightCPKg, tobBaseDarkCPKg };
 }
 
 // ── Tech Cards UI ─────────────────────────────────────────
@@ -3334,8 +3363,11 @@ function onTKChange() {
   tk.mixDark  = { glyKg: tkV('tk_md_gly'), invKg: tkV('tk_md_inv'), outputKg: tkV('tk_md_out'), extra: readExtraComps('mixDark') };
   tk.tobPrep  = {
     rawKg: tkV('tk_tp_raw'), initMoist: tkV('tk_tp_init'),
-    targMoist: tkV('tk_tp_targ'), wastePct: tkV('tk_tp_waste'),
-    tobType: gn('tk_tp_type').value
+    targMoist: tkV('tk_tp_targ'), wastePct: tkV('tk_tp_waste')
+  };
+  tk.tobPrepV = {
+    rawKg: tkV('tk_tpv_raw'), initMoist: tkV('tk_tpv_init'),
+    targMoist: tkV('tk_tpv_targ'), wastePct: tkV('tk_tpv_waste')
   };
   tk.tobBaseLight = { prepLeafKg: tkV('tk_bl_leaf'), mixKg: tkV('tk_bl_mix'), outputKg: tkV('tk_bl_out'), extra: readExtraComps('tobBaseLight') };
   tk.tobBaseDark  = { burleyLeafKg: tkV('tk_bd_burley'), virginiaLeafKg: tkV('tk_bd_virginia'), mixKg: tkV('tk_bd_mix'), outputKg: tkV('tk_bd_out'), extra: readExtraComps('tobBaseDark') };
@@ -3374,6 +3406,10 @@ function renderTKDisplay() {
   gn('tk_tp_dried_v').textContent = fmtKg(tc.driedKg);
   gn('tk_tp_prep_v').textContent = fmtKg(tc.preparedLeafKg);
   gn('tkTobPrepBadge').textContent = Math.round(tc.prepLeafCPKg).toLocaleString('uk-UA') + ' грн/кг';
+  gn('tk_tpv_raw_v').textContent = fmtKg(tc.prepV.rawKg || 1);
+  gn('tk_tpv_dried_v').textContent = fmtKg(tc.prepV.dried);
+  gn('tk_tpv_prep_v').textContent = fmtKg(tc.prepV.prepared);
+  gn('tkTobPrepVBadge').textContent = Math.round(tc.prepV.cpkg).toLocaleString('uk-UA') + ' грн/кг';
 
   // Base Light
   gn('tk_bl_leaf_v').textContent = fmtKg(tk.tobBaseLight.prepLeafKg);
@@ -3407,7 +3443,11 @@ function loadTKInputsFromDB() {
   gn('tk_tp_init').value  = tk.tobPrep.initMoist;
   gn('tk_tp_targ').value  = tk.tobPrep.targMoist;
   gn('tk_tp_waste').value = tk.tobPrep.wastePct;
-  gn('tk_tp_type').value  = tk.tobPrep.tobType || 'burley';
+  const tv = tk.tobPrepV || tk.tobPrep;
+  gn('tk_tpv_raw').value   = tv.rawKg || 1;
+  gn('tk_tpv_init').value  = tv.initMoist;
+  gn('tk_tpv_targ').value  = tv.targMoist;
+  gn('tk_tpv_waste').value = tv.wastePct;
   gn('tk_bl_leaf').value  = tk.tobBaseLight.prepLeafKg;
   gn('tk_bl_mix').value   = tk.tobBaseLight.mixKg;
   gn('tk_bl_out').value   = tk.tobBaseLight.outputKg;
@@ -6165,25 +6205,26 @@ async function exportTechSheetPDF() {
   const prodSecs = cats.map(([id, title]) => {
     const list = DB.recipes.filter(r => (r.category || 'permanent') === id).sort((a, b) => a.name.localeCompare(b.name, 'uk'));
     if (!list.length) return '';
-    return `<div class="bl-sec"><h2>${title}</h2><table class="ts-grid"><thead><tr><th>Позиція</th><th style="text-align:left">База</th><th>База, кг</th><th>Аромат., кг</th><th>Нікотин, кг</th>${hasCtk ? '<th>Інше, кг</th>' : ''}<th>Вихід, кг</th><th>Собів., грн/кг</th><th>Заміс, грн</th></tr></thead><tbody>
+    return `<div class="bl-sec"><h2>${title}</h2><table class="ts-grid"><thead><tr><th>Позиція</th><th style="text-align:left">База</th><th>База, кг</th><th>Аромат., кг</th><th>Нікотин, кг</th>${hasCtk ? '<th>Інше, кг</th>' : ''}<th>Вихід, кг</th></tr></thead><tbody>
       ${list.map(r => {
         const d = r.data || {};
         const fl = (d.flavors || []).reduce((s, f) => s + (f.vol || 0), 0);
         const ctk = (d.customTKUsages || []).reduce((s, u) => s + (u.kg || 0), 0);
         const cd = calcRecipeCostData(d);
-        return `<tr><td>${escHtml(r.name)}</td><td style="text-align:left">${d.tobBaseType === 'light' ? 'Base Light' : 'Base Dark'}</td><td>${k3(d.tobBaseKg)}</td><td>${k3(fl)}</td><td>${k3(d.nicVol)}</td>${hasCtk ? `<td>${ctk ? k3(ctk) : '–'}</td>` : ''}<td><b>${k3(cd.totalKg)}</b></td><td>${m2(cd.perKg)}</td><td>${m2(cd.totalCost)}</td></tr>`;
+        return `<tr><td>${escHtml(r.name)}</td><td style="text-align:left">${d.tobBaseType === 'light' ? 'Base Light' : 'Base Dark'}</td><td>${k3(d.tobBaseKg)}</td><td>${k3(fl)}</td><td>${k3(d.nicVol)}</td>${hasCtk ? `<td>${ctk ? k3(ctk) : '–'}</td>` : ''}<td><b>${k3(cd.totalKg)}</b></td></tr>`;
       }).join('')}</tbody></table></div>`;
   }).filter(Boolean);
   // рядок: [назва, кількість, одиниця, ціна за кг (або null), сума]
   const kg = (l, q, price) => [l, k3(q), 'кг', price, (q || 0) * (price || 0)];
   const ex = arr => (arr || []).filter(c => c.label || c.amountKg).map(c => kg(c.label || 'Компонент', c.amountKg, c.pricePerKg || 0));
-  const is = tk.invSyrup, tp = tk.tobPrep;
-  const rawPrice = tp.tobType === 'virginia' ? tobP.virginia : tobP.burley;
+  const is = tk.invSyrup;
+  const prepRows = (pr, sortName, price) => [kg('Сировина ' + sortName, pr.rawKg, price), ['Початкова вологість', String(pr.initMoist), '%', null, 0], ['Цільова вологість', String(pr.targMoist), '%', null, 0], ['Відходи', String(pr.wastePct), '%', null, 0]];
   const semis = [
     ['Інвертний сироп', [kg('Цукор', is.sugarKg, pp.sugar), kg('Вода', is.waterKg, null), ['Лимонна кислота', String(is.citricG || 0), 'г', pp.citric_acid, (is.citricG || 0) / 1000 * (pp.citric_acid || 0)], ['Сода', String(is.sodaG || 0), 'г', null, 0]], is.outputKg],
     ['Mix Light', [kg('Гліцерин', tk.mixLight.glyKg, pp.glycerin), kg('Інвертний сироп', tk.mixLight.invKg, tc.invSyrupCPKg), ...ex(tk.mixLight.extra)], tk.mixLight.outputKg],
     ['Mix Dark', [kg('Гліцерин', tk.mixDark.glyKg, pp.glycerin), kg('Інвертний сироп', tk.mixDark.invKg, tc.invSyrupCPKg), ...ex(tk.mixDark.extra)], tk.mixDark.outputKg],
-    ['Підготовка тютюнового листа', [kg('Сировина (' + (tp.tobType === 'virginia' ? 'Virginia' : 'Burley') + ')', tp.rawKg, rawPrice), ['Початкова вологість', String(tp.initMoist), '%', null, 0], ['Цільова вологість', String(tp.targMoist), '%', null, 0], ['Відходи', String(tp.wastePct), '%', null, 0]], tc.preparedLeafKg],
+    ['Підготовка Burley', prepRows(tk.tobPrep, 'Burley', tobP.burley), tc.prepB.prepared],
+    ['Підготовка Virginia', prepRows(tk.tobPrepV || tk.tobPrep, 'Virginia', tobP.virginia), tc.prepV.prepared],
     ['Tobacco Base Light', [kg('Підготовлений Virginia', tk.tobBaseLight.prepLeafKg, tc.virginiaPrepCPKg), kg('Mix Light', tk.tobBaseLight.mixKg, tc.mixLightCPKg), ...ex(tk.tobBaseLight.extra)], tk.tobBaseLight.outputKg],
     ['Tobacco Base Dark', [kg('Підготовлений Burley', tk.tobBaseDark.burleyLeafKg, tc.burleyPrepCPKg), kg('Підготовлений Virginia', tk.tobBaseDark.virginiaLeafKg, tc.virginiaPrepCPKg), kg('Mix Dark', tk.tobBaseDark.mixKg, tc.mixDarkCPKg), ...ex(tk.tobBaseDark.extra)], tk.tobBaseDark.outputKg],
     ...(DB.customTK || []).map(c => [c.name || 'Техкарта', (c.components || []).map(x => kg(x.label || 'Компонент', x.amountKg, x.pricePerKg || 0)), c.outputKg]),
@@ -6195,9 +6236,19 @@ async function exportTechSheetPDF() {
       ${rows.map(([l, q, u, pr, sm]) => `<tr><td>${escHtml(l)}</td><td>${q}</td><td style="text-align:left" class="muted">${u}</td><td>${pr != null ? m2(pr) : '–'}</td><td>${pr != null ? m2(sm) : '–'}</td></tr>`).join('')}
       <tr class="ts-out"><td>Вихід</td><td>${k3(out)}</td><td style="text-align:left" class="muted">кг</td><td>${out > 0 ? m2(total / out) : '–'}</td><td>${m2(total)}</td></tr>
     </tbody></table>`; }).join('')}</div>`;
+  // Вартість нікотину й ароматизаторів окремими рядками
+  const flPrices = {};
+  (DB.prices.flavorings || []).forEach(f => { const pref = (f.name.split(' ')[0] || '').toUpperCase(); (flPrices[pref] = flPrices[pref] || new Set()).add(f.price || 0); });
+  const priceRows = [['Нікотин', m2(pp.nicotine)]].concat(Object.keys(flPrices).sort().map(pref => {
+    const arr = [...flPrices[pref]].sort((a, b) => a - b);
+    return [`Ароматизатори ${pref}`, arr.length === 1 ? m2(arr[0]) : `${m2(arr[0])} – ${m2(arr[arr.length - 1])}`];
+  }));
+  const priceHtml = `<div class="bl-sec"><h2>Вартість компонентів</h2><table><thead><tr><th>Компонент</th><th style="width:160px">Ціна, грн/кг</th></tr></thead><tbody>
+    ${priceRows.map(([l, v]) => `<tr><td>${escHtml(l)}</td><td>${v}</td></tr>`).join('')}</tbody></table></div>`;
   const blocks = [
     `<header><div class="brand">Hookah</div><h1>Технологічний бланк</h1><div class="meta">Станом на ${dateStr} · ${DB.recipes.length} позицій</div></header>`,
     ...prodSecs,
+    priceHtml,
     semiHtml,
   ];
   await blocksToPdf({ blocks, filename: `Технологічний бланк ${dateStr}.pdf` });
@@ -7356,7 +7407,7 @@ function calcSemiDeduction(key, outKg) {
     else skipped.push(label || 'без назви');
   };
   const extras = (arr, s) => (arr || []).forEach(e => addByLabel(e.label, (e.amountKg || 0) * s));
-  const rawPerPrep = tc.preparedLeafKg > 0 ? (tc.rawKg || 1) / tc.preparedLeafKg : 1;
+  const rawPer = p => p.prepared > 0 ? (p.rawKg || 1) / p.prepared : 1;
   const sc = out => out > 0 ? outKg / out : 0;
 
   if (key === 'inv_syrup') {
@@ -7370,7 +7421,7 @@ function calcSemiDeduction(key, outKg) {
     extras(m.extra, s);
   } else if (key === 'prep_burley' || key === 'prep_virginia') {
     // Підготовка: сушка + нарізка + відбраковка – сировини йде більше, ніж виходить листа
-    add(key === 'prep_burley' ? 'burley' : 'virginia', outKg * rawPerPrep);
+    add(key === 'prep_burley' ? 'burley' : 'virginia', outKg * rawPer(key === 'prep_burley' ? tc.prepB : tc.prepV));
   } else if (key === 'tob_base_light') {
     const b = tk.tobBaseLight, s = sc(b.outputKg);
     add('prep_virginia', b.prepLeafKg * s);          // підготовлений лист
