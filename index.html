@@ -6386,10 +6386,15 @@ if (document.documentElement.classList.contains('locked')) setTimeout(() => gn('
 // ── Export / Import ────────────────────────────────────────
 async function exportData() {
   const date = new Date().toISOString().slice(0,10);
-  const blob = new Blob([JSON.stringify(DB, null, 2)], {type:'application/json'});
+  if (!SEC.pass) { showToast('Увійдіть у додаток, щоб зробити резервну копію'); return; }
+  // резервна копія шифрується паролем входу (AES-256-GCM, PBKDF2)
+  let payload;
+  try { payload = { hookahBackup: 1, ...(await secEncryptStr(JSON.stringify(DB), SEC.pass, secNewSalt())) }; }
+  catch (e) { showToast('Не вдалося зашифрувати дані'); return; }
+  const blob = new Blob([JSON.stringify(payload)], {type:'application/json'});
   saveBlobFile(blob, 'toolkit_' + date + '.json').then(ok => {
     if (!ok) return;
-    showToast('Резервну копію збережено ✓ Файл не зашифрований – зберігайте його в надійному місці');
+    showToast('Резервну копію збережено ✓ Файл зашифровано паролем входу');
     DB.lastExport = new Date().toISOString();
     saveDB();
     checkExportReminder();
@@ -6401,7 +6406,17 @@ function importData() {
   inp.onchange = async e => {
     const file = e.target.files[0]; if (!file) return;
     try {
-      const data = JSON.parse(await file.text());
+      let data = JSON.parse(await file.text());
+      if (data && data.ct && data.iv && data.salt) {     // зашифрована резервна копія
+        let dec = null;
+        try { dec = await secDecrypt(data, SEC.pass); } catch (_) {}
+        while (!dec) {
+          const pw = await uiDialog({ msg: 'Файл зашифровано іншим паролем. Введіть пароль, яким його зберігали:', input: true, inputType: 'password', okText: 'Розшифрувати' });
+          if (pw == null) return;
+          try { dec = await secDecrypt(data, pw); } catch (_) { showToast('Невірний пароль'); }
+        }
+        data = dec;
+      }
       if (!data || !data.prices) { showToast('Невірний формат файлу'); return; }
       if (!await uiConfirm('Імпорт замінить усі поточні дані даними з файлу. Продовжити?\n(Порада: спершу зробіть «Експорт» як резервну копію.)')) return;
       applyDB(data);
@@ -8202,7 +8217,7 @@ scheduleBalanceStages();
   <div class="ops-page">
     <div class="ops-box">
       <div class="ops-title">Дані</div>
-      <p class="set-note">Експорт зберігає всі дані (рецепти, склад, журнали, звіти) у JSON-файл – це ваша резервна копія. Файл не зашифрований, тож тримайте його в надійному місці. Імпорт повністю замінює поточні дані даними з файлу. <b id="exportAge"></b></p>
+      <p class="set-note">Експорт зберігає всі дані (рецепти, склад, журнали, звіти) у файл – це ваша резервна копія. Файл зашифровано паролем входу: без пароля його не прочитати. Для імпорту потрібен той самий пароль.</p>
       <div class="set-actions">
         <button class="ops-btn primary" onclick="exportData()">↓ Експорт у файл</button>
         <button class="ops-btn outline" onclick="importData()">↑ Імпорт з файлу</button>
