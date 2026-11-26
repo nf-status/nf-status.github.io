@@ -5525,6 +5525,9 @@ function itemMovements(key) {
       p.agingUntil ? push(p.agingUntil, p.earlyRelease ? 'Готово достроково' : 'Після витримки', 'вироблено ' + fmtDT(p.date) + (p.note ? ' · ' + p.note : ''), +p.totalKg)
                    : push(p.date, 'Виробництво', p.note, +p.totalKg));
     DB.shipments.filter(s => s.recipeId === rid).forEach(s => push(s.date, 'Відвантаження', s.client, -s.amountKg));
+    (DB.auditLog || []).forEach(a => {
+      if (a.fgBefore && a.fgSnapshot) push(a.date, 'Інвентаризація', 'коригування', (a.fgSnapshot[rid] || 0) - (a.fgBefore[rid] || 0));
+    });
     var current = DB.finishedGoods[rid] || 0;
   } else {
     (DB.receipts || []).filter(r => r.key === key).forEach(r => push(r.date, 'Прихід', r.price ? `${r.price.toLocaleString('uk-UA')} грн/кг` : '', +r.qty));
@@ -6185,8 +6188,8 @@ async function exportAuditBlankPDF(withLast) {
     else groups.push({ group: 'Ароматизатори', items: flavors });
   }
   const fin = DB.recipes.filter(r => !r.deleted).sort((a, b) => a.name.localeCompare(b.name, 'uk'))
-    .map(r => ({ name: r.name, unit: 'кг', qty: DB.finishedGoods[r.id] || 0 }));
-  if (fin.length) groups.push({ group: 'Готова продукція', items: fin, cur: true });
+    .map(r => ({ name: r.name, unit: 'кг', qty: (last && last.fgSnapshot ? last.fgSnapshot[r.id] : DB.finishedGoods[r.id]) || 0 }));
+  if (fin.length) groups.push({ group: 'Готова продукція', items: fin, cur: !(last && last.fgSnapshot) });
   let n = 0;
   const secs = groups.filter(g => g.items.length).map(g => `<div class="bl-sec"><h2>${escHtml(g.group)}${withLast && g.cur ? ' <span class="cat-count">поточний залишок</span>' : ''}</h2>
     <table class="bl-tbl"><thead><tr><th style="width:28px;text-align:left">№</th><th style="text-align:left">Позиція</th><th style="width:40px;text-align:center">Од.</th>${withLast ? '<th style="width:100px">За обліком</th>' : ''}<th style="width:120px;text-align:center">Фактично</th><th style="width:${withLast ? 120 : 150}px;text-align:center">Примітка</th></tr></thead>
@@ -6942,11 +6945,14 @@ function populateAuditGrid() {
   const groups = getInvGroups();
   const flavors = (DB.prices.flavorings || []).map(f => ({ key: 'flav_' + f.name, name: f.name, unit: 'кг' }));
   if (flavors.length) groups.push({ group: 'Ароматизатори', items: flavors });
+  const fin = [...DB.recipes].sort((a, b) => a.name.localeCompare(b.name, 'uk'))
+    .map(r => ({ key: 'fg_' + r.id, name: r.name, unit: 'кг', fg: true }));
+  if (fin.length) groups.push({ group: 'Готова продукція', items: fin });
   let html = '';
   groups.forEach(g => {
     html += `<div class="inv-group-hdr">${g.group}</div>`;
     g.items.forEach(item => {
-      const qty = DB.inventory[item.key] || 0;
+      const qty = item.fg ? (DB.finishedGoods[item.key.slice(3)] || 0) : (DB.inventory[item.key] || 0);
       const safeId = item.key.replace(/[^a-z0-9]/gi,'_');
       html += `<div class="inv-row inv-row3" data-label="${item.name.toLowerCase()}">
         <div class="inv-label">${item.name}</div>
@@ -7121,6 +7127,12 @@ async function deleteWriteoff(id) {
 
 function confirmAudit() {
   const beforeAudit = JSON.parse(JSON.stringify(DB.inventory));
+  const beforeFG = JSON.parse(JSON.stringify(DB.finishedGoods || {}));
+  // готова продукція: фактичні залишки з блоку «Готова продукція»
+  DB.recipes.forEach(r => {
+    const el = gn('aud_' + ('fg_' + r.id).replace(/[^a-z0-9]/gi,'_'));
+    if (el) DB.finishedGoods[r.id] = Math.max(0, parseFloat(el.value) || 0);
+  });
   getAllInvItems().forEach(item => {
     const safeId = item.key.replace(/[^a-z0-9]/gi,'_');
     const el = gn('aud_' + safeId);
@@ -7130,7 +7142,9 @@ function confirmAudit() {
     id: 'a_' + Date.now(),
     date: new Date().toISOString(),
     snapshot: JSON.parse(JSON.stringify(DB.inventory)),
-    before: beforeAudit
+    before: beforeAudit,
+    fgSnapshot: JSON.parse(JSON.stringify(DB.finishedGoods || {})),
+    fgBefore: beforeFG
   });
   saveDB();
   renderInventory();
