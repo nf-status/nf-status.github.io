@@ -6208,10 +6208,10 @@ async function exportTechSheetPDF() {
   const tc = computeTK();
   const pp = Object.assign({}, DEFAULT_PRICES, DB.prices);
   const tobP = Object.assign({}, DEFAULT_PRICES.tobacco, DB.prices.tobacco || {});
-  const cats = [['permanent', 'Постійні смаки'], ['elsewhere', 'Elsewhere'], ['tester', 'Тестер']];
+  const cats = [[null, 'Асортимент']];   // усі продукти однією таблицею
   const hasCtk = DB.recipes.some(r => (r.data?.customTKUsages || []).some(u => u.kg > 0));
   const prodSecs = cats.map(([id, title]) => {
-    const list = DB.recipes.filter(r => (r.category || 'permanent') === id).sort((a, b) => a.name.localeCompare(b.name, 'uk'));
+    const list = DB.recipes.filter(r => !id || (r.category || 'permanent') === id).sort((a, b) => a.name.localeCompare(b.name, 'uk'));
     if (!list.length) return '';
     return `<div class="bl-sec"><h2>${title}</h2><table class="ts-grid"><thead><tr><th>Позиція</th><th style="text-align:left">База</th><th>База, кг</th><th>Аромат., кг</th><th>Нікотин, кг</th>${hasCtk ? '<th>Інше, кг</th>' : ''}<th>Вихід, кг</th></tr></thead><tbody>
       ${list.map(r => {
