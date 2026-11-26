@@ -1316,6 +1316,8 @@ html{background:var(--bg);min-height:100%;}
 .rec-toolbar .pdf-wrap{position:relative;}
 .sx-dl{width:44px;height:44px;border-radius:50%;border:0;background:#fff;box-shadow:inset 0 0 0 1px rgba(60,60,67,.13);display:flex;align-items:center;justify-content:center;color:var(--text1);cursor:pointer;padding:0;flex:0 0 44px;}
 .sx-dl:active{transform:scale(.94);}
+
+#tab-tk .tk-body .field input.tk-ro{background:transparent!important;padding:0!important;width:80px!important;pointer-events:none;}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -1917,6 +1919,10 @@ document.documentElement.classList.add('locked', 'decoy');
       <div class="g1" style="margin-bottom:10px">
         <div class="field"><label>Відходи після нарізки (%)</label>
           <input type="number" class="finp" id="tk_tp_waste" value="5" min="0" max="50" step="1" oninput="onTKChange()"></div>
+        <div class="field"><label>Після сушки (кг)</label>
+          <input type="text" class="finp tk-ro" id="tk_tp_dried_ro" readonly tabindex="-1"></div>
+        <div class="field f-out"><label>Вихід листа (кг)</label>
+          <input type="text" class="finp tk-ro" id="tk_tp_out_ro" readonly tabindex="-1"></div>
       </div>
       <div class="tk-flow">
         <div class="tk-block"><div class="val" id="tk_tp_raw_v">1.000</div><div class="lbl">Сировина кг</div></div>
@@ -1944,6 +1950,10 @@ document.documentElement.classList.add('locked', 'decoy');
       <div class="g1" style="margin-bottom:10px">
         <div class="field"><label>Відходи після нарізки (%)</label>
           <input type="number" class="finp" id="tk_tpv_waste" value="5" min="0" max="50" step="1" oninput="onTKChange()"></div>
+        <div class="field"><label>Після сушки (кг)</label>
+          <input type="text" class="finp tk-ro" id="tk_tpv_dried_ro" readonly tabindex="-1"></div>
+        <div class="field f-out"><label>Вихід листа (кг)</label>
+          <input type="text" class="finp tk-ro" id="tk_tpv_out_ro" readonly tabindex="-1"></div>
       </div>
       <div class="tk-flow">
         <div class="tk-block"><div class="val" id="tk_tpv_raw_v">1.000</div><div class="lbl">Сировина кг</div></div>
@@ -3405,10 +3415,14 @@ function renderTKDisplay() {
   gn('tk_tp_raw_v').textContent = fmtKg(tk.tobPrep.rawKg || 1);
   gn('tk_tp_dried_v').textContent = fmtKg(tc.driedKg);
   gn('tk_tp_prep_v').textContent = fmtKg(tc.preparedLeafKg);
+  gn('tk_tp_dried_ro').value = tc.driedKg.toFixed(3);
+  gn('tk_tp_out_ro').value = tc.preparedLeafKg.toFixed(3);
   gn('tkTobPrepBadge').textContent = Math.round(tc.prepLeafCPKg).toLocaleString('uk-UA') + ' грн/кг';
   gn('tk_tpv_raw_v').textContent = fmtKg(tc.prepV.rawKg || 1);
   gn('tk_tpv_dried_v').textContent = fmtKg(tc.prepV.dried);
   gn('tk_tpv_prep_v').textContent = fmtKg(tc.prepV.prepared);
+  gn('tk_tpv_dried_ro').value = tc.prepV.dried.toFixed(3);
+  gn('tk_tpv_out_ro').value = tc.prepV.prepared.toFixed(3);
   gn('tkTobPrepVBadge').textContent = Math.round(tc.prepV.cpkg).toLocaleString('uk-UA') + ' грн/кг';
 
   // Base Light
@@ -6237,12 +6251,9 @@ async function exportTechSheetPDF() {
       <tr class="ts-out"><td>Вихід</td><td>${k3(out)}</td><td style="text-align:left" class="muted">кг</td><td>${out > 0 ? m2(total / out) : '–'}</td><td>${m2(total)}</td></tr>
     </tbody></table>`; }).join('')}</div>`;
   // Вартість нікотину й ароматизаторів окремими рядками
-  const flPrices = {};
-  (DB.prices.flavorings || []).forEach(f => { const pref = (f.name.split(' ')[0] || '').toUpperCase(); (flPrices[pref] = flPrices[pref] || new Set()).add(f.price || 0); });
-  const priceRows = [['Нікотин', m2(pp.nicotine)]].concat(Object.keys(flPrices).sort().map(pref => {
-    const arr = [...flPrices[pref]].sort((a, b) => a - b);
-    return [`Ароматизатори ${pref}`, arr.length === 1 ? m2(arr[0]) : `${m2(arr[0])} – ${m2(arr[arr.length - 1])}`];
-  }));
+  const fpr = [...new Set((DB.prices.flavorings || []).map(f => f.price || 0))].sort((a, b) => a - b);
+  const priceRows = [['Нікотин', m2(pp.nicotine)]];
+  if (fpr.length) priceRows.push(['Ароматизатори', fpr.length === 1 ? m2(fpr[0]) : `${m2(fpr[0])} – ${m2(fpr[fpr.length - 1])}`]);
   const priceHtml = `<div class="bl-sec"><h2>Вартість компонентів</h2><table><thead><tr><th>Компонент</th><th style="width:160px">Ціна, грн/кг</th></tr></thead><tbody>
     ${priceRows.map(([l, v]) => `<tr><td>${escHtml(l)}</td><td>${v}</td></tr>`).join('')}</tbody></table></div>`;
   const blocks = [
@@ -6329,6 +6340,21 @@ function switchTab(name) {
   if (name === 'settings') renderSheetsStatus();
   navPushSoon();
 }
+
+
+// ── Enter підтверджує введення в будь-якому полі (як вихід із поля) ──
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || e.isComposing || e.shiftKey) return;
+  const t = e.target;
+  if (!(t instanceof HTMLInputElement) || t.readOnly) return;
+  if (['checkbox', 'radio', 'button', 'submit', 'file', 'password'].includes(t.type)) return;
+  if (t.hasAttribute('onkeydown') || t.closest('.ui-dlg, #lockScreen, .ss-pop, .sx') || ['eName', 'eAmount', 'lockPin'].includes(t.id)) return;
+  setTimeout(() => {
+    if (e.defaultPrevented) return;
+    t.dispatchEvent(new Event('change', { bubbles: true }));
+    t.blur();
+  }, 0);
+});
 
 // ── Enter key for expense ──────────────────────────────────
 document.addEventListener('keydown', e => {
