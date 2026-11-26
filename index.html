@@ -1338,6 +1338,8 @@ html{background:var(--bg);min-height:100%;}
 .aud-tbl th:not(:first-child),.aud-tbl td:not(:first-child){text-align:right;white-space:nowrap;}
 .aud-tbl tr.grp-row td{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding-top:12px;}
 @media (max-width:640px){.aud-tbl th:nth-child(2),.aud-tbl td:nth-child(2),.aud-tbl th:nth-child(3),.aud-tbl td:nth-child(3){display:none;}.aud-tiles b{font-size:15px;}}
+.aud-undo{display:flex;justify-content:flex-end;margin-top:12px;}
+.aud-undo .ops-btn{color:var(--red)!important;border-radius:999px!important;}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -7750,6 +7752,7 @@ function openAuditResult(id) {
       ${groups.map(g => `<tr class="grp-row"><td colspan="5">${g}</td></tr>` + res.rows.filter(r => r.group === g).sort((x, y) => Math.abs(y.sum) - Math.abs(x.sum)).map(r =>
         `<tr><td>${escHtml(r.name)}</td><td>${q(r.before, r.unit)}</td><td>${q(r.after, r.unit)}</td><td class="${r.diff > 0 ? 'aud-plus' : 'aud-minus'}">${r.diff > 0 ? '+' : '−'}${q(Math.abs(r.diff), r.unit)}</td><td class="${r.sum >= 0 ? 'aud-plus' : 'aud-minus'}">${r.sum >= 0 ? '+' : '−'}${m(Math.abs(r.sum))}</td></tr>`).join('')).join('')}
       </tbody></table></div>`}
+    ${a.before ? `<div class="aud-undo"><button type="button" class="ops-btn outline sm" onclick="undoAudit('${a.id}')">Скасувати інвентаризацію</button></div>` : ''}
     <div class="aging-foot">Суми рахуються за поточною собівартістю позицій.</div>
   </div>`;
   const close = () => { wrap.remove(); document.removeEventListener('keydown', onKey); };
@@ -7778,7 +7781,7 @@ const XS = (() => {
     title: { font: font({ sz: 15, bold: true }) },
     sub: { font: font({ color: { rgb: '8E8E93' } }) },
     kLbl: { font: font({ color: { rgb: '6C6C70' } }), fill: fill('F2F2F7'), border: { top: line, bottom: line, left: line } },
-    kVal: (rgb) => ({ font: font({ sz: 12, bold: true, color: { rgb } }), fill: fill('F2F2F7'), numFmt: '#,##0.00 "грн";-#,##0.00 "грн";0 "грн"', border: { top: line, bottom: line, right: line }, alignment: { horizontal: 'right' } }),
+    kVal: (rgb) => ({ font: font({ sz: 12, bold: true, color: { rgb } }), fill: fill('F2F2F7'), numFmt: '#,##0.00 "грн"', border: { top: line, bottom: line, right: line }, alignment: { horizontal: 'right' } }),
     head: (center) => ({ font: font({ bold: true, color: { rgb: 'FFFFFF' } }), fill: fill('1C1C1E'), alignment: { horizontal: center ? 'center' : 'left', vertical: 'center', wrapText: true } }),
     group: { font: font({ bold: true, color: { rgb: '3A3A3C' } }), fill: fill('EDEDF2') },
     cell: { font: font(), border: { bottom: line }, alignment: { vertical: 'center' } },
@@ -7796,7 +7799,8 @@ async function exportAuditXlsx(id) {
   const fmt = d => new Date(d).toLocaleString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   const GREEN = '248A3D', RED = 'D70015', GRAY = '8E8E93';
   const QF = '#,##0.000', GF = '#,##0', MF = '#,##0.00';
-  const DF = '+#,##0.000;-#,##0.000;0', DFG = '+#,##0;-#,##0;0', DMF = '+#,##0.00;-#,##0.00;0.00';
+  // прості формати: знак мінус ставить сама таблиця (Google Таблиці дублюють явний «-» у форматі)
+  const DF = QF, DFG = GF, DMF = MF;
   const put = (ws, r, c, v, st, z) => { const cell = { v, t: typeof v === 'number' ? 'n' : 's', s: st }; if (z) cell.z = z; ws[enc({ r, c })] = cell; };
   const wb = X.utils.book_new();
   const used = new Set();
@@ -7875,6 +7879,34 @@ async function exportAuditXlsx(id) {
   const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   const dstr = new Date(id ? list[0].date : Date.now()).toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
   await saveBlobFile(blob, (id ? 'Інвентаризація ' : 'Інвентаризації (усі) ') + dstr + '.xlsx');
+}
+
+
+// Скасування інвентаризації: зворотне коригування (операції після неї зберігаються)
+async function undoAudit(id) {
+  const a = (DB.auditLog || []).find(x => x.id === id);
+  if (!a || !a.before) return;
+  const dt = new Date(a.date).toLocaleString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const ok = await uiConfirm(`Скасувати інвентаризацію від ${dt}? Залишки повернуться до стану перед підрахунком (операції після неї збережуться), а запис зникне з журналу.`, { okText: 'Скасувати інвентаризацію', cancelText: 'Ні', danger: true });
+  if (!ok) return;
+  const snap = a.snapshot || {}, before = a.before;
+  new Set([...Object.keys(before), ...Object.keys(snap)]).forEach(k => {
+    const d = (snap[k] || 0) - (before[k] || 0);
+    if (Math.abs(d) < 1e-9) return;
+    DB.inventory[k] = Math.max(0, Math.round(((DB.inventory[k] || 0) - d) * 1e6) / 1e6);
+  });
+  if (a.fgBefore && a.fgSnapshot) {
+    new Set([...Object.keys(a.fgBefore), ...Object.keys(a.fgSnapshot)]).forEach(rid => {
+      const d = (a.fgSnapshot[rid] || 0) - (a.fgBefore[rid] || 0);
+      if (Math.abs(d) < 1e-9) return;
+      DB.finishedGoods[rid] = Math.max(0, Math.round(((DB.finishedGoods[rid] || 0) - d) * 1e6) / 1e6);
+    });
+  }
+  DB.auditLog = DB.auditLog.filter(x => x.id !== id);
+  saveDB();
+  document.querySelectorAll('.aud-dlg').forEach(d => d.closest('.ui-dlg-wrap')?.remove());
+  renderInventory(); renderAuditLog(); renderRecipeList(); populateAuditGrid();
+  showToast('Інвентаризацію скасовано, залишки відновлено ✓');
 }
 
 function renderAuditLog() {
