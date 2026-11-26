@@ -1671,7 +1671,7 @@ document.documentElement.classList.add('locked', 'decoy');
         <button class="full-action-btn" onclick="confirmAudit()">✓ Зберегти інвентаризацію</button>
       </div>
       <div class="ops-box">
-        <div class="ops-title"><span>Журнал інвентаризацій</span><div class="pf" data-cb="renderAuditLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label><input type="date" id="auditLogFrom" class="finp" onchange="pfChanged(this)"></label><label><input type="date" id="auditLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div>
+        <div class="ops-title"><span>Журнал інвентаризацій</span><div class="ops-actions"><button type="button" class="sx-dl" onclick="exportAuditXlsx()" title="Усі інвентаризації в таблицю (Google Таблиці / Excel)" aria-label="Завантажити таблицю"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/></svg></button><div class="pf" data-cb="renderAuditLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label><input type="date" id="auditLogFrom" class="finp" onchange="pfChanged(this)"></label><label><input type="date" id="auditLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div></div>
         <div class="log-wrap" id="auditLogEl"><div class="log-empty">Інвентаризацій ще не проводилось</div></div>
       </div>
       <div class="ops-box">
@@ -7696,29 +7696,31 @@ function renderShipLog() {
 // ── Audit Log ──────────────────────────────────────────────
 
 // ── Результат інвентаризації: надлишки (+) і нестачі (−) за собівартістю ──
-function auditDiff(a) {
+function auditDiff(a, all = false) {
   const tk = computeTK();
   const names = {}; getAllInvItems().forEach(i => names[i.key] = i);
   const rows = [];
   const before = a.before || {}, snap = a.snapshot || {};
   new Set([...Object.keys(before), ...Object.keys(snap)]).forEach(k => {
     const d = (snap[k] || 0) - (before[k] || 0);
-    if (Math.abs(d) < 5e-4) return;
+    if (!all && Math.abs(d) < 5e-4) return;
     const it = names[k] || { name: k.startsWith('flav_') ? k.slice(5) : k, unit: 'кг' };
     const cpk = getItemCostPerKg(k, tk) || 0;
-    rows.push({ name: it.name, unit: it.unit, before: before[k] || 0, after: snap[k] || 0, diff: d, sum: (it.unit === 'г' ? d / 1000 : d) * cpk, group: k.startsWith('flav_') ? 'Ароматизатори' : 'Склад' });
+    rows.push({ name: it.name, unit: it.unit, before: before[k] || 0, after: snap[k] || 0, diff: d, cpk, sum: (it.unit === 'г' ? d / 1000 : d) * cpk, group: k.startsWith('flav_') ? 'Ароматизатори' : 'Склад' });
   });
   if (a.fgBefore && a.fgSnapshot) {
     new Set([...Object.keys(a.fgBefore), ...Object.keys(a.fgSnapshot)]).forEach(rid => {
       const d = (a.fgSnapshot[rid] || 0) - (a.fgBefore[rid] || 0);
-      if (Math.abs(d) < 5e-4) return;
+      if (!all && Math.abs(d) < 5e-4) return;
       const r = DB.recipes.find(x => x.id === rid);
       const cpk = r ? shipCostPerKg(r) : 0;
-      rows.push({ name: r ? r.name : 'Видалений продукт', unit: 'кг', before: a.fgBefore[rid] || 0, after: a.fgSnapshot[rid] || 0, diff: d, sum: d * cpk, group: 'Готова продукція' });
+      rows.push({ name: r ? r.name : 'Видалений продукт', unit: 'кг', before: a.fgBefore[rid] || 0, after: a.fgSnapshot[rid] || 0, diff: d, cpk, sum: d * cpk, group: 'Готова продукція' });
     });
   }
   const plus = rows.filter(r => r.sum > 0).reduce((s, r) => s + r.sum, 0);
-  const minus = -rows.filter(r => r.sum < 0).reduce((s, r) => s + r.sum, 0);
+  const GO = { 'Склад': 0, 'Ароматизатори': 1, 'Готова продукція': 2 };
+  if (all) rows.sort((x, y) => (GO[x.group] - GO[y.group]) || x.name.localeCompare(y.name, 'uk'));
+  const minus = Math.abs(rows.filter(r => r.sum < 0).reduce((s, r) => s + r.sum, 0)) || 0;
   return { rows, plus, minus };
 }
 function openAuditResult(id) {
@@ -7735,11 +7737,12 @@ function openAuditResult(id) {
     <div class="aging-head">
       <div><div class="aging-title">Інвентаризація ${dt}</div>
       <div class="aging-sub">Позицій з розбіжністю: <b>${res.rows.length}</b></div></div>
-      <button type="button" class="aging-x" data-close aria-label="Закрити">×</button>
+      <div style="display:flex;gap:8px;align-items:center"><button type="button" class="sx-dl" onclick="exportAuditXlsx('${a.id}')" title="Завантажити таблицю (Google Таблиці / Excel)" aria-label="Завантажити таблицю">${XLS_ICON}</button>
+      <button type="button" class="aging-x" data-close aria-label="Закрити">×</button></div>
     </div>
     <div class="aud-tiles">
-      <div><span>Надлишки</span><b class="aud-plus">+${m(res.plus)}</b></div>
-      <div><span>Нестачі</span><b class="aud-minus">−${m(res.minus)}</b></div>
+      <div><span>Надлишки</span><b class="${res.plus >= 0.5 ? 'aud-plus' : ''}">${res.plus >= 0.5 ? '+' : ''}${m(res.plus)}</b></div>
+      <div><span>Нестачі</span><b class="${res.minus >= 0.5 ? 'aud-minus' : ''}">${res.minus >= 0.5 ? '−' : ''}${m(res.minus)}</b></div>
       <div><span>Разом</span><b class="${res.plus - res.minus >= 0 ? 'aud-plus' : 'aud-minus'}">${res.plus - res.minus >= 0 ? '+' : '−'}${m(Math.abs(res.plus - res.minus))}</b></div>
     </div>
     ${!a.before ? '<div class="log-empty">Для цієї інвентаризації не збереглися залишки до підрахунку</div>' : !res.rows.length ? '<div class="log-empty">Фактичні залишки збіглися з обліком</div>' :
@@ -7754,6 +7757,124 @@ function openAuditResult(id) {
   wrap.addEventListener('click', e => { if (e.target === wrap || e.target.closest('[data-close]')) close(); });
   document.addEventListener('keydown', onKey);
   document.body.appendChild(wrap);
+}
+
+
+// ── Інвентаризація → таблиця .xlsx (відкривається в Google Таблицях і Excel) ──
+const XLS_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/></svg>';
+async function ensureXlsxLib() {
+  if (window.XLSX && window.XLSX.__styled) return;
+  // збірка SheetJS з підтримкою оформлення (кольори, шрифти, рамки)
+  await loadScriptOnce('https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js');
+  if (!window.XLSX) throw new Error('Бібліотека таблиць недоступна');
+  window.XLSX.__styled = true;
+}
+// Оформлення клітинок
+const XS = (() => {
+  const font = (o = {}) => ({ name: 'Arial', sz: 10, color: { rgb: '1C1C1E' }, ...o });
+  const line = { style: 'thin', color: { rgb: 'E5E5EA' } };
+  const fill = rgb => ({ patternType: 'solid', fgColor: { rgb } });
+  return {
+    title: { font: font({ sz: 15, bold: true }) },
+    sub: { font: font({ color: { rgb: '8E8E93' } }) },
+    kLbl: { font: font({ color: { rgb: '6C6C70' } }), fill: fill('F2F2F7'), border: { top: line, bottom: line, left: line } },
+    kVal: (rgb) => ({ font: font({ sz: 12, bold: true, color: { rgb } }), fill: fill('F2F2F7'), numFmt: '#,##0.00 "грн";-#,##0.00 "грн";0 "грн"', border: { top: line, bottom: line, right: line }, alignment: { horizontal: 'right' } }),
+    head: (center) => ({ font: font({ bold: true, color: { rgb: 'FFFFFF' } }), fill: fill('1C1C1E'), alignment: { horizontal: center ? 'center' : 'left', vertical: 'center', wrapText: true } }),
+    group: { font: font({ bold: true, color: { rgb: '3A3A3C' } }), fill: fill('EDEDF2') },
+    cell: { font: font(), border: { bottom: line }, alignment: { vertical: 'center' } },
+    unit: { font: font({ color: { rgb: '8E8E93' } }), border: { bottom: line }, alignment: { horizontal: 'center', vertical: 'center' } },
+    num: (fmt, rgb, bold) => ({ font: font({ color: { rgb: rgb || '1C1C1E' }, bold: !!bold }), numFmt: fmt, border: { bottom: line }, alignment: { horizontal: 'center', vertical: 'center' } }),
+    total: (fmt, rgb) => ({ font: font({ bold: true, color: { rgb: rgb || '1C1C1E' } }), numFmt: fmt, border: { top: { style: 'medium', color: { rgb: '1C1C1E' } } }, alignment: { horizontal: 'center' } }),
+    totalLbl: { font: font({ bold: true }), border: { top: { style: 'medium', color: { rgb: '1C1C1E' } } } },
+  };
+})();
+async function exportAuditXlsx(id) {
+  const list = (DB.auditLog || []).filter(a => !id || a.id === id).sort((a, b) => b.date.localeCompare(a.date));
+  if (!list.length) { showToast('Інвентаризацій ще не проводилось'); return; }
+  try { await ensureXlsxLib(); } catch (e) { showToast('Не вдалося завантажити модуль таблиць – перевірте інтернет'); return; }
+  const X = window.XLSX, enc = X.utils.encode_cell;
+  const fmt = d => new Date(d).toLocaleString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const GREEN = '248A3D', RED = 'D70015', GRAY = '8E8E93';
+  const QF = '#,##0.000', GF = '#,##0', MF = '#,##0.00';
+  const DF = '+#,##0.000;-#,##0.000;0', DFG = '+#,##0;-#,##0;0', DMF = '+#,##0.00;-#,##0.00;0.00';
+  const put = (ws, r, c, v, st, z) => { const cell = { v, t: typeof v === 'number' ? 'n' : 's', s: st }; if (z) cell.z = z; ws[enc({ r, c })] = cell; };
+  const wb = X.utils.book_new();
+  const used = new Set();
+  const sum = [];
+  list.forEach(a => {
+    const res = auditDiff(a, true);
+    const diffN = res.rows.filter(r => Math.abs(r.diff) >= 5e-4).length;
+    sum.push({ date: fmt(a.date), n: diffN, plus: res.plus, minus: res.minus });
+    const ws = {}; const merges = [];
+    let r = 0;
+    put(ws, r, 0, 'Інвентаризація ' + fmt(a.date), XS.title); merges.push({ s: { r, c: 0 }, e: { r, c: 6 } }); r++;
+    put(ws, r, 0, a.before ? `Позицій: ${res.rows.length} · з розбіжністю: ${diffN} · суми за поточною собівартістю` : 'Для цієї інвентаризації не збереглися залишки до підрахунку – показано лише фактичні', XS.sub); merges.push({ s: { r, c: 0 }, e: { r, c: 6 } }); r += 2;
+    [['Надлишки', res.plus, GREEN], ['Нестачі', -res.minus, RED], ['Разом', res.plus - res.minus, res.plus - res.minus >= 0 ? GREEN : RED]].forEach(([l, v, c]) => {
+      const st = XS.kVal(Math.abs(v) < 0.005 ? GRAY : c);
+      put(ws, r, 0, l, XS.kLbl); put(ws, r, 1, Math.round(v * 100) / 100, st); put(ws, r, 2, '', st);
+      merges.push({ s: { r, c: 1 }, e: { r, c: 2 } }); r++;
+    });
+    r++;
+    const hdr = ['Позиція', 'Од.', 'За обліком', 'Фактично', 'Різниця', 'Собівартість, грн/кг', 'Сума різниці, грн'];
+    const headRow = r;
+    hdr.forEach((h, c) => put(ws, r, c, h, XS.head(c >= 2)));
+    r++;
+    let curG = null;
+    res.rows.forEach(x => {
+      if (x.group !== curG) {
+        curG = x.group;
+        for (let c = 0; c < 7; c++) put(ws, r, c, c ? '' : curG.toUpperCase(), XS.group);
+        merges.push({ s: { r, c: 0 }, e: { r, c: 6 } }); r++;
+      }
+      const g = x.unit === 'г', has = Math.abs(x.diff) >= 5e-4;
+      const col = !has ? GRAY : (x.diff > 0 ? GREEN : RED);
+      put(ws, r, 0, x.name, XS.cell);
+      put(ws, r, 1, x.unit, XS.unit);
+      put(ws, r, 2, g ? Math.round(x.before) : Math.round(x.before * 1000) / 1000, XS.num(g ? GF : QF));
+      put(ws, r, 3, g ? Math.round(x.after) : Math.round(x.after * 1000) / 1000, XS.num(g ? GF : QF, null, has));
+      put(ws, r, 4, has ? (g ? Math.round(x.diff) : Math.round(x.diff * 1000) / 1000) : 0, XS.num(g ? DFG : DF, col, has));
+      put(ws, r, 5, Math.round((x.cpk || 0) * 100) / 100, XS.num(MF, '6C6C70'));
+      put(ws, r, 6, has ? Math.round(x.sum * 100) / 100 : 0, XS.num(DMF, col, has));
+      r++;
+    });
+    put(ws, r, 0, 'Разом', XS.totalLbl);
+    for (let c = 1; c < 6; c++) put(ws, r, c, '', XS.totalLbl);
+    put(ws, r, 6, Math.round((res.plus - res.minus) * 100) / 100, XS.total(DMF, res.plus - res.minus >= 0 ? GREEN : RED));
+    ws['!ref'] = X.utils.encode_range({ s: { r: 0, c: 0 }, e: { r, c: 6 } });
+    ws['!merges'] = merges;
+    ws['!cols'] = [{ wch: 34 }, { wch: 6 }, { wch: 13 }, { wch: 13 }, { wch: 13 }, { wch: 15 }, { wch: 17 }];
+    ws['!rows'] = []; ws['!rows'][0] = { hpt: 24 }; ws['!rows'][headRow] = { hpt: 30 };
+    let name = new Date(a.date).toLocaleString('uk-UA', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(/[\\/?*\[\]:]/g, '.').slice(0, 28);
+    while (used.has(name)) name = name.slice(0, 26) + '_' + used.size;
+    used.add(name);
+    X.utils.book_append_sheet(wb, ws, name);
+  });
+  if (!id) {
+    const ws = {}; let r = 0;
+    put(ws, r, 0, 'Інвентаризації – підсумок', XS.title); r++;
+    put(ws, r, 0, 'Сформовано ' + fmt(new Date()) + ' · суми за поточною собівартістю', XS.sub); r += 2;
+    const hdr = ['Дата', 'З розбіжністю', 'Надлишки, грн', 'Нестачі, грн', 'Разом, грн'];
+    hdr.forEach((h, c) => put(ws, r, c, h, XS.head(c >= 1))); const hr = r; r++;
+    sum.forEach(x => {
+      put(ws, r, 0, x.date, XS.cell);
+      put(ws, r, 1, x.n, XS.num('0'));
+      put(ws, r, 2, Math.round(x.plus * 100) / 100, XS.num(MF, x.plus >= 0.005 ? GREEN : GRAY));
+      put(ws, r, 3, -Math.round(x.minus * 100) / 100, XS.num(DMF, x.minus >= 0.005 ? RED : GRAY));
+      const t = x.plus - x.minus;
+      put(ws, r, 4, Math.round(t * 100) / 100, XS.num(DMF, Math.abs(t) < 0.005 ? GRAY : (t > 0 ? GREEN : RED), true));
+      r++;
+    });
+    ws['!ref'] = X.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: r - 1, c: 4 } });
+    ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }, { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } }];
+    ws['!cols'] = [{ wch: 20 }, { wch: 15 }, { wch: 16 }, { wch: 16 }, { wch: 16 }];
+    ws['!rows'] = []; ws['!rows'][0] = { hpt: 24 }; ws['!rows'][hr] = { hpt: 26 };
+    X.utils.book_append_sheet(wb, ws, 'Підсумок');
+    wb.SheetNames.unshift(wb.SheetNames.pop());
+  }
+  const out = X.write(wb, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const dstr = new Date(id ? list[0].date : Date.now()).toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  await saveBlobFile(blob, (id ? 'Інвентаризація ' : 'Інвентаризації (усі) ') + dstr + '.xlsx');
 }
 
 function renderAuditLog() {
