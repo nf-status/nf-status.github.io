@@ -1322,6 +1322,22 @@ html{background:var(--bg);min-height:100%;}
 .app-header .rep-toolbar.in-hdr .rec-search{display:flex!important;align-items:center;}
 .app-header .rep-toolbar.in-hdr .rec-search .mini-search{flex:1 1 auto!important;width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box!important;}
 .app-header .rep-toolbar.in-hdr .rec-search .mini-search input{width:100%!important;min-width:0!important;flex:1 1 auto;}
+
+.aud-entry{cursor:pointer;}
+.aud-entry:hover{background:rgba(118,118,128,.06);}
+.aud-amt{display:flex;align-items:center;gap:10px;justify-content:flex-end;}
+.aud-amt svg{color:var(--text3);flex-shrink:0;}
+.aud-plus{color:var(--green)!important;font-variant-numeric:tabular-nums;}
+.aud-minus{color:var(--red)!important;font-variant-numeric:tabular-nums;}
+.aud-dlg{max-width:640px!important;width:calc(100vw - 32px);}
+.aud-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 14px;}
+.aud-tiles>div{background:#F2F2F7;border-radius:16px;padding:10px 14px;display:flex;flex-direction:column;gap:2px;}
+.aud-tiles span{font-size:12px;color:var(--text2);}
+.aud-tiles b{font-size:17px;font-weight:600;}
+.aud-scroll{max-height:55vh;overflow:auto;margin:0 -4px;}
+.aud-tbl th:not(:first-child),.aud-tbl td:not(:first-child){text-align:right;white-space:nowrap;}
+.aud-tbl tr.grp-row td{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding-top:12px;}
+@media (max-width:640px){.aud-tbl th:nth-child(2),.aud-tbl td:nth-child(2),.aud-tbl th:nth-child(3),.aud-tbl td:nth-child(3){display:none;}.aud-tiles b{font-size:15px;}}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -6956,7 +6972,7 @@ function populateAuditGrid() {
       const safeId = item.key.replace(/[^a-z0-9]/gi,'_');
       html += `<div class="inv-row inv-row3" data-label="${item.name.toLowerCase()}">
         <div class="inv-label">${item.name}</div>
-        <input type="number" id="aud_${safeId}" class="finp" value="${item.unit==='г' ? qty.toFixed(0) : qty.toFixed(3)}" min="0" step="${item.unit==='г' ? '1' : '0.001'}" style="text-align:right;padding:4px 8px;height:30px;font-size:13px">
+        <input type="number" id="aud_${safeId}" data-key="${escHtml(item.key)}" class="finp aud-inp" value="${item.unit==='г' ? qty.toFixed(0) : qty.toFixed(3)}" min="0" step="${item.unit==='г' ? '1' : '0.001'}" style="text-align:right;padding:4px 8px;height:30px;font-size:13px">
         <div style="font-size:12px;color:var(--text2)">${item.unit}</div>
       </div>`;
     });
@@ -7125,17 +7141,18 @@ async function deleteWriteoff(id) {
   showToast('Списання скасовано');
 }
 
+// Поле інвентаризації за ключем позиції (id з кирилиці могли збігатися)
+function audInput(key) { return [...document.querySelectorAll('#auditGrid .aud-inp')].find(i => i.dataset.key === key) || null; }
 function confirmAudit() {
   const beforeAudit = JSON.parse(JSON.stringify(DB.inventory));
   const beforeFG = JSON.parse(JSON.stringify(DB.finishedGoods || {}));
   // готова продукція: фактичні залишки з блоку «Готова продукція»
   DB.recipes.forEach(r => {
-    const el = gn('aud_' + ('fg_' + r.id).replace(/[^a-z0-9]/gi,'_'));
+    const el = audInput('fg_' + r.id);
     if (el) DB.finishedGoods[r.id] = Math.max(0, parseFloat(el.value) || 0);
   });
   getAllInvItems().forEach(item => {
-    const safeId = item.key.replace(/[^a-z0-9]/gi,'_');
-    const el = gn('aud_' + safeId);
+    const el = audInput(item.key);
     if (el) DB.inventory[item.key] = Math.max(0, parseFloat(el.value) || 0);
   });
   DB.auditLog.push({
@@ -7677,6 +7694,68 @@ function renderShipLog() {
 
 
 // ── Audit Log ──────────────────────────────────────────────
+
+// ── Результат інвентаризації: надлишки (+) і нестачі (−) за собівартістю ──
+function auditDiff(a) {
+  const tk = computeTK();
+  const names = {}; getAllInvItems().forEach(i => names[i.key] = i);
+  const rows = [];
+  const before = a.before || {}, snap = a.snapshot || {};
+  new Set([...Object.keys(before), ...Object.keys(snap)]).forEach(k => {
+    const d = (snap[k] || 0) - (before[k] || 0);
+    if (Math.abs(d) < 5e-4) return;
+    const it = names[k] || { name: k.startsWith('flav_') ? k.slice(5) : k, unit: 'кг' };
+    const cpk = getItemCostPerKg(k, tk) || 0;
+    rows.push({ name: it.name, unit: it.unit, before: before[k] || 0, after: snap[k] || 0, diff: d, sum: (it.unit === 'г' ? d / 1000 : d) * cpk, group: k.startsWith('flav_') ? 'Ароматизатори' : 'Склад' });
+  });
+  if (a.fgBefore && a.fgSnapshot) {
+    new Set([...Object.keys(a.fgBefore), ...Object.keys(a.fgSnapshot)]).forEach(rid => {
+      const d = (a.fgSnapshot[rid] || 0) - (a.fgBefore[rid] || 0);
+      if (Math.abs(d) < 5e-4) return;
+      const r = DB.recipes.find(x => x.id === rid);
+      const cpk = r ? shipCostPerKg(r) : 0;
+      rows.push({ name: r ? r.name : 'Видалений продукт', unit: 'кг', before: a.fgBefore[rid] || 0, after: a.fgSnapshot[rid] || 0, diff: d, sum: d * cpk, group: 'Готова продукція' });
+    });
+  }
+  const plus = rows.filter(r => r.sum > 0).reduce((s, r) => s + r.sum, 0);
+  const minus = -rows.filter(r => r.sum < 0).reduce((s, r) => s + r.sum, 0);
+  return { rows, plus, minus };
+}
+function openAuditResult(id) {
+  const a = (DB.auditLog || []).find(x => x.id === id);
+  if (!a) return;
+  const res = auditDiff(a);
+  const m = x => Math.round(x).toLocaleString('uk-UA') + ' грн';
+  const q = (x, u) => u === 'г' ? Math.round(x).toLocaleString('uk-UA') + ' г' : kgFmt(x);
+  const dt = new Date(a.date).toLocaleString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const groups = [...new Set(res.rows.map(r => r.group))];
+  const wrap = document.createElement('div');
+  wrap.className = 'ui-dlg-wrap';
+  wrap.innerHTML = `<div class="ui-dlg aging-dlg aud-dlg" role="dialog" aria-modal="true">
+    <div class="aging-head">
+      <div><div class="aging-title">Інвентаризація ${dt}</div>
+      <div class="aging-sub">Позицій з розбіжністю: <b>${res.rows.length}</b></div></div>
+      <button type="button" class="aging-x" data-close aria-label="Закрити">×</button>
+    </div>
+    <div class="aud-tiles">
+      <div><span>Надлишки</span><b class="aud-plus">+${m(res.plus)}</b></div>
+      <div><span>Нестачі</span><b class="aud-minus">−${m(res.minus)}</b></div>
+      <div><span>Разом</span><b class="${res.plus - res.minus >= 0 ? 'aud-plus' : 'aud-minus'}">${res.plus - res.minus >= 0 ? '+' : '−'}${m(Math.abs(res.plus - res.minus))}</b></div>
+    </div>
+    ${!a.before ? '<div class="log-empty">Для цієї інвентаризації не збереглися залишки до підрахунку</div>' : !res.rows.length ? '<div class="log-empty">Фактичні залишки збіглися з обліком</div>' :
+      `<div class="aud-scroll"><table class="fin-table aud-tbl"><thead><tr><th>Позиція</th><th>Було</th><th>Стало</th><th>Різниця</th><th>Сума</th></tr></thead><tbody>
+      ${groups.map(g => `<tr class="grp-row"><td colspan="5">${g}</td></tr>` + res.rows.filter(r => r.group === g).sort((x, y) => Math.abs(y.sum) - Math.abs(x.sum)).map(r =>
+        `<tr><td>${escHtml(r.name)}</td><td>${q(r.before, r.unit)}</td><td>${q(r.after, r.unit)}</td><td class="${r.diff > 0 ? 'aud-plus' : 'aud-minus'}">${r.diff > 0 ? '+' : '−'}${q(Math.abs(r.diff), r.unit)}</td><td class="${r.sum >= 0 ? 'aud-plus' : 'aud-minus'}">${r.sum >= 0 ? '+' : '−'}${m(Math.abs(r.sum))}</td></tr>`).join('')).join('')}
+      </tbody></table></div>`}
+    <div class="aging-foot">Суми рахуються за поточною собівартістю позицій.</div>
+  </div>`;
+  const close = () => { wrap.remove(); document.removeEventListener('keydown', onKey); };
+  const onKey = e => { if (e.key === 'Escape') close(); };
+  wrap.addEventListener('click', e => { if (e.target === wrap || e.target.closest('[data-close]')) close(); });
+  document.addEventListener('keydown', onKey);
+  document.body.appendChild(wrap);
+}
+
 function renderAuditLog() {
   const el = gn('auditLogEl');
   if (!el) return;
@@ -7693,13 +7772,15 @@ function renderAuditLog() {
   el.innerHTML = filtered.slice(0, 30).map(a => {
     const date = new Date(a.date).toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'});
     const time = new Date(a.date).toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
-    const snap = a.snapshot || {};
-    const nonZero = Object.values(snap).filter(v => v > 0).length;
-    const totalKg = Object.entries(snap).reduce((s,[k,v]) => s + toKg(k, v), 0);
-    return `<div class="log-entry">
+    const res = auditDiff(a);
+    const m = x => Math.round(x).toLocaleString('uk-UA') + ' грн';
+    const amt = a.before
+      ? (res.rows.length ? `<span class="aud-plus">+${m(res.plus)}</span><span class="aud-minus">−${m(res.minus)}</span>` : '<span class="muted">без розбіжностей</span>')
+      : '<span class="muted">немає даних для порівняння</span>';
+    return `<div class="log-entry aud-entry" onclick="openAuditResult('${a.id}')" role="button" tabindex="0">
       <div class="log-date">${date}<br><span style="font-size:10px">${time}</span></div>
       <div class="log-rname">Інвентаризація</div>
-      <div class="log-amt">${nonZero} поз. · ${kgFmt(totalKg)}</div>
+      <div class="log-amt aud-amt">${amt}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg></div>
     </div>`;
   }).join('');
 }
