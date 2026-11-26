@@ -3284,7 +3284,9 @@ function computeTK() {
 
   // Inverted syrup own production cost/kg
   const is = tk.invSyrup || DEFAULT_TECH_CARDS.invSyrup;
-  const invIn = is.sugarKg * (pp.sugar || 0) + (is.citricG / 1000) * (pp.citric_acid || 0);
+  const sodaIt = sodaItem();
+  const invIn = is.sugarKg * (pp.sugar || 0) + (is.citricG / 1000) * (pp.citric_acid || 0)
+              + ((is.sodaG || 0) / 1000) * (sodaIt ? getItemCostPerKg(sodaIt.key) : 0);
   const invSyrupCPKg = is.outputKg > 0 ? invIn / is.outputKg : 0;
 
   // Helper: extra component cost sum
@@ -6249,7 +6251,7 @@ async function exportTechSheetPDF() {
   const is = tk.invSyrup;
   const prepRows = (pr, sortName, price) => [kg('Сировина ' + sortName, pr.rawKg, price), ['Початкова вологість', String(pr.initMoist), '%', null, 0], ['Цільова вологість', String(pr.targMoist), '%', null, 0], ['Відходи', String(pr.wastePct), '%', null, 0]];
   const semis = [
-    ['Інвертний сироп', [kg('Цукор', is.sugarKg, pp.sugar), kg('Вода', is.waterKg, null), ['Лимонна кислота', String(is.citricG || 0), 'г', pp.citric_acid, (is.citricG || 0) / 1000 * (pp.citric_acid || 0)], ['Сода', String(is.sodaG || 0), 'г', null, 0]], is.outputKg],
+    ['Інвертний сироп', [kg('Цукор', is.sugarKg, pp.sugar), kg('Вода', is.waterKg, null), ['Лимонна кислота', String(is.citricG || 0), 'г', pp.citric_acid, (is.citricG || 0) / 1000 * (pp.citric_acid || 0)], ['Сода', String(is.sodaG || 0), 'г', sodaItem() ? getItemCostPerKg(sodaItem().key) : null, (is.sodaG || 0) / 1000 * (sodaItem() ? getItemCostPerKg(sodaItem().key) : 0)]], is.outputKg],
     ['Mix Light', [kg('Гліцерин', tk.mixLight.glyKg, pp.glycerin), kg('Інвертний сироп', tk.mixLight.invKg, tc.invSyrupCPKg), ...ex(tk.mixLight.extra)], tk.mixLight.outputKg],
     ['Mix Dark', [kg('Гліцерин', tk.mixDark.glyKg, pp.glycerin), kg('Інвертний сироп', tk.mixDark.invKg, tc.invSyrupCPKg), ...ex(tk.mixDark.extra)], tk.mixDark.outputKg],
     ['Підготовка Burley', prepRows(tk.tobPrep, 'Burley', tobP.burley), tc.prepB.prepared],
@@ -7443,6 +7445,10 @@ function populateSemiSelect() {
 }
 
 // Пошук позиції складу за назвою компонента (для дод. компонентів і власних ТК)
+// Сода для інвертного сиропу – складська позиція, у назві якої є «сода»
+function sodaItem() {
+  return getAllInvItems().find(i => !i.key.startsWith('flav_') && /сода/i.test(i.name)) || null;
+}
 function matchInvItem(label, excludeKey) {
   const l = (label || '').trim().toLowerCase();
   if (!l) return null;
@@ -7467,6 +7473,11 @@ function calcSemiDeduction(key, outKg) {
     const is = tk.invSyrup, s = sc(is.outputKg);
     add('sugar', is.sugarKg * s);
     add('citric_acid', is.citricG * s);              // склад у грамах
+    if ((is.sodaG || 0) > 0) {
+      const si = sodaItem();
+      if (si) add(si.key, si.unit === 'г' ? is.sodaG * s : is.sodaG * s / 1000);
+      else skipped.push('Сода');
+    }
   } else if (key === 'mix_light' || key === 'mix_dark') {
     const m = key === 'mix_light' ? tk.mixLight : tk.mixDark, s = sc(m.outputKg);
     add('glycerin', m.glyKg * s);
