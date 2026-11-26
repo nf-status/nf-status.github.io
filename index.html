@@ -1310,6 +1310,12 @@ html{background:var(--bg);min-height:100%;}
 .inv-subtotal .ist{display:inline-flex;align-items:baseline;gap:6px;background:#F2F2F7;border-radius:999px;padding:5px 12px;font-size:12px;color:var(--text2);}
 .inv-subtotal .ist b{font-weight:500;color:var(--text1);font-variant-numeric:tabular-nums;font-size:13px;}
 #tab-calc.view-mode #calcName{display:none!important;}
+
+/* ── Раунд 11 ── */
+#lockPin{text-align:center!important;}
+.rec-toolbar .pdf-wrap{position:relative;}
+.sx-dl{width:44px;height:44px;border-radius:50%;border:0;background:#fff;box-shadow:inset 0 0 0 1px rgba(60,60,67,.13);display:flex;align-items:center;justify-content:center;color:var(--text1);cursor:pointer;padding:0;flex:0 0 44px;}
+.sx-dl:active{transform:scale(.94);}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -1508,7 +1514,7 @@ document.documentElement.classList.add('locked', 'decoy');
     <button class="filter-chip" id="chipTester" onclick="setRecipeFilter('tester')">Тестер</button>
     <button class="filter-chip chip-deleted" id="chipDeleted" onclick="setRecipeFilter('deleted')" style="display:none">Видалені <span class="chip-cnt" id="trashCnt">0</span></button>
     <span class="ls-seg"><button class="filter-chip base-chip" id="chipLight" onclick="setBaseFilter('light')" title="Рецепти на Tobacco Base Light">Light</button><button class="filter-chip base-chip" id="chipStrong" onclick="setBaseFilter('dark')" title="Рецепти на Tobacco Base Dark">Strong</button></span>
-    <div class="rep-toolbar rec-toolbar" id="hdrRecipeActions"><div class="rep-tb-search rec-search"><label class="mini-search" title="Пошук по асортименту"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="recipeSearch" placeholder="" autocomplete="off" oninput="setRecipeSearch(this.value)"></label></div><div class="rep-tb-right"><button class="ops-btn primary chip-pdf" onclick="exportCatalogPDF()" title="PDF з наявністю «Постійні смаки» та «Elsewhere» для замовника"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>PDF</button></div></div>
+    <div class="rep-toolbar rec-toolbar" id="hdrRecipeActions"><div class="rep-tb-search rec-search"><label class="mini-search" title="Пошук по асортименту"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="recipeSearch" placeholder="" autocomplete="off" oninput="setRecipeSearch(this.value)"></label></div><div class="rep-tb-right"><div class="pdf-wrap"><button class="ops-btn primary chip-pdf" type="button" onclick="toggleRecPdfMenu(event)" title="PDF"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-2px;margin-right:4px"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>PDF</button><div class="pdf-menu" id="recPdfMenu"><button type="button" onclick="closePopovers();exportCatalogPDF()">Наявність для замовника</button><button type="button" onclick="closePopovers();exportTechSheetPDF()">Технологічний бланк</button></div></div></div></div>
   </div>
   <div class="rlc-grid" id="recipeListGrid"></div>
 </div>
@@ -1638,7 +1644,7 @@ document.documentElement.classList.add('locked', 'decoy');
     <!-- Page: Інвентаризація -->
     <div class="sklad-subpage" id="sklPage-inventaryzatsia">
       <div class="ops-box">
-        <div class="ops-title"><span>Введіть фактичні залишки</span><div class="ops-actions"><div class="sx" data-target="auditGrid"><input class="sx-inp" type="text" enterkeyhint="search" autocomplete="off" oninput="sxFilter(this)" onkeydown="if(event.key==='Escape')sxClose(this)"><button type="button" class="sx-btn" onclick="sxToggle(this)" title="Пошук" aria-label="Пошук"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div></div></div>
+        <div class="ops-title"><span>Введіть фактичні залишки</span><div class="ops-actions"><div class="sx" data-target="auditGrid"><input class="sx-inp" type="text" enterkeyhint="search" autocomplete="off" oninput="sxFilter(this)" onkeydown="if(event.key==='Escape')sxClose(this)"><button type="button" class="sx-btn" onclick="sxToggle(this)" title="Пошук" aria-label="Пошук"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div><div class="pdf-wrap" style="position:relative"><button type="button" class="sx-dl" onclick="toggleAudPdfMenu(event)" title="Бланки інвентаризації" aria-label="Бланк інвентаризації"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg></button><div class="pdf-menu" id="audPdfMenu"><button type="button" onclick="closePopovers();exportAuditBlankPDF(false)">Порожній бланк</button><button type="button" onclick="closePopovers();exportAuditBlankPDF(true)">Бланк з останньою інвентаризацією</button></div></div></div></div>
         <div id="auditGrid" style="margin-bottom:12px"></div>
         <button class="full-action-btn" onclick="confirmAudit()">✓ Зберегти інвентаризацію</button>
       </div>
@@ -4996,12 +5002,14 @@ function togglePdfMenu(e) {
 function closePopovers() {
   document.querySelectorAll('.pf.open').forEach(p => p.classList.remove('open'));
   gn('pdfMenu')?.classList.remove('open');
+  gn('recPdfMenu')?.classList.remove('open');
+  gn('audPdfMenu')?.classList.remove('open');
   closeSS();
 }
 
 document.addEventListener('mousedown', e => {
   if (!e.target.closest('.pf')) document.querySelectorAll('.pf.open').forEach(p => p.classList.remove('open'));
-  if (!e.target.closest('.pdf-wrap')) gn('pdfMenu')?.classList.remove('open');
+  if (!e.target.closest('.pdf-wrap')) { gn('pdfMenu')?.classList.remove('open'); gn('recPdfMenu')?.classList.remove('open'); gn('audPdfMenu')?.classList.remove('open'); }
   if (ssState && !e.target.closest('#ssPop') && !ssState.sel._ss.wrap.contains(e.target)) closeSS();
 });
 document.addEventListener('keydown', e => {
@@ -5925,7 +5933,19 @@ const PDF_CSS = `
   .cat-desc{font-size:9.5pt;color:#52525B;margin-top:3px;line-height:1.45;white-space:pre-wrap}
   .cat-stock{font-size:11.5pt;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
   .cat-stock span{font-size:9pt;font-weight:400;color:#A1A1AA}
-  .cat-item.out .cat-name{color:#71717A}`;
+  .cat-item.out .cat-name{color:#71717A}
+  .bl-meta{display:flex;gap:28px;font-size:9.5pt;margin-top:10px}
+  .bl-meta span{flex:1;border-bottom:1px solid #A1A1AA;padding-bottom:2px;color:#52525B}
+  .bl-sec{margin-top:18px}
+  .bl-tbl td{height:24px;vertical-align:bottom}
+  .bl-tbl td.fill{border-bottom:1px solid #A1A1AA}
+  .bl-tbl td.no{color:#A1A1AA;width:28px}
+  .bl-tbl td:nth-child(2){text-align:left}
+  .bl-sign{display:flex;gap:28px;margin-top:28px;font-size:9.5pt;color:#52525B}
+  .bl-sign span{flex:1;border-bottom:1px solid #A1A1AA;padding-bottom:2px}
+  .ts-grid td{white-space:nowrap}
+  .ts-grid td:first-child{white-space:normal}
+  .ts-out td{font-weight:600;border-top:1px solid #A1A1AA}`;
 
 // ── PDF: готовий файл, що завантажується одразу (без вікна друку) ──
 const PDF_LIBS = [
@@ -6012,8 +6032,8 @@ async function blocksToPdf(doc) {
     for (const block of host.querySelectorAll('.pdf-block')) {
       const top = block.getBoundingClientRect().top;
       // Межі рядків таблиць – щоб не різати рядок навпіл
-      const cuts = [...block.querySelectorAll('tr, .abc-sum, .metric-grid, .kpi-row, .rep-note, .rep-sec-title, h2, .cat-item')]
-        .flatMap(el => { const r = el.getBoundingClientRect(); return el.matches('.cat-item, .rep-sec-title, h2') ? [r.top - top, r.bottom - top] : [r.bottom - top]; })
+      const cuts = [...block.querySelectorAll('tbody tr, .abc-sum, .metric-grid, .kpi-row, .rep-note, .rep-sec-title, h2, .cat-item')]
+        .flatMap(el => { const r = el.getBoundingClientRect(); return el.matches('.rep-sec-title, h2') ? [r.top - top] : el.matches('.cat-item') ? [r.top - top, r.bottom - top] : [r.bottom - top]; })
         .filter(v => v > 0).sort((a, b) => a - b);
       const canvas = await html2canvas(block, { scale: 2, backgroundColor: '#ffffff', logging: false, useCORS: true });
       const k = canvas.height / block.offsetHeight;
@@ -6065,7 +6085,7 @@ function buildCatalogDoc() {
   const fmtStock = kg => kg >= 0.0005 ? kgFmt(kg) : '';
   let totalKg = 0, totalPos = 0;
   const sections = CATALOG_CATS.map(c => {
-    const list = DB.recipes.filter(r => (r.category || 'permanent') === c.id)
+    const list = DB.recipes.filter(r => (r.category || 'permanent') === c.id && (DB.finishedGoods[r.id] || 0) >= 0.0005)
       .sort((a, b) => cleanName(a.name).localeCompare(cleanName(b.name), 'uk'));
     if (!list.length) return '';
     const kgSum = list.reduce((s, r) => s + (DB.finishedGoods[r.id] || 0), 0);
@@ -6088,10 +6108,105 @@ function buildCatalogDoc() {
   ];
   return { blocks, filename: `Наявність продукції ${dateStr}.pdf`, empty: !sections.length };
 }
+
+// ── Бланк інвентаризації для ручного заповнення (без облікових залишків) ──
+function toggleRecPdfMenu(e) {
+  e.stopPropagation();
+  const m = gn('recPdfMenu'), open = !m.classList.contains('open');
+  closePopovers();
+  if (open) m.classList.add('open');
+}
+function toggleAudPdfMenu(e) {
+  e.stopPropagation();
+  const m = gn('audPdfMenu'), open = !m.classList.contains('open');
+  closePopovers();
+  if (open) m.classList.add('open');
+}
+async function exportAuditBlankPDF(withLast) {
+  const fmtD = d => new Date(d).toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const dateStr = fmtD(new Date());
+  const last = withLast ? [...(DB.auditLog || [])].sort((a, b) => b.date.localeCompare(a.date))[0] : null;
+  if (withLast && !last) { showToast('Інвентаризацій ще не проводилось'); return; }
+  const snap = last ? (last.snapshot || {}) : {};
+  const fq = (q, unit) => unit === 'г' ? Math.round(q).toLocaleString('uk-UA') : (q || 0).toLocaleString('uk-UA', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  const groups = getInvGroups().map(g => ({ group: g.group, items: g.items.map(it => ({ ...it, qty: snap[it.key] || 0 })) }));
+  const flavors = (DB.prices.flavorings || []).map(f => ({ key: 'flav_' + f.name, name: f.name, unit: 'кг', qty: snap['flav_' + f.name] || 0 }))
+    .sort((a, b) => a.name.localeCompare(b.name, 'uk'));
+  if (flavors.length) {
+    if (withLast) groups.push({ group: 'Ароматизатори', items: [{ name: `Ароматизатори – разом (${flavors.length} поз.)`, unit: 'кг', qty: flavors.reduce((s, f) => s + f.qty, 0) }] });
+    else groups.push({ group: 'Ароматизатори', items: flavors });
+  }
+  const fin = DB.recipes.filter(r => !r.deleted).sort((a, b) => a.name.localeCompare(b.name, 'uk'))
+    .map(r => ({ name: r.name, unit: 'кг', qty: DB.finishedGoods[r.id] || 0 }));
+  if (fin.length) groups.push({ group: 'Готова продукція', items: fin, cur: true });
+  let n = 0;
+  const secs = groups.filter(g => g.items.length).map(g => `<div class="bl-sec"><h2>${escHtml(g.group)}${withLast && g.cur ? ' <span class="cat-count">поточний залишок</span>' : ''}</h2>
+    <table class="bl-tbl"><thead><tr><th style="width:28px;text-align:left">№</th><th style="text-align:left">Позиція</th><th style="width:40px;text-align:center">Од.</th>${withLast ? '<th style="width:100px">За обліком</th>' : ''}<th style="width:120px;text-align:center">Фактично</th><th style="width:${withLast ? 120 : 150}px;text-align:center">Примітка</th></tr></thead>
+    <tbody>${g.items.map(it => `<tr><td class="no">${++n}</td><td>${escHtml(it.name)}</td><td class="c muted">${escHtml(it.unit)}</td>${withLast ? `<td>${fq(it.qty, it.unit)}</td>` : ''}<td class="fill"></td><td class="fill"></td></tr>`).join('')}</tbody></table></div>`);
+  const blocks = [
+    `<header><div class="brand">Hookah</div><h1>Бланк інвентаризації</h1><div class="meta">Сформовано ${dateStr} · ${n} позицій${last ? ' · дані останньої інвентаризації від ' + fmtD(last.date) : ''}</div>
+      <div class="bl-meta"><span style="flex:0 0 50%">Дата підрахунку:</span></div></header>`,
+    ...secs,
+  ];
+  await blocksToPdf({ blocks, filename: `Бланк інвентаризації${last ? ' (облік ' + fmtD(last.date) + ')' : ''} ${dateStr}.pdf` });
+}
+
+// ── Технологічний бланк: склад продуктів і напівфабрикатів без цін ──
+async function exportTechSheetPDF() {
+  const dateStr = new Date().toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const k3 = x => (x || 0).toLocaleString('uk-UA', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  const m2 = x => (x || 0).toLocaleString('uk-UA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const tk = Object.assign({}, DEFAULT_TECH_CARDS, DB.techCards || {});
+  const tc = computeTK();
+  const pp = Object.assign({}, DEFAULT_PRICES, DB.prices);
+  const tobP = Object.assign({}, DEFAULT_PRICES.tobacco, DB.prices.tobacco || {});
+  const cats = [['permanent', 'Постійні смаки'], ['elsewhere', 'Elsewhere'], ['tester', 'Тестер']];
+  const hasCtk = DB.recipes.some(r => (r.data?.customTKUsages || []).some(u => u.kg > 0));
+  const prodSecs = cats.map(([id, title]) => {
+    const list = DB.recipes.filter(r => (r.category || 'permanent') === id).sort((a, b) => a.name.localeCompare(b.name, 'uk'));
+    if (!list.length) return '';
+    return `<div class="bl-sec"><h2>${title}</h2><table class="ts-grid"><thead><tr><th>Позиція</th><th style="text-align:left">База</th><th>База, кг</th><th>Аромат., кг</th><th>Нікотин, кг</th>${hasCtk ? '<th>Інше, кг</th>' : ''}<th>Вихід, кг</th><th>Собів., грн/кг</th><th>Заміс, грн</th></tr></thead><tbody>
+      ${list.map(r => {
+        const d = r.data || {};
+        const fl = (d.flavors || []).reduce((s, f) => s + (f.vol || 0), 0);
+        const ctk = (d.customTKUsages || []).reduce((s, u) => s + (u.kg || 0), 0);
+        const cd = calcRecipeCostData(d);
+        return `<tr><td>${escHtml(r.name)}</td><td style="text-align:left">${d.tobBaseType === 'light' ? 'Base Light' : 'Base Dark'}</td><td>${k3(d.tobBaseKg)}</td><td>${k3(fl)}</td><td>${k3(d.nicVol)}</td>${hasCtk ? `<td>${ctk ? k3(ctk) : '–'}</td>` : ''}<td><b>${k3(cd.totalKg)}</b></td><td>${m2(cd.perKg)}</td><td>${m2(cd.totalCost)}</td></tr>`;
+      }).join('')}</tbody></table></div>`;
+  }).filter(Boolean);
+  // рядок: [назва, кількість, одиниця, ціна за кг (або null), сума]
+  const kg = (l, q, price) => [l, k3(q), 'кг', price, (q || 0) * (price || 0)];
+  const ex = arr => (arr || []).filter(c => c.label || c.amountKg).map(c => kg(c.label || 'Компонент', c.amountKg, c.pricePerKg || 0));
+  const is = tk.invSyrup, tp = tk.tobPrep;
+  const rawPrice = tp.tobType === 'virginia' ? tobP.virginia : tobP.burley;
+  const semis = [
+    ['Інвертний сироп', [kg('Цукор', is.sugarKg, pp.sugar), kg('Вода', is.waterKg, null), ['Лимонна кислота', String(is.citricG || 0), 'г', pp.citric_acid, (is.citricG || 0) / 1000 * (pp.citric_acid || 0)], ['Сода', String(is.sodaG || 0), 'г', null, 0]], is.outputKg],
+    ['Mix Light', [kg('Гліцерин', tk.mixLight.glyKg, pp.glycerin), kg('Інвертний сироп', tk.mixLight.invKg, tc.invSyrupCPKg), ...ex(tk.mixLight.extra)], tk.mixLight.outputKg],
+    ['Mix Dark', [kg('Гліцерин', tk.mixDark.glyKg, pp.glycerin), kg('Інвертний сироп', tk.mixDark.invKg, tc.invSyrupCPKg), ...ex(tk.mixDark.extra)], tk.mixDark.outputKg],
+    ['Підготовка тютюнового листа', [kg('Сировина (' + (tp.tobType === 'virginia' ? 'Virginia' : 'Burley') + ')', tp.rawKg, rawPrice), ['Початкова вологість', String(tp.initMoist), '%', null, 0], ['Цільова вологість', String(tp.targMoist), '%', null, 0], ['Відходи', String(tp.wastePct), '%', null, 0]], tc.preparedLeafKg],
+    ['Tobacco Base Light', [kg('Підготовлений Virginia', tk.tobBaseLight.prepLeafKg, tc.virginiaPrepCPKg), kg('Mix Light', tk.tobBaseLight.mixKg, tc.mixLightCPKg), ...ex(tk.tobBaseLight.extra)], tk.tobBaseLight.outputKg],
+    ['Tobacco Base Dark', [kg('Підготовлений Burley', tk.tobBaseDark.burleyLeafKg, tc.burleyPrepCPKg), kg('Підготовлений Virginia', tk.tobBaseDark.virginiaLeafKg, tc.virginiaPrepCPKg), kg('Mix Dark', tk.tobBaseDark.mixKg, tc.mixDarkCPKg), ...ex(tk.tobBaseDark.extra)], tk.tobBaseDark.outputKg],
+    ...(DB.customTK || []).map(c => [c.name || 'Техкарта', (c.components || []).map(x => kg(x.label || 'Компонент', x.amountKg, x.pricePerKg || 0)), c.outputKg]),
+  ];
+  const semiHtml = `<div class="bl-sec"><h2>Напівфабрикати</h2>${semis.map(([name, rows, out]) => {
+    const total = rows.reduce((s, r) => s + (r[4] || 0), 0);
+    return `<div class="rep-sec-title">${escHtml(name)}</div>
+    <table><thead><tr><th>Складова</th><th style="width:90px">Кількість</th><th style="width:34px;text-align:left">Од.</th><th style="width:100px">Ціна, грн/кг</th><th style="width:100px">Сума, грн</th></tr></thead><tbody>
+      ${rows.map(([l, q, u, pr, sm]) => `<tr><td>${escHtml(l)}</td><td>${q}</td><td style="text-align:left" class="muted">${u}</td><td>${pr != null ? m2(pr) : '–'}</td><td>${pr != null ? m2(sm) : '–'}</td></tr>`).join('')}
+      <tr class="ts-out"><td>Вихід</td><td>${k3(out)}</td><td style="text-align:left" class="muted">кг</td><td>${out > 0 ? m2(total / out) : '–'}</td><td>${m2(total)}</td></tr>
+    </tbody></table>`; }).join('')}</div>`;
+  const blocks = [
+    `<header><div class="brand">Hookah</div><h1>Технологічний бланк</h1><div class="meta">Станом на ${dateStr} · ${DB.recipes.length} позицій</div></header>`,
+    ...prodSecs,
+    semiHtml,
+  ];
+  await blocksToPdf({ blocks, filename: `Технологічний бланк ${dateStr}.pdf` });
+}
+
 async function exportCatalogPDF() {
   closePopovers();
   const doc = buildCatalogDoc();
-  if (doc.empty) { showToast('Немає рецептів у категоріях «Постійні смаки» та «Elsewhere»'); return; }
+  if (doc.empty) { showToast('Немає продукції в наявності в категоріях «Постійні смаки» та «Elsewhere»'); return; }
   await blocksToPdf(doc);
 }
 
