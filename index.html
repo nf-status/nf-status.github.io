@@ -1360,6 +1360,16 @@ html{background:var(--bg);min-height:100%;}
 /* напівфабрикати рахуються автоматично у виробництві готового продукту – окремий блок не потрібен */
 #sklPage-vyrobnytstvo > .ops-box:has(#semiItem),#sklPage-vyrobnytstvo > .ops-box:has(#semiLog){display:none!important;}
 #prodReport table th:not(:first-child),#prodReport table td:not(:first-child){text-align:center!important;}
+
+.inv-price .ip-u{font-size:.85em;color:var(--text3);}
+.inv-row.inv-row5{grid-template-columns:minmax(0,1fr) 92px 65px 96px 22px!important;}
+.inv-row.inv-row5:not(:has(.inv-x, .x-del)){grid-template-columns:minmax(0,1fr) 92px 65px 96px!important;}
+.inv-row5 > .inv-price{white-space:nowrap;}
+@media (max-width:640px){
+  .inv-row.inv-row5{grid-template-columns:minmax(0,1fr) 62px 40px 80px 10px!important;gap:5px!important;}
+  .inv-row.inv-row5:not(:has(.inv-x, .x-del)){grid-template-columns:minmax(0,1fr) 62px 40px 80px!important;}
+  .inv-row5 > .inv-price{font-size:12px!important;}
+}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -6565,7 +6575,7 @@ async function initFileSave(){
 const PRICE_EDITABLE_KEYS = ['burley','virginia','glycerin','sugar','citric_acid','nicotine','pg'];
 // Ціна у складі лише для перегляду: з приходу або з техкарти
 function invPriceCell(cpk, src) {
-  const val = cpk > 0 ? Math.round(cpk).toLocaleString('uk-UA') : '–';
+  const val = cpk > 0 ? Math.round(cpk).toLocaleString('uk-UA') + '<span class="ip-u"> грн</span>' : '–';
   return src === 'tk'
     ? `<div class="inv-price inv-price-tk" title="Собівартість із техкарти, грн/кг">${val}</div>`
     : `<div class="inv-price" title="${cpk > 0 ? 'Ціна з останнього приходу, грн/кг' : 'Ціни ще немає – вкажіть вхідну ціну в «Приході»'}">${val}</div>`;
@@ -6730,7 +6740,7 @@ function getAllInvItems() {
 
 // Підсумок групи складу: кількість позицій, вага, сума
 function invSubtotal(n, kg, sum) {
-  return `<div class="inv-subtotal"><span class="ist">Позицій <b>${n}</b></span><span class="ist">Вага <b>${kgFmt(kg)}</b></span><span class="ist">Сума <b>${Math.round(sum).toLocaleString('uk-UA')} грн</b></span></div>`;
+  return `<div class="inv-subtotal"><span class="ist">Позицій <b>${n}</b></span><span class="ist">Сума <b>${Math.round(sum).toLocaleString('uk-UA')} грн</b></span><span class="ist">Вага <b>${kgFmt(kg)}</b></span></div>`;
 }
 function renderInventory() {
   const grid = gn('sklGrid');
