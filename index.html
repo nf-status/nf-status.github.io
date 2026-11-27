@@ -1357,6 +1357,8 @@ html{background:var(--bg);min-height:100%;}
 .inv-row5:not(:has(.inv-x, .x-del)) > :not(.inv-label):not(.inv-price):not(.inv-min-inp):not(.inv-qty){display:none!important;}
 @media (max-width:640px){.inv-row.inv-row5:not(:has(.inv-x, .x-del)){grid-template-columns:minmax(0,1fr) 40px 42px 86px!important;}}
 .full-action-btn.saved{background:#248A3D!important;border-color:#248A3D!important;color:#fff!important;transition:background .2s;}
+/* напівфабрикати рахуються автоматично у виробництві готового продукту – окремий блок не потрібен */
+#sklPage-vyrobnytstvo > .ops-box:has(#semiItem),#sklPage-vyrobnytstvo > .ops-box:has(#semiLog){display:none!important;}
 </style>
 <script>
 // ── Вхід за паролем ──
