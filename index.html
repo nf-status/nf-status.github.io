@@ -1340,6 +1340,22 @@ html{background:var(--bg);min-height:100%;}
 @media (max-width:640px){.aud-tbl th:nth-child(2),.aud-tbl td:nth-child(2),.aud-tbl th:nth-child(3),.aud-tbl td:nth-child(3){display:none;}.aud-tiles b{font-size:15px;}}
 .aud-undo{display:flex;justify-content:flex-end;margin-top:12px;}
 .aud-undo .ops-btn{color:var(--red)!important;border-radius:999px!important;}
+
+/* ── Склад: порядок колонок ціна → мінімум → залишок; вміст по центру ── */
+.inv-row.inv-row5{grid-template-columns:minmax(0,1fr) 72px 65px 96px 22px!important;}
+.inv-row5 > .inv-label{order:0;}
+.inv-row5 > .inv-price{order:1;text-align:center!important;padding-right:0!important;}
+.inv-row5 > .inv-min-inp{order:2;text-align:center!important;width:100%!important;box-sizing:border-box;}
+.inv-row5 > .inv-qty{order:3;text-align:center!important;white-space:nowrap!important;min-width:0;}
+.inv-row.inv-row5{box-sizing:border-box;}
+.inv-row5 > :not(.inv-label):not(.inv-price):not(.inv-min-inp):not(.inv-qty){order:4;}
+@media (max-width:640px){.inv-row.inv-row5{grid-template-columns:minmax(0,1fr) 40px 42px 86px 10px!important;gap:5px!important;}.inv-row5 > .inv-qty{font-size:13px!important;}}
+#auditGrid .aud-inp{text-align:center!important;}
+
+/* рядки без кнопки видалення – без порожньої колонки праворуч */
+.inv-row.inv-row5:not(:has(.inv-x, .x-del)){grid-template-columns:minmax(0,1fr) 72px 65px 96px!important;}
+.inv-row5:not(:has(.inv-x, .x-del)) > :not(.inv-label):not(.inv-price):not(.inv-min-inp):not(.inv-qty){display:none!important;}
+@media (max-width:640px){.inv-row.inv-row5:not(:has(.inv-x, .x-del)){grid-template-columns:minmax(0,1fr) 40px 42px 86px!important;}}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -2068,7 +2084,7 @@ document.documentElement.classList.add('locked', 'decoy');
         <div class="section-title">Виробництво</div>
         <div class="slider-row">
           <div class="slider-label"><span class="lbl">Змін на місяць</span><span class="val" id="lShifts">12 змін</span></div>
-          <input type="range" id="sShifts" min="8" max="22" step="1" value="12" oninput="onFinInput()">
+          <input type="range" id="sShifts" min="1" max="62" step="1" value="12" oninput="onFinInput()">
           <div class="slider-note">У кожній зміні – 2 особи</div>
         </div>
         <div class="slider-row">
@@ -2392,13 +2408,30 @@ function lockRegisterFail() {
 function lockResetFails() { [SEC_FAILS_LS, SEC_UNTIL_LS, SEC_STAGE_LS].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} }); }
 function fmtWait(ms) { const s = Math.ceil(ms / 1000); return s >= 90 ? Math.ceil(s / 60) + ' хв' : s + ' с'; }
 
+// Пароль, набраний на українській/російській розкладці, → ті самі клавіші латиницею
+const KB_UA = 'йцукенгшщзхїфівапролджєячсмитьбюыэъ', KB_EN = "qwertyuiop[]asdfghjkl;'zxcvbnm,.s']";
+function kbToLatin(str) {
+  return [...str].map(ch => {
+    const lo = ch.toLowerCase(), i = KB_UA.indexOf(lo);
+    if (i < 0) return ch;
+    const r = KB_EN[i];
+    return ch !== lo ? r.toUpperCase() : r;
+  }).join('');
+}
+function kbToCyr(str) {
+  return [...str].map(ch => { const lo = ch.toLowerCase(), i = KB_EN.slice(0, 32).indexOf(lo); if (i < 0) return ch; const r = KB_UA[i]; return ch !== lo ? r.toUpperCase() : r; }).join('');
+}
 // Перевірка пароля і відкриття даних. Повертає true / false.
-async function secTryPassword(pass) {
-  if (SEC.ready) return pass === SEC.pass;                    // повторний вхід після блокування
+async function secTryPassword(passIn) {
+  const pass = kbToLatin(passIn);                              // розкладка клавіатури не має значення
+  if (SEC.ready) return pass === SEC.pass || passIn === SEC.pass;   // повторний вхід після блокування
   const blob = secStoredBlob();
-  let data = null, first = false;
+  let data = null, first = false, usedVariant = null;
   if (blob) {
-    try { data = await secDecrypt(blob, pass); } catch (e) { return false; }
+    for (const v of [...new Set([pass, passIn, kbToCyr(pass)])]) {
+      try { data = await secDecrypt(blob, v); usedVariant = v; break; } catch (e) {}
+    }
+    if (!data) return false;
     SEC.salt = blob.salt;
   } else {
     const legacy = localStorage.getItem(DB_KEY);
@@ -2413,6 +2446,7 @@ async function secTryPassword(pass) {
     CLOUD.applying = true;
     try { applyDB(data); } finally { CLOUD.applying = false; }
     refreshAllUI();
+    if (usedVariant !== pass) secPersist();                     // дані були зашифровані кириличним варіантом – перешифровуємо латиницею
   }
   if (first) {
     secPersist();                                                   // шифруємо те, що було у відкритому вигляді
@@ -2491,7 +2525,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 
 // ── Зміна пароля ──
 async function changePin() {
-  const o = gn('pinOld').value, n = gn('pinNew').value, n2 = gn('pinNew2').value;
+  const o = kbToLatin(gn('pinOld').value), n = kbToLatin(gn('pinNew').value), n2 = kbToLatin(gn('pinNew2').value);
   if (o !== SEC.pass) { showToast('Поточний пароль невірний'); return; }
   if (n.length < 6) { showToast('Новий пароль – щонайменше 6 символів'); return; }
   if (n !== n2) { showToast('Нові паролі не збігаються'); return; }
@@ -6204,7 +6238,7 @@ async function exportAuditBlankPDF(withLast) {
   const flavors = (DB.prices.flavorings || []).map(f => ({ key: 'flav_' + f.name, name: f.name, unit: 'кг', qty: snap['flav_' + f.name] || 0 }))
     .sort((a, b) => a.name.localeCompare(b.name, 'uk'));
   if (flavors.length) {
-    if (withLast) groups.push({ group: 'Ароматизатори', items: [{ name: `Ароматизатори – разом (${flavors.length} поз.)`, unit: 'кг', qty: flavors.reduce((s, f) => s + f.qty, 0) }] });
+    if (withLast) groups.push({ group: 'Ароматизатори', items: [{ name: 'Ароматизатори', unit: 'кг', qty: flavors.reduce((s, f) => s + f.qty, 0) }] });
     else groups.push({ group: 'Ароматизатори', items: flavors });
   }
   const fin = DB.recipes.filter(r => !r.deleted).sort((a, b) => a.name.localeCompare(b.name, 'uk'))
@@ -6212,7 +6246,7 @@ async function exportAuditBlankPDF(withLast) {
   if (fin.length) groups.push({ group: 'Готова продукція', items: fin, cur: !(last && last.fgSnapshot) });
   let n = 0;
   const secs = groups.filter(g => g.items.length).map(g => `<div class="bl-sec"><h2>${escHtml(g.group)}${withLast && g.cur ? ' <span class="cat-count">поточний залишок</span>' : ''}</h2>
-    <table class="bl-tbl"><thead><tr><th style="width:28px;text-align:left">№</th><th style="text-align:left">Позиція</th><th style="width:40px;text-align:center">Од.</th>${withLast ? '<th style="width:110px;text-align:center">Фактично</th>' : '<th style="width:120px;text-align:center">Фактично</th><th style="width:150px;text-align:center">Примітка</th>'}</tr></thead>
+    <table class="bl-tbl"><thead><tr><th style="width:28px"></th><th></th><th style="width:40px;text-align:center">Од.</th>${withLast ? '<th style="width:110px;text-align:center">Фактично</th>' : '<th style="width:120px;text-align:center">Фактично</th><th style="width:150px;text-align:center">Примітка</th>'}</tr></thead>
     <tbody>${g.items.map(it => `<tr><td class="no">${++n}</td><td>${escHtml(it.name)}</td><td class="c muted">${escHtml(it.unit)}</td>${withLast ? `<td style="text-align:center">${fq(it.qty, it.unit)}</td>` : '<td class="fill"></td><td class="fill"></td>'}</tr>`).join('')}</tbody></table></div>`);
   const fmtDT = d => new Date(d).toLocaleString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   const blocks = last ? [
