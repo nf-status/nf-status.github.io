@@ -1356,6 +1356,7 @@ html{background:var(--bg);min-height:100%;}
 .inv-row.inv-row5:not(:has(.inv-x, .x-del)){grid-template-columns:minmax(0,1fr) 72px 65px 96px!important;}
 .inv-row5:not(:has(.inv-x, .x-del)) > :not(.inv-label):not(.inv-price):not(.inv-min-inp):not(.inv-qty){display:none!important;}
 @media (max-width:640px){.inv-row.inv-row5:not(:has(.inv-x, .x-del)){grid-template-columns:minmax(0,1fr) 40px 42px 86px!important;}}
+.full-action-btn.saved{background:#248A3D!important;border-color:#248A3D!important;color:#fff!important;transition:background .2s;}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -1615,7 +1616,7 @@ document.documentElement.classList.add('locked', 'decoy');
       <div class="field" style="margin-bottom:10px"><label>Примітка</label>
         <input type="text" id="prodNote" class="finp" placeholder="Необов'язково">
       </div>
-      <button class="full-action-btn" onclick="confirmProduction()">✓ Підтвердити виробництво</button>
+      <button class="full-action-btn" onclick="flashSave(this, confirmProduction, 'productions', 'Виробництво збережено')">✓ Підтвердити виробництво</button>
     </div>
     <div class="ops-box">
       <div class="ops-title"><span>Журнал виробництва</span><div class="ops-actions"><div class="sx" data-target="prodLog"><input class="sx-inp" type="text" enterkeyhint="search" autocomplete="off" oninput="sxFilter(this)" onkeydown="if(event.key==='Escape')sxClose(this)"><button type="button" class="sx-btn" onclick="sxToggle(this)" title="Пошук" aria-label="Пошук"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div><div class="pf" data-cb="renderProdLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label><input type="date" id="prodLogFrom" class="finp" onchange="pfChanged(this)"></label><label><input type="date" id="prodLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div></div>
@@ -1641,7 +1642,7 @@ document.documentElement.classList.add('locked', 'decoy');
         <div class="field"><label>Дата</label><input type="date" id="semiDate" class="finp"></div>
         <div class="field"><label>Примітка</label><input type="text" id="semiNote" class="finp" placeholder="Необов'язково"></div>
       </div>
-      <button class="full-action-btn" onclick="confirmSemiProduction()">✓ Підтвердити виготовлення</button>
+      <button class="full-action-btn" onclick="flashSave(this, confirmSemiProduction, 'semiProductions', 'Виготовлення збережено')">✓ Підтвердити виготовлення</button>
     </div>
     <div class="ops-box">
       <div class="ops-title"><span>Журнал напівфабрикатів</span></div>
@@ -1673,7 +1674,7 @@ document.documentElement.classList.add('locked', 'decoy');
         <input type="text" id="shipClient" class="finp" placeholder="Необов'язково">
       </div>
       <div id="shipPreview" style="margin-bottom:10px"></div>
-      <button class="full-action-btn" onclick="confirmShipment()">✓ Підтвердити відвантаження</button>
+      <button class="full-action-btn" onclick="flashSave(this, confirmShipment, 'shipments', 'Відвантаження збережено')">✓ Підтвердити відвантаження</button>
     </div>
     <div class="ops-box">
       <div class="ops-title"><span>Журнал відвантажень</span><div class="ops-actions"><div class="sx" data-target="shipLog"><input class="sx-inp" type="text" enterkeyhint="search" autocomplete="off" oninput="sxFilter(this)" onkeydown="if(event.key==='Escape')sxClose(this)"><button type="button" class="sx-btn" onclick="sxToggle(this)" title="Пошук" aria-label="Пошук"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div><div class="pf" data-cb="renderShipLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label><input type="date" id="shipLogFrom" class="finp" onchange="pfChanged(this)"></label><label><input type="date" id="shipLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div></div>
@@ -1760,7 +1761,7 @@ document.documentElement.classList.add('locked', 'decoy');
             <div id="receiptCurrentPrice" style="font-size:11px;color:var(--text2);line-height:1.5;padding-bottom:6px"></div>
           </div>
         </div>
-        <button class="full-action-btn" onclick="confirmReceipt()">✓ Зберегти прихід</button>
+        <button class="full-action-btn" onclick="flashSave(this, confirmReceipt, 'receipts', 'Прихід збережено')">✓ Зберегти прихід</button>
       </div>
       <div class="ops-box">
         <div class="ops-title"><span>Журнал приходів</span><div class="ops-actions"><div class="sx" data-target="receiptLog"><input class="sx-inp" type="text" enterkeyhint="search" autocomplete="off" oninput="sxFilter(this)" onkeydown="if(event.key==='Escape')sxClose(this)"><button type="button" class="sx-btn" onclick="sxToggle(this)" title="Пошук" aria-label="Пошук"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div><div class="pf" data-cb="renderReceiptLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label><input type="date" id="receiptLogFrom" class="finp" onchange="pfChanged(this)"></label><label><input type="date" id="receiptLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div></div>
@@ -1788,7 +1789,7 @@ document.documentElement.classList.add('locked', 'decoy');
             <input type="date" id="writeoffDate" class="finp">
           </div>
         </div>
-        <button class="full-action-btn" onclick="confirmWriteoff()">✓ Підтвердити списання</button>
+        <button class="full-action-btn" onclick="flashSave(this, confirmWriteoff, 'writeoffs', 'Списання збережено')">✓ Підтвердити списання</button>
       </div>
       <div class="ops-box">
         <div class="ops-title"><span>Журнал списань</span><div class="ops-actions"><div class="sx" data-target="writeoffLog"><input class="sx-inp" type="text" enterkeyhint="search" autocomplete="off" oninput="sxFilter(this)" onkeydown="if(event.key==='Escape')sxClose(this)"><button type="button" class="sx-btn" onclick="sxToggle(this)" title="Пошук" aria-label="Пошук"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button></div><div class="pf" data-cb="renderWriteoffLog"><button type="button" class="pf-btn" onclick="togglePf(this)" title="Період: весь час" aria-label="Період"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="pf-lbl">Весь час</span></button><div class="pf-pop"><div class="pf-presets"><button type="button" onclick="pfPreset(this,'month')">Цей місяць</button><button type="button" onclick="pfPreset(this,'prev')">Минулий місяць</button><button type="button" onclick="pfPreset(this,'quarter')">Квартал</button><button type="button" onclick="pfPreset(this,'year')">Рік</button><button type="button" onclick="pfPreset(this,'all')">Весь час</button></div><div class="pf-dates"><label><input type="date" id="writeoffLogFrom" class="finp" onchange="pfChanged(this)"></label><label><input type="date" id="writeoffLogTo" class="finp" onchange="pfChanged(this)"></label></div></div></div></div></div>
@@ -3391,6 +3392,21 @@ function applyTKMode() {
   const fab = gn('fabAdd');
   if (fab && tab.classList.contains('active')) fab.style.display = 'flex';
 }
+
+// Кнопка підтвердження: після успішного збереження коротко показує «✓ … збережено»
+async function flashSave(btn, fn, coll, msg) {
+  if (btn.classList.contains('saved')) return;
+  const cnt = () => (DB[coll] || []).length;
+  const before = cnt();
+  await fn();
+  if (cnt() <= before) return;                      // не збережено (помилка або скасовано)
+  if (!btn.dataset.label) btn.dataset.label = btn.textContent;
+  btn.textContent = '✓ ' + msg;
+  btn.classList.add('saved');
+  clearTimeout(btn._flashT);
+  btn._flashT = setTimeout(() => { btn.textContent = btn.dataset.label; btn.classList.remove('saved'); }, 2200);
+}
+
 function startEditTK() {
   tkSnapshot = JSON.stringify({ techCards: DB.techCards, customTK: DB.customTK });
   tkEditMode = true;
