@@ -1377,6 +1377,31 @@ html{background:var(--bg);min-height:100%;}
 .rcp-wrap:has(.pdf-menu.open) .rcp-gear{transform:rotate(60deg);color:var(--text1);}
 #recipeMenu{right:0;left:auto;min-width:190px;}
 #recipeMenu button.danger{color:var(--red)!important;}
+
+/* Контекстне меню у стилі iOS */
+.ctx-menu{padding:6px!important;min-width:220px!important;}
+.ctx-menu button{display:flex!important;align-items:center;gap:12px;padding:10px 12px!important;font-size:15px!important;}
+.ctx-menu button svg{flex:0 0 18px;color:var(--text1);}
+.ctx-menu button.danger svg{color:var(--red);}
+.ctx-sep{height:.5px;background:rgba(60,60,67,.18);margin:5px 8px;}
+/* форма складу у вікні */
+.form-dlg{width:min(640px,100%);max-height:88vh;overflow:auto;}
+.ops-box.in-modal{box-shadow:none!important;background:transparent!important;padding:0!important;margin:0!important;}
+.ops-box.in-modal > .ops-title:first-child{display:none;}
+/* інформація по продукту */
+.ri-dlg{width:min(600px,100%);}
+.ri-per{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px;}
+.ri-per button{border:0;background:#F2F2F7;border-radius:999px;padding:6px 12px;font-size:13px;font-family:inherit;color:var(--text1);cursor:pointer;}
+.ri-per button.on{background:#1C1C1E;color:#fff;}
+.ri-tiles{grid-template-columns:repeat(4,1fr)!important;}
+.ri-tiles i{font-style:normal;font-size:11.5px;color:var(--text3);}
+.ri-rows>div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:.5px solid rgba(60,60,67,.15);font-size:14px;}
+.ri-rows>div span{color:var(--text2);}
+.ri-rows>div b{font-weight:500;white-space:nowrap;font-variant-numeric:tabular-nums;}
+@media (max-width:640px){.ri-tiles{grid-template-columns:repeat(2,1fr)!important;}}
+/* пароль по центру всього рядка (з урахуванням значка замка) */
+.lock-pill .lock-inp{padding-left:0!important;padding-right:56px!important;text-align:center!important;}
+.tab-btn.tab-icon{display:inline-flex!important;align-items:center;justify-content:center;position:relative;}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -1421,7 +1446,7 @@ document.documentElement.classList.add('locked', 'decoy');
     <button class="tab-btn" data-tab="reports" onclick="switchTab('reports')">Звіти</button>
     <button class="tab-btn" data-tab="tk" onclick="switchTab('tk')">Техкарти</button>
     <button class="tab-btn" data-tab="fin" onclick="switchTab('fin')">Фінансова модель</button>
-    <button class="tab-btn tab-icon" data-tab="settings" onclick="switchTab('settings')" title="Налаштування" aria-label="Налаштування">⚙<span id="syncDot" class="sync-dot off"></span></button>
+    <button class="tab-btn tab-icon" data-tab="settings" onclick="switchTab('settings')" title="Налаштування" aria-label="Налаштування"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="display:block"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span id="syncDot" class="sync-dot off"></span></button>
   </nav>
 
 </div>
@@ -1437,12 +1462,15 @@ document.documentElement.classList.add('locked', 'decoy');
   <div class="recipe-bar">
     <select id="recipeSelect" class="finp" onchange="onRecipeSelect()" style="height:32px;padding:0 8px;flex:1"></select>
     <div class="pdf-wrap rcp-wrap" id="recipeGearWrap" style="display:none"><button type="button" class="rcp-gear" onclick="toggleRecipeMenu(event)" title="Дії з продуктом" aria-label="Дії з продуктом"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
-      <div class="pdf-menu" id="recipeMenu">
-        <button type="button" onclick="recipeAction('edit')">Редагувати</button>
-        <button type="button" onclick="recipeAction('prod')">Виробництво</button>
-        <button type="button" onclick="recipeAction('ship')">Відвантаження</button>
-        <button type="button" onclick="recipeAction('wo')">Списання</button>
-        <button type="button" class="danger" onclick="recipeAction('del')">Видалити</button>
+      <div class="pdf-menu ctx-menu" id="recipeMenu">
+        <button type="button" onclick="recipeAction('edit')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6"/><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L12 14.8l-3.6.8.8-3.6z"/></svg><span>Редагувати</span></button>
+        <button type="button" onclick="recipeAction('info')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></svg><span>Інформація</span></button>
+        <div class="ctx-sep"></div>
+        <button type="button" onclick="recipeAction('prod')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg><span>Виробництво</span></button>
+        <button type="button" onclick="recipeAction('ship')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg><span>Відвантаження</span></button>
+        <button type="button" onclick="recipeAction('wo')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg><span>Списання</span></button>
+        <div class="ctx-sep"></div>
+        <button type="button" class="danger" onclick="recipeAction('del')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg><span>Видалити</span></button>
       </div></div>
     <button class="btn-sm btn-save" id="btnEditRecipe" style="display:none" onclick="startEditRecipe()">Редагувати</button>
     <button class="btn-sm btn-save" id="btnSaveRecipe" onclick="saveRecipe()">Зберегти</button>
@@ -4319,12 +4347,103 @@ function recipeAction(act) {
   const rid = currentRecipeId;
   if (!rid) return;
   const pick = (selId, val) => { const s = gn(selId); if (!s) return; s.value = val; s._ssRefresh && s._ssRefresh(); s.dispatchEvent(new Event('change', { bubbles: true })); };
-  const goSklad = page => { switchTab('sklad'); switchSkladPage(page); navPushSoon(); window.scrollTo(0, 0); };
   if (act === 'edit') startEditRecipe();
-  else if (act === 'prod') { goSklad('vyrobnytstvo'); pick('prodRecipe', rid); }
-  else if (act === 'ship') { goSklad('vidvantazhennia'); pick('shipRecipe', rid); }
-  else if (act === 'wo') { goSklad('spysannia'); populateWriteoffSelect(); pick('writeoffItem', 'fg_' + rid); }
+  else if (act === 'info') openRecipeInfo(rid);
+  else if (act === 'prod') openFormModal('#prodRecipe', 'Нова партія', 'productions', () => { populateProdSelect(); pick('prodRecipe', rid); });
+  else if (act === 'ship') openFormModal('#shipRecipe', 'Відвантаження', 'shipments', () => { populateShipSelect(); pick('shipRecipe', rid); });
+  else if (act === 'wo') openFormModal('#writeoffItem', 'Списання', 'writeoffs', () => { populateWriteoffSelect(); pick('writeoffItem', 'fg_' + rid); });
   else if (act === 'del') deleteRecipe();
+}
+// Форма складу (виробництво / відвантаження / списання) у спливаючому вікні – без переходу на склад
+function openFormModal(fieldSel, title, coll, prep) {
+  const box = document.querySelector(fieldSel)?.closest('.ops-box');
+  if (!box) return;
+  const home = document.createComment('form-home');
+  box.parentNode.insertBefore(home, box);
+  const wrap = document.createElement('div');
+  wrap.className = 'ui-dlg-wrap';
+  wrap.innerHTML = `<div class="ui-dlg form-dlg" role="dialog" aria-modal="true"><div class="aging-head"><div class="aging-title">${title}</div><button type="button" class="aging-x" data-close aria-label="Закрити">×</button></div></div>`;
+  const dlg = wrap.firstElementChild;
+  box.classList.add('in-modal');
+  dlg.appendChild(box);
+  const before = (DB[coll] || []).length;
+  let timer = null;
+  const close = () => {
+    clearInterval(timer); document.removeEventListener('keydown', onKey);
+    box.classList.remove('in-modal'); home.parentNode.insertBefore(box, home); home.remove(); wrap.remove();
+  };
+  const onKey = e => { if (e.key === 'Escape') close(); };
+  wrap.addEventListener('click', e => { if (e.target === wrap || e.target.closest('[data-close]')) close(); });
+  document.addEventListener('keydown', onKey);
+  document.body.appendChild(wrap);
+  try { prep && prep(); } catch (e) {}
+  // після збереження – показати «збережено» і закрити вікно
+  timer = setInterval(() => { if ((DB[coll] || []).length > before) { clearInterval(timer); setTimeout(close, 1100); } }, 200);
+}
+
+
+// ── Інформація по продукту за період ──
+function openRecipeInfo(rid) {
+  const r = DB.recipes.find(x => x.id === rid);
+  if (!r) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'ui-dlg-wrap';
+  wrap.innerHTML = `<div class="ui-dlg aging-dlg ri-dlg" role="dialog" aria-modal="true">
+    <div class="aging-head"><div><div class="aging-title">${escHtml(r.name)}</div><div class="aging-sub" id="riSub"></div></div>
+      <button type="button" class="aging-x" data-close aria-label="Закрити">×</button></div>
+    <div class="ri-per">${[['month','Цей місяць'],['prev','Минулий'],['q','3 місяці'],['year','Рік'],['all','Весь час']].map(([k, l]) => `<button type="button" data-p="${k}">${l}</button>`).join('')}</div>
+    <div id="riBody"></div></div>`;
+  const close = () => { wrap.remove(); document.removeEventListener('keydown', onKey); };
+  const onKey = e => { if (e.key === 'Escape') close(); };
+  wrap.addEventListener('click', e => {
+    if (e.target === wrap || e.target.closest('[data-close]')) return close();
+    const b = e.target.closest('.ri-per button'); if (b) draw(b.dataset.p);
+  });
+  document.addEventListener('keydown', onKey);
+  document.body.appendChild(wrap);
+  const kg = x => kgFmt(x || 0), m = x => Math.round(x || 0).toLocaleString('uk-UA') + ' грн';
+  const draw = per => {
+    wrap.querySelectorAll('.ri-per button').forEach(b => b.classList.toggle('on', b.dataset.p === per));
+    const now = new Date(); let from = null, to = null;
+    if (per === 'month') { from = new Date(now.getFullYear(), now.getMonth(), 1); }
+    else if (per === 'prev') { from = new Date(now.getFullYear(), now.getMonth() - 1, 1); to = new Date(now.getFullYear(), now.getMonth(), 1); }
+    else if (per === 'q') { from = new Date(now.getFullYear(), now.getMonth() - 2, 1); }
+    else if (per === 'year') { from = new Date(now.getFullYear(), 0, 1); }
+    const inR = d => { const t = new Date(d); return (!from || t >= from) && (!to || t < to); };
+    const prods = (DB.productions || []).filter(p => p.recipeId === rid && inR(p.date));
+    const ships = (DB.shipments || []).filter(x => x.recipeId === rid && inR(x.date));
+    const wos = (DB.writeoffs || []).filter(w => w.key === 'fg_' + rid && inR(w.date));
+    const prodKg = prods.reduce((a, p) => a + (p.totalKg || 0), 0);
+    const shipKg = ships.reduce((a, x) => a + (x.amountKg || 0), 0);
+    const rev = ships.reduce((a, x) => a + (x.totalSum || 0), 0);
+    const cogs = ships.reduce((a, x) => a + (x.totalCost || 0), 0);
+    const woKg = wos.reduce((a, w) => a + (w.qty || 0), 0);
+    const aging = agingBatches(rid).reduce((a, p) => a + (p.totalKg || 0), 0);
+    const cpk = shipCostPerKg(r), price = r.targetPrice || 0;
+    const clients = {}; ships.forEach(x => { const c = x.client || 'Без клієнта'; clients[c] = (clients[c] || 0) + (x.amountKg || 0); });
+    const ops = [...prods.map(p => ({ d: p.date, t: 'Виробництво', q: p.totalKg, c: 'up' })), ...ships.map(x => ({ d: x.date, t: 'Відвантаження' + (x.client ? ' · ' + x.client : ''), q: -x.amountKg, c: 'down' })), ...wos.map(w => ({ d: w.date, t: 'Списання' + (w.reason ? ' · ' + w.reason : ''), q: -w.qty, c: 'down' }))]
+      .sort((a, b) => b.d.localeCompare(a.d)).slice(0, 12);
+    gn('riSub').textContent = (r.category === 'elsewhere' ? 'Elsewhere' : r.category === 'tester' ? 'Тестер' : 'Постійні смаки') + ' · ' + (r.data?.tobBaseType === 'light' ? 'Light' : 'Strong');
+    gn('riBody').innerHTML = `
+      <div class="aud-tiles ri-tiles">
+        <div><span>Вироблено</span><b>${kg(prodKg)}</b><i>${prods.length} парт.</i></div>
+        <div><span>Відвантажено</span><b>${kg(shipKg)}</b><i>${ships.length} відв.</i></div>
+        <div><span>Списано</span><b>${kg(woKg)}</b><i>${wos.length} зап.</i></div>
+        <div><span>На складі зараз</span><b>${kg(DB.finishedGoods[rid])}</b><i>на витримці ${kg(aging)}</i></div>
+      </div>
+      <div class="ri-rows">
+        <div><span>Виручка за період</span><b>${m(rev)}</b></div>
+        <div><span>Собівартість відвантаженого</span><b>${m(cogs)}</b></div>
+        <div><span>Валовий прибуток</span><b class="${rev - cogs >= 0 ? 'aud-plus' : 'aud-minus'}">${m(rev - cogs)}</b></div>
+        <div><span>Середня ціна продажу</span><b>${shipKg ? m(rev / shipKg) + '/кг' : '–'}</b></div>
+        <div><span>Собівартість 1 кг (зараз)</span><b>${m(cpk)}/кг</b></div>
+        <div><span>Ціна продажу на картці</span><b>${price ? m(price) + '/кг' : '–'}</b></div>
+      </div>
+      ${Object.keys(clients).length ? `<div class="rep-sec-title" style="margin-top:14px">Клієнти</div><div class="ri-rows">${Object.entries(clients).sort((a, b) => b[1] - a[1]).map(([c, q]) => `<div><span>${escHtml(c)}</span><b>${kg(q)}</b></div>`).join('')}</div>` : ''}
+      <div class="rep-sec-title" style="margin-top:14px">Операції</div>
+      ${ops.length ? `<div class="ri-rows">${ops.map(o => `<div><span>${new Date(o.d).toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: '2-digit' })} · ${escHtml(o.t)}</span><b class="${o.c === 'up' ? 'aud-plus' : 'aud-minus'}">${o.q > 0 ? '+' : '−'}${kg(Math.abs(o.q))}</b></div>`).join('')}</div>` : '<div class="log-empty">Операцій за період немає</div>'}`;
+  };
+  draw('month');
 }
 
 function deleteRecipe() {
@@ -4548,7 +4667,7 @@ function renderFin() {
   s('kRentab',   m.netPct.toFixed(1) + '%', m.netPct >= 15 ? css('--green') : m.netPct >= 0 ? css('--amber') : css('--red'));
 
   s('beNum',  m.beKg < Infinity ? Math.ceil(m.beKg) + ' кг' : '∞', bClr(m.bePct));
-  s('beSub2', m.beShifts.toFixed(1) + ' кг/зміну · мін. виручка ' + fmt(m.beRev));
+  s('beSub2', m.beShifts.toLocaleString('uk-UA', { maximumFractionDigits: 1 }) + ' змін із ' + m.shifts + ' · мін. виручка ' + fmt(m.beRev));
   s('bePctLabel', bPD.toFixed(0) + '%', bClr(m.bePct));
   gn('beBar').style.cssText = `width:${Math.min(bPD,100)}%;background:${bClr(m.bePct)}`;
 
