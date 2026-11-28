@@ -1370,6 +1370,13 @@ html{background:var(--bg);min-height:100%;}
   .inv-row.inv-row5:not(:has(.inv-x, .x-del)){grid-template-columns:minmax(0,1fr) 62px 40px 80px!important;}
   .inv-row5 > .inv-price{font-size:12px!important;}
 }
+
+.rcp-wrap{position:relative;flex:0 0 auto;}
+.rcp-gear{width:36px;height:36px;border-radius:50%;border:0;background:#fff;box-shadow:inset 0 0 0 1px rgba(60,60,67,.15);display:flex;align-items:center;justify-content:center;color:var(--text2);cursor:pointer;padding:0;transition:transform .25s;}
+.rcp-gear:hover{color:var(--text1);}
+.rcp-wrap:has(.pdf-menu.open) .rcp-gear{transform:rotate(60deg);color:var(--text1);}
+#recipeMenu{right:0;left:auto;min-width:190px;}
+#recipeMenu button.danger{color:var(--red)!important;}
 </style>
 <script>
 // ── Вхід за паролем ──
@@ -1429,6 +1436,14 @@ document.documentElement.classList.add('locked', 'decoy');
   <!-- Recipe bar -->
   <div class="recipe-bar">
     <select id="recipeSelect" class="finp" onchange="onRecipeSelect()" style="height:32px;padding:0 8px;flex:1"></select>
+    <div class="pdf-wrap rcp-wrap" id="recipeGearWrap" style="display:none"><button type="button" class="rcp-gear" onclick="toggleRecipeMenu(event)" title="Дії з продуктом" aria-label="Дії з продуктом"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+      <div class="pdf-menu" id="recipeMenu">
+        <button type="button" onclick="recipeAction('edit')">Редагувати</button>
+        <button type="button" onclick="recipeAction('prod')">Виробництво</button>
+        <button type="button" onclick="recipeAction('ship')">Відвантаження</button>
+        <button type="button" onclick="recipeAction('wo')">Списання</button>
+        <button type="button" class="danger" onclick="recipeAction('del')">Видалити</button>
+      </div></div>
     <button class="btn-sm btn-save" id="btnEditRecipe" style="display:none" onclick="startEditRecipe()">Редагувати</button>
     <button class="btn-sm btn-save" id="btnSaveRecipe" onclick="saveRecipe()">Зберегти</button>
     <button class="btn-sm btn-cancel" id="btnCancelEdit" style="display:none" onclick="cancelEditRecipe()">Скасувати</button>
@@ -2103,7 +2118,7 @@ document.documentElement.classList.add('locked', 'decoy');
         </div>
         <div class="slider-row">
           <div class="slider-label"><span class="lbl">Продуктивність зміни (кг)</span><span class="val" id="lYield">20 кг/зміну</span></div>
-          <input type="range" id="sYield" min="5" max="50" step="1" value="20" oninput="onFinInput()">
+          <input type="range" id="sYield" min="1" max="50" step="1" value="20" oninput="onFinInput()">
         </div>
         <div class="slider-row">
           <div class="slider-label"><span class="lbl">Мікс: легкий / міцний</span><span class="val" id="lMix">50% / 50%</span></div>
@@ -4079,9 +4094,10 @@ function renderRecipeBar() {
   sel.value = currentRecipeId || '';
   const _delBtn = gn('btnDeleteRecipe');
   const viewing = !!currentRecipeId && !calcEditMode, editingSaved = !!currentRecipeId && calcEditMode;
-  if (_delBtn) { _delBtn.style.display = viewing ? '' : 'none'; _delBtn.textContent = 'Видалити'; _delBtn.style.background = ''; }
+  if (_delBtn) { _delBtn.style.display = 'none'; }
+  if (gn('recipeGearWrap')) gn('recipeGearWrap').style.display = viewing ? '' : 'none';
   const show = (id, on) => { const b = gn(id); if (b) b.style.display = on ? '' : 'none'; };
-  show('btnEditRecipe', viewing);
+  show('btnEditRecipe', false);
   show('btnSaveRecipe', !viewing);
   show('btnCancelEdit', editingSaved);
   applyCalcMode();
@@ -4288,6 +4304,27 @@ function doDeleteRecipe(id) {
   renderRecipeList();
   renderRecipeBar();
   showToast(`«${r.name}» переміщено у «Видалені»`);
+}
+
+
+// ── Меню дій з продуктом (шестерня в техкарті) ──
+function toggleRecipeMenu(e) {
+  e.stopPropagation();
+  const m = gn('recipeMenu'), open = !m.classList.contains('open');
+  closePopovers();
+  if (open) m.classList.add('open');
+}
+function recipeAction(act) {
+  closePopovers();
+  const rid = currentRecipeId;
+  if (!rid) return;
+  const pick = (selId, val) => { const s = gn(selId); if (!s) return; s.value = val; s._ssRefresh && s._ssRefresh(); s.dispatchEvent(new Event('change', { bubbles: true })); };
+  const goSklad = page => { switchTab('sklad'); switchSkladPage(page); navPushSoon(); window.scrollTo(0, 0); };
+  if (act === 'edit') startEditRecipe();
+  else if (act === 'prod') { goSklad('vyrobnytstvo'); pick('prodRecipe', rid); }
+  else if (act === 'ship') { goSklad('vidvantazhennia'); pick('shipRecipe', rid); }
+  else if (act === 'wo') { goSklad('spysannia'); populateWriteoffSelect(); pick('writeoffItem', 'fg_' + rid); }
+  else if (act === 'del') deleteRecipe();
 }
 
 function deleteRecipe() {
@@ -4864,6 +4901,7 @@ function setRecipeFilter(val) {
 }
 
 function openRecipeFromList(id) {
+  try { if (history.state && history.state.hk) history.replaceState({ ...history.state, sy: Math.round(window.scrollY) }, ''); } catch (e) {}
   switchTab('calc');
   loadRecipe(id);
   window.scrollTo(0, 0);
@@ -5135,12 +5173,13 @@ function closePopovers() {
   gn('pdfMenu')?.classList.remove('open');
   gn('recPdfMenu')?.classList.remove('open');
   gn('audPdfMenu')?.classList.remove('open');
+  gn('recipeMenu')?.classList.remove('open');
   closeSS();
 }
 
 document.addEventListener('mousedown', e => {
   if (!e.target.closest('.pf')) document.querySelectorAll('.pf.open').forEach(p => p.classList.remove('open'));
-  if (!e.target.closest('.pdf-wrap')) { gn('pdfMenu')?.classList.remove('open'); gn('recPdfMenu')?.classList.remove('open'); gn('audPdfMenu')?.classList.remove('open'); }
+  if (!e.target.closest('.pdf-wrap')) { gn('pdfMenu')?.classList.remove('open'); gn('recPdfMenu')?.classList.remove('open'); gn('audPdfMenu')?.classList.remove('open'); gn('recipeMenu')?.classList.remove('open'); }
   if (ssState && !e.target.closest('#ssPop') && !ssState.sel._ss.wrap.contains(e.target)) closeSS();
 });
 document.addEventListener('keydown', e => {
@@ -5611,6 +5650,7 @@ function itemMovements(key) {
     (DB.auditLog || []).forEach(a => {
       if (a.fgBefore && a.fgSnapshot) push(a.date, 'Інвентаризація', 'коригування', (a.fgSnapshot[rid] || 0) - (a.fgBefore[rid] || 0));
     });
+    (DB.writeoffs || []).filter(w => w.key === 'fg_' + rid).forEach(w => push(w.date, 'Списання', w.reason || '', -w.qty));
     var current = DB.finishedGoods[rid] || 0;
   } else {
     (DB.receipts || []).filter(r => r.key === key).forEach(r => push(r.date, 'Прихід', r.price ? `${r.price.toLocaleString('uk-UA')} грн/кг` : '', +r.qty));
@@ -5785,8 +5825,24 @@ function navApply(st) {
         if ((st.base || '') !== recipeBaseFilter) setBaseFilter(st.base || recipeBaseFilter);
       }
     }
-  } finally { setTimeout(() => { navApplying = false; }, 0); }
+    // повертаємось на те місце сторінки, де були (напр., до відкритої техкарти в асортименті)
+    if (st.tab !== 'calc' && st.sy > 0) {
+      const y = st.sy;
+      requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, y)));
+      setTimeout(() => window.scrollTo(0, y), 120);
+    }
+  } finally { setTimeout(() => { navApplying = false; }, 200); }
 }
+// запам'ятовуємо прокрутку поточної сторінки в історії
+let navScrollT = null;
+window.addEventListener('scroll', () => {
+  if (navApplying) return;
+  clearTimeout(navScrollT);
+  navScrollT = setTimeout(() => {
+    if (navApplying || !history.state || !history.state.hk) return;
+    try { history.replaceState({ ...history.state, sy: Math.round(window.scrollY) }, ''); } catch (e) {}
+  }, 120);
+}, { passive: true });
 window.addEventListener('popstate', e => {
   if (!e.state || !e.state.hk) return;
   if (isLocked()) { history.pushState(e.state, ''); return; }
@@ -7155,7 +7211,9 @@ function populateWriteoffSelect() {
   const items = getAllInvItems();
   const sel = gn('writeoffItem');
   if (!sel) return;
-  sel.innerHTML = items.map(it => `<option value="${it.key}" data-unit="${it.unit}">${it.name} (${it.unit})</option>`).join('');
+  const fg = [...DB.recipes].sort((a, b) => a.name.localeCompare(b.name, 'uk'));
+  sel.innerHTML = `<optgroup label="Склад">${items.map(it => `<option value="${it.key}" data-unit="${it.unit}">${it.name} (${it.unit})</option>`).join('')}</optgroup>`
+    + (fg.length ? `<optgroup label="Готова продукція">${fg.map(r => `<option value="fg_${r.id}" data-unit="кг">${escHtml(r.name)} (кг)</option>`).join('')}</optgroup>` : '');
   if (gn('writeoffQty')) gn('writeoffQty').value = '';
   if (gn('writeoffReason')) gn('writeoffReason').value = '';
 }
@@ -7171,15 +7229,18 @@ function confirmWriteoff() {
   const opt = sel.options[sel.selectedIndex];
   const itemName = opt ? opt.text.replace(/\s*\(.*\)$/, '') : key;
   const woDate = dateVal ? new Date(dateVal + 'T12:00:00').toISOString() : new Date().toISOString();
-  const before = DB.inventory[key] || 0;
-  DB.inventory[key] = Math.max(0, before - qty);
+  const isFg = key.startsWith('fg_'), rid = isFg ? key.slice(3) : null;
+  const rec = isFg ? DB.recipes.find(r => r.id === rid) : null;
+  const before = isFg ? (DB.finishedGoods[rid] || 0) : (DB.inventory[key] || 0);
+  const after = Math.max(0, before - qty);
+  if (isFg) DB.finishedGoods[rid] = after; else DB.inventory[key] = after;
   DB.writeoffs.push({
     id: 'w_' + Date.now(),
     date: woDate,
     key, itemName,
     qty, reason,
-    before, after: DB.inventory[key],
-    costPerKg: getItemCostPerKg(key)
+    before, after,
+    costPerKg: isFg ? (rec ? shipCostPerKg(rec) : 0) : getItemCostPerKg(key)
   });
   saveDB();
   syncToSheets('Списання',
